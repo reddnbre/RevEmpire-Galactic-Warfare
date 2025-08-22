@@ -1,0 +1,4297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>RevEmpire: Galactic Warfare</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            color: white;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #loadingScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #0a0a0a, #1a1a2e, #16213e, #0f3460);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-title {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #00ffff;
+            text-shadow: 0 0 20px #00ffff;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .loading-subtitle {
+            font-size: 1.2rem;
+            color: #888;
+            margin-bottom: 2rem;
+        }
+
+        .loading-bar {
+            width: 300px;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #00ffff, #0080ff);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .loading-text {
+            color: #00ffff;
+            font-size: 1rem;
+        }
+
+                 #gameCanvas {
+             display: block;
+             background: #000;
+         }
+
+                 #hud {
+             position: absolute;
+             top: 10px;
+             left: 10px;
+             z-index: 100;
+             font-size: 16px;
+             color: white;
+             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+             background: rgba(0, 0, 0, 0.7);
+             padding: 15px;
+             border-radius: 10px;
+             border: 2px solid #00ffff;
+             backdrop-filter: blur(5px);
+         }
+
+         #hud div {
+             margin-bottom: 8px;
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             min-width: 200px;
+         }
+
+         #hud .stat-label {
+             color: #00ffff;
+             font-weight: bold;
+         }
+
+         #hud .stat-value {
+             color: #fff;
+             text-shadow: 0 0 5px currentColor;
+         }
+
+         #hud .health-bar {
+            width: 80px;
+             height: 8px;
+             background: #333;
+             border-radius: 4px;
+             overflow: hidden;
+             margin-left: 10px;
+         }
+
+         #hud .health-fill {
+             height: 100%;
+             background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00);
+             transition: width 0.3s ease;
+         }
+
+        #startScreen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 500;
+        }
+
+        #startScreen h1 {
+            font-size: 3rem;
+            color: #00ffff;
+            text-shadow: 0 0 20px #00ffff;
+            margin-bottom: 2rem;
+        }
+
+        #startScreen button {
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #startScreen button:hover {
+            background: linear-gradient(45deg, #0080ff, #0040ff);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        #shop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        
+        .shop-container {
+            background: linear-gradient(45deg, #1a1a2e, #16213e);
+            border: 3px solid #00ffff;
+            border-radius: 20px;
+            padding: 20px;
+            max-width: 95vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.3);
+        }
+
+        #shop h2 {
+            color: #00ffff;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .shop-section {
+            margin-bottom: 15px;
+            padding: 12px;
+            border: 1px solid #00ffff;
+            border-radius: 10px;
+            background: rgba(0, 255, 255, 0.05);
+        }
+
+        .shop-section h3 {
+            color: #00ffff;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .shop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            margin: 3px 0;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .shop-item button {
+            background: linear-gradient(45deg, #00ff00, #008000);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.8rem;
+            min-width: 80px;
+        }
+
+        .shop-item button:hover {
+            background: linear-gradient(45deg, #008000, #004000);
+        }
+
+        #closeShop {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+        
+        #closeShop:hover {
+            background: #cc0000;
+            transform: scale(1.1);
+        }
+        
+        /* Premium Shop Styles */
+        #premiumShop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .premium-shop-content {
+            background: linear-gradient(45deg, #0a0a1a, #1a1a3a);
+            border: 3px solid #00ffff;
+            border-radius: 20px;
+            padding: 0;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.3);
+        }
+        
+        .premium-header {
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            color: #000;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #00ffff;
+        }
+        
+        .premium-header h2 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .revcoins-display {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .revcoins-icon {
+            font-size: 1.5rem;
+        }
+        
+        .close-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .premium-tabs {
+            display: flex;
+            background: #1a1a2e;
+            border-bottom: 2px solid #00ffff;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            background: #2a2a4a;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn:hover {
+            background: #3a3a6a;
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            color: #000;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 30px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .premium-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .premium-item {
+            background: linear-gradient(45deg, #2a2a4a, #3a3a6a);
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .premium-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3);
+            border-color: #ffff00;
+        }
+        
+        .premium-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .premium-item:hover::before {
+            left: 100%;
+        }
+        
+        .premium-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .premium-item-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #00ffff;
+        }
+        
+        .premium-item-price {
+            background: linear-gradient(45deg, #ffd700, #ffa500);
+            color: #000;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .premium-item-description {
+            color: #ccc;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .premium-item-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .premium-stat {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        .premium-buy-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #00ff00, #008000);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .premium-buy-btn:hover {
+            background: linear-gradient(45deg, #00cc00, #006600);
+            transform: scale(1.05);
+        }
+        
+        .premium-buy-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .premium-footer {
+            background: #1a1a2e;
+            padding: 20px 30px;
+            border-top: 2px solid #00ffff;
+            text-align: center;
+        }
+        
+        .premium-footer button {
+            background: linear-gradient(45deg, #ffd700, #ffa500);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        
+        .premium-note {
+            color: #00ffff;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        /* Weapon Shop Styles */
+        #weaponShop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .weapon-shop-content {
+            background: linear-gradient(45deg, #0a0a1a, #1a1a3a);
+            border: 3px solid #ff8800;
+            border-radius: 20px;
+            padding: 0;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(255, 136, 0, 0.3);
+        }
+        
+        .weapon-shop-header {
+            background: linear-gradient(45deg, #ff8800, #ff6600);
+            color: #000;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ff8800;
+        }
+        
+        .weapon-shop-header h2 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .coins-display {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .coins-icon {
+            font-size: 1.5rem;
+        }
+        
+        .weapon-shop-tabs {
+            display: flex;
+            background: #1a1a2e;
+            border-bottom: 2px solid #ff8800;
+        }
+        
+        .weapon-tab-btn {
+            flex: 1;
+            background: #2a2a4a;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .weapon-tab-btn:hover {
+            background: #3a3a6a;
+        }
+        
+        .weapon-tab-btn.active {
+            background: linear-gradient(45deg, #ff8800, #ff6600);
+            color: #000;
+        }
+        
+        .weapon-tab-content {
+            display: none;
+            padding: 30px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        
+        .weapon-tab-content.active {
+            display: block;
+        }
+        
+        .weapon-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .weapon-item {
+            background: linear-gradient(45deg, #2a2a4a, #3a3a6a);
+            border: 2px solid #ff8800;
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .weapon-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 136, 0, 0.3);
+            border-color: #ffff00;
+        }
+        
+        .weapon-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .weapon-item-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #ff8800;
+        }
+        
+        .weapon-item-price {
+            background: linear-gradient(45deg, #ffd700, #ffa500);
+            color: #000;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .weapon-item-description {
+            color: #ccc;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .weapon-item-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .weapon-stat {
+            background: rgba(255, 136, 0, 0.1);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        .weapon-buy-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #00ff00, #008000);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .weapon-buy-btn:hover {
+            background: linear-gradient(45deg, #00cc00, #006600);
+            transform: scale(1.05);
+        }
+        
+        .weapon-buy-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .weapon-shop-footer {
+            background: #1a1a2e;
+            padding: 20px 30px;
+            border-top: 2px solid #ff8800;
+            text-align: center;
+        }
+        
+        .weapon-note {
+            color: #ff8800;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        /* Shop Tabs */
+        .shop-tabs {
+            display: flex;
+            background: #1a1a2e;
+            border-bottom: 2px solid #00ffff;
+            margin-bottom: 15px;
+        }
+        
+        .shop-tab-btn {
+            flex: 1;
+            background: #2a2a4a;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .shop-tab-btn:hover {
+            background: #3a3a6a;
+        }
+        
+        .shop-tab-btn.active {
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            color: #000;
+        }
+        
+        .shop-tab-content {
+            display: none;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+        
+        .shop-tab-content.active {
+            display: block;
+        }
+        
+        .shop-actions {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .shop-actions button {
+            background: linear-gradient(45deg, #00ff00, #008000);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .shop-actions button:hover {
+            background: linear-gradient(45deg, #00cc00, #006600);
+            transform: scale(1.02);
+        }
+        
+        .shop-actions button:nth-child(2) {
+            background: linear-gradient(45deg, #ffd700, #ffa500);
+            color: #000;
+        }
+        
+        .shop-actions button:nth-child(3) {
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            color: #000;
+        }
+        
+        .shop-actions button:nth-child(4) {
+            background: linear-gradient(45deg, #ff4444, #cc0000);
+        }
+        
+        /* Mobile and Tablet Responsive Design */
+        @media (max-width: 768px) {
+            .shop-container {
+                padding: 15px;
+                max-width: 98vw;
+                max-height: 95vh;
+            }
+            
+            #shop h2 {
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+            }
+            
+            .shop-section {
+                padding: 10px;
+                margin-bottom: 12px;
+            }
+            
+            .shop-section h3 {
+                font-size: 1rem;
+            }
+            
+            .shop-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+                padding: 10px;
+            }
+            
+            .shop-item button {
+                align-self: flex-end;
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .shop-tabs {
+                flex-direction: column;
+            }
+            
+            .shop-tab-btn {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+            
+            .shop-actions button {
+                margin: 5px 0;
+                padding: 12px 20px;
+                font-size: 1rem;
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            /* Premium Shop Mobile */
+            .premium-shop-content {
+                max-width: 98vw;
+                max-height: 95vh;
+            }
+            
+            .premium-header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .premium-header h2 {
+                font-size: 1.5rem;
+            }
+            
+            .revcoins-display {
+                font-size: 1rem;
+                padding: 8px 15px;
+            }
+            
+            .premium-tabs {
+                flex-direction: column;
+            }
+            
+            .tab-btn {
+                padding: 12px 15px;
+                font-size: 1rem;
+            }
+            
+            .tab-content {
+                padding: 20px;
+                max-height: 50vh;
+            }
+            
+            .premium-items-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .premium-item {
+                padding: 15px;
+            }
+            
+            .premium-item-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .premium-item-stats {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .premium-footer {
+                padding: 15px 20px;
+            }
+            
+            .premium-footer button {
+                width: 100%;
+                padding: 12px 20px;
+            }
+            
+            /* Weapon Shop Mobile */
+            .weapon-shop-content {
+                max-width: 98vw;
+                max-height: 95vh;
+            }
+            
+            .weapon-shop-header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .weapon-shop-header h2 {
+                font-size: 1.5rem;
+            }
+            
+            .coins-display {
+                font-size: 1rem;
+                padding: 8px 15px;
+            }
+            
+            .weapon-shop-tabs {
+                flex-direction: column;
+            }
+            
+            .weapon-tab-btn {
+                padding: 12px 15px;
+                font-size: 1rem;
+            }
+            
+            .weapon-tab-content {
+                padding: 20px;
+                max-height: 50vh;
+            }
+            
+            .weapon-items-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .weapon-item {
+                padding: 15px;
+            }
+            
+            .weapon-item-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .weapon-item-stats {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .weapon-shop-footer {
+                padding: 15px 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .shop-container {
+                padding: 10px;
+            }
+            
+            #shop h2 {
+                font-size: 1.3rem;
+            }
+            
+            .shop-item {
+                font-size: 0.8rem;
+            }
+            
+            .shop-item button {
+                font-size: 0.8rem;
+                padding: 6px 10px;
+            }
+            
+            .premium-header h2 {
+                font-size: 1.3rem;
+            }
+            
+            .premium-item-name {
+                font-size: 1.1rem;
+            }
+            
+            .premium-item-description {
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Mobile Controls */
+        #mobileControls {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+        
+        .mobile-controls {
+            display: flex;
+            gap: 20px;
+            align-items: flex-end;
+        }
+        
+        .control-pad {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .control-row {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 255, 255, 0.8);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            touch-action: manipulation;
+        }
+        
+        .control-btn:active {
+            background: rgba(0, 255, 255, 1);
+            transform: scale(0.95);
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            padding: 12px 20px;
+            background: linear-gradient(45deg, #ff4444, #cc0000);
+            border: 2px solid #ff4444;
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            touch-action: manipulation;
+        }
+        
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+        
+        @media (max-width: 768px) {
+            #mobileControls {
+                display: block;
+            }
+            
+            .control-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 1.8rem;
+            }
+            
+            .action-btn {
+                padding: 15px 25px;
+                font-size: 1.1rem;
+            }
+        }
+
+        #levelComplete {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 30px;
+            z-index: 200;
+            display: none;
+            text-align: center;
+        }
+
+        #levelComplete h2 {
+            color: #00ff00;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        #levelComplete button {
+            background: linear-gradient(45deg, #00ff00, #008000);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            margin: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        #levelComplete button:hover {
+            background: linear-gradient(45deg, #008000, #004000);
+            transform: scale(1.05);
+        }
+
+        #gameOver {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #ff4444;
+            border-radius: 15px;
+            padding: 30px;
+            z-index: 200;
+            display: none;
+            text-align: center;
+        }
+
+        #gameOver h2 {
+            color: #ff4444;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        #gameOver button {
+            background: linear-gradient(45deg, #ff4444, #cc0000);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            margin: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        #gameOver button:hover {
+            background: linear-gradient(45deg, #cc0000, #880000);
+            transform: scale(1.05);
+        }
+
+                 @media (max-width: 768px) {
+             #hud {
+                 font-size: 14px;
+                 padding: 10px;
+            }
+            
+            #startScreen h1 {
+                font-size: 2rem;
+            }
+            
+            #shop, #levelComplete, #gameOver {
+                padding: 20px;
+                margin: 10px;
+             }
+         }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="loadingScreen">
+            <div class="loading-title">RevEmpire: Galactic Warfare</div>
+            <div class="loading-subtitle">Game by RevEmpire.Net</div>
+            <div class="loading-bar">
+                <div class="loading-progress" id="loadingProgress"></div>
+            </div>
+            <div class="loading-text" id="loadingText">Loading...</div>
+        </div>
+        
+        <canvas id="gameCanvas"></canvas>
+        
+                 <div id="hud">
+            <div><span class="stat-label">Score:</span> <span class="stat-value" id="score">0</span></div>
+            <div><span class="stat-label">Wave:</span> <span class="stat-value" id="wave">1</span></div>
+             <div><span class="stat-label">HP:</span> <span class="stat-value" id="healthPercent">100%</span>
+                <div class="health-bar">
+                     <div class="health-fill" id="healthBar" style="width: 100%"></div>
+                 </div>
+             </div>
+             <div><span class="stat-label">Progress:</span> <span class="stat-value" id="progressPercent">0%</span>
+                <div class="health-bar">
+                     <div class="health-fill" id="waveProgress" style="width: 0%; background: linear-gradient(90deg, #ffff00, #00ff00);"></div>
+                 </div>
+             </div>
+            <div><span class="stat-label">Coins:</span> <span class="stat-value" id="coins">0</span></div>
+            <div><span class="stat-label">Empire Coins:</span> <span class="stat-value" id="empireCoins">1000</span></div>
+            <div><span class="stat-label">Enemies:</span> <span class="stat-value" id="enemiesLeft">0</span></div>
+            <div><span class="stat-label">Loyalty Earnings:</span> <span class="stat-value" id="earnings">$0.00</span></div>
+            <div><span class="stat-label">Total Wallet:</span> <span class="stat-value" id="wallet">$0.00</span></div>
+            <div><span class="stat-label">RevCoins:</span> <span class="stat-value" id="revCoins">0</span></div>
+            <div><span class="stat-label">Revives:</span> <span class="stat-value" id="revives">0/3</span></div>
+         </div>
+        
+        <div id="startScreen">
+            <h1>RevEmpire: Galactic Warfare</h1>
+            <button id="startButton">START GAME</button>
+        <button id="shopButton">SHOP</button>
+        </div>
+        
+        <div id="shop" style="display: none;">
+            <div class="shop-container">
+                <button id="closeShop">×</button>
+                <h2>🚀 REVEMPIRE HANGAR 🚀</h2>
+                
+                <div class="shop-tabs">
+                    <button class="shop-tab-btn active" data-tab="ships">🛸 Ships</button>
+                    <button class="shop-tab-btn" data-tab="shipyard">🔧 Shipyard</button>
+                    <button class="shop-tab-btn" data-tab="powerups">⚡ Powerups</button>
+                </div>
+                
+                <div id="shipsTab" class="shop-tab-content active">
+                    <div class="shop-section">
+                        <h3>Available Ships</h3>
+                        <div id="shipList"></div>
+                    </div>
+                </div>
+                
+                <div id="shipyardTab" class="shop-tab-content">
+                    <div class="shop-section">
+                        <h3>Repair & Construction</h3>
+                        <div id="shipyardList"></div>
+                    </div>
+                </div>
+                
+                <div id="powerupsTab" class="shop-tab-content">
+                    <div class="shop-section">
+                        <h3>Power-ups & Enhancements</h3>
+                        <div id="powerupList"></div>
+                    </div>
+                </div>
+                
+                            <div class="shop-actions">
+                <button id="weaponShopButton">🎯 WEAPON SHOP</button>
+                <button id="earnRevCoinsButton">💎 EARN REVCOINS</button>
+                <button id="premiumShopButton">💎 PREMIUM SHOP</button>
+                <button id="speedUpConstructionButton">⚡ SPEED UP CONSTRUCTION</button>
+                <button id="backToLevelComplete">← Back to Level Complete</button>
+            </div>
+            </div>
+        </div>
+        
+        <!-- Weapon Shop Modal -->
+        <div id="weaponShop" style="display: none;">
+            <div class="weapon-shop-content">
+                <div class="weapon-shop-header">
+                    <h2>🎯 WEAPON SHOP</h2>
+                    <div class="coins-display">
+                        <span class="coins-icon">💰</span>
+                        <span id="weaponShopCoins">0</span> Coins
+                    </div>
+                    <button id="closeWeaponShop" class="close-btn">×</button>
+                </div>
+                
+                <div class="weapon-shop-tabs">
+                    <button class="weapon-tab-btn active" data-tab="regular">🔫 Regular Weapons</button>
+                    <button class="weapon-tab-btn" data-tab="premium">💎 Premium Weapons</button>
+                </div>
+                
+                <div id="regularWeaponsTab" class="weapon-tab-content active">
+                    <div class="weapon-items-grid" id="regularWeaponsList"></div>
+                </div>
+                
+                <div id="premiumWeaponsTab" class="weapon-tab-content">
+                    <div class="weapon-items-grid" id="premiumWeaponsList"></div>
+                </div>
+                
+                <div class="weapon-shop-footer">
+                    <p class="weapon-note">💡 Weapons can be used in battle with keyboard shortcuts!</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Premium Shop Modal -->
+        <div id="premiumShop" style="display: none;">
+            <div class="premium-shop-content">
+                <div class="premium-header">
+                    <h2>💎 PREMIUM SHOP</h2>
+                    <div class="revcoins-display">
+                        <span class="revcoins-icon">💎</span>
+                        <span id="premiumRevCoins">0</span> RevCoins
+                    </div>
+                    <button id="closePremiumShop" class="close-btn">×</button>
+                </div>
+                
+                <div class="premium-tabs">
+                    <button class="tab-btn active" data-tab="weapons">⚔️ Premium Weapons</button>
+                    <button class="tab-btn" data-tab="powerups">🛡️ Premium Powerups</button>
+                </div>
+                
+                <div id="premiumWeaponsTab" class="tab-content active">
+                    <div class="premium-items-grid" id="premiumWeaponsList"></div>
+                </div>
+                
+                <div id="premiumPowerupsTab" class="tab-content">
+                    <div class="premium-items-grid" id="premiumPowerupsList"></div>
+                </div>
+                
+                <div class="premium-footer">
+                    <button id="earnRevCoinsFromPremium">💎 Watch Ad to Earn RevCoins</button>
+                    <p class="premium-note">💡 Premium items are superior to regular items and can only be purchased with RevCoins!</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="levelComplete">
+            <h2>Level Complete!</h2>
+            <p>Wave: <span id="completedWave">1</span></p>
+            <p>Enemies Defeated: <span id="enemiesDefeated">0</span></p>
+            <p>Coins Earned: <span id="coinsEarned">0</span></p>
+            <p>Loyalty Earned: <span id="loyaltyEarned">$0.00</span></p>
+            
+            <div style="margin: 20px 0; padding: 15px; background: rgba(0, 255, 255, 0.1); border-radius: 10px; border: 1px solid #00ffff;">
+                <h3 style="color: #00ffff; margin-bottom: 10px;">💰 Double Your Earnings!</h3>
+                <p style="margin-bottom: 15px; font-size: 0.9rem;">Watch a short ad to double your coins and loyalty earnings!</p>
+                <button id="watchAdForDouble" style="
+                    background: linear-gradient(45deg, #ffd700, #ffa500);
+                    color: #000;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    margin-right: 10px;
+                ">Watch Ad to Double Earnings</button>
+            </div>
+            
+            <button id="upgradeShips">Ship Shop</button>
+            <button id="repairShips">Shipyard</button>
+            <button id="buyWeapons">Weapon Shop</button>
+            <button id="buyPowerups">Power-ups</button>
+            <button id="continueToNextLevel">Continue to Next Level</button>
+        </div>
+        
+        <div id="gameOver">
+            <h2>GAME OVER</h2>
+            <p>Final Score: <span id="finalScore">0</span></p>
+            <p>Wave Reached: <span id="finalWave">1</span></p>
+            
+            <div style="margin: 20px 0; padding: 15px; background: rgba(255, 68, 68, 0.1); border-radius: 10px; border: 1px solid #ff4444;">
+                <h3 style="color: #ff4444; margin-bottom: 10px;">🛡️ Revive Your Ship!</h3>
+                <p style="margin-bottom: 15px; font-size: 0.9rem;">Watch an ad to revive and continue the battle!</p>
+                <button id="watchAdForRevive" style="
+                    background: linear-gradient(45deg, #00ff00, #008000);
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    margin-right: 10px;
+                ">Watch Ad to Revive</button>
+        </div>
+
+            <button id="restartGame">Restart</button>
+         </div>
+    </div>
+
+    <script>
+        // ===== GAME VARIABLES =====
+         let canvas, ctx;
+         let gameRunning = false;
+         let gamePaused = false;
+        
+        // Player stats
+         let score = 0;
+         let coins = 0;
+         let empireCoins = 1000;
+         let health = 100;
+         let currentWave = 1;
+         let enemiesRequiredForLevel = 30;
+         let enemiesKilled = 0;
+         let enemiesKilledThisWave = 0;
+         let coinsEarnedThisWave = 0;
+         let loyaltyEarnedThisWave = 0;
+         let totalWallet = 0;
+         let loyaltyEarnings = 0;
+        
+        // Game objects
+        let player = { x: 0, y: 0, width: 40, height: 40, speed: 3, currentShip: 1 };
+                         let bullets = [];
+        let enemies = [];
+        let powerups = [];
+        let explosions = [];
+        let stars = [];
+        
+        // Input
+        let keys = {};
+        let lastFireTime = 0;
+        
+        // Ship data with build times and repair costs
+        let ships = {
+            1: { 
+                name: "Level 1 Starship", 
+                price: 100, 
+                level: 1, 
+                damage: 20, 
+                fireRate: 500, 
+                speed: 4, 
+                health: 100, 
+                maxHealth: 100,
+                owned: true, 
+                destroyed: false, 
+                repairCost: 50, 
+                buildTime: 0,
+                currentBuildTime: 0,
+                baseBuildTime: 0 // Level 1 ships are instant
+            },
+            2: { 
+                name: "Level 2 Cruiser", 
+                price: 250, 
+                level: 2, 
+                damage: 35, 
+                fireRate: 450, 
+                speed: 5, 
+                health: 150, 
+                maxHealth: 150,
+                owned: false, 
+                destroyed: false, 
+                repairCost: 75, 
+                buildTime: 0,
+                currentBuildTime: 0,
+                baseBuildTime: 30000 // 30 seconds
+            },
+            3: { 
+                name: "Level 3 Destroyer", 
+                price: 500, 
+                level: 3, 
+                damage: 50, 
+                fireRate: 400, 
+                speed: 6, 
+                health: 200, 
+                maxHealth: 200,
+                owned: false, 
+                destroyed: false, 
+                repairCost: 100, 
+                buildTime: 0,
+                currentBuildTime: 0,
+                baseBuildTime: 60000 // 1 minute
+            },
+            4: { 
+                name: "Level 4 Battleship", 
+                price: 1000, 
+                level: 4, 
+                damage: 70, 
+                fireRate: 350, 
+                speed: 7, 
+                health: 300, 
+                maxHealth: 300,
+                owned: false, 
+                destroyed: false, 
+                repairCost: 150, 
+                buildTime: 0,
+                currentBuildTime: 0,
+                baseBuildTime: 120000 // 2 minutes
+            },
+            5: { 
+                name: "Level 5 Dreadnought", 
+                price: 2000, 
+                level: 5, 
+                damage: 100, 
+                fireRate: 300, 
+                speed: 8, 
+                health: 500, 
+                maxHealth: 500,
+                owned: false, 
+                destroyed: false, 
+                repairCost: 250, 
+                buildTime: 0,
+                currentBuildTime: 0,
+                baseBuildTime: 300000 // 5 minutes
+            }
+        };
+        
+        // Current active ship
+        let currentShip = 1;
+        
+        // Enemy types with AI behaviors
+         let enemyTypes = {
+             fighter: { 
+                 name: "Fighter", 
+                 health: 20, 
+                 maxHealth: 20,
+                 speed: 1.2, 
+                 damage: 10, 
+                 color: "#ff4444", 
+                 weapon: "laser",
+                 ai: "straight_shooter", // Shoots straight down
+                 fireRate: 2000,
+                 lastFireTime: 0,
+                 canShoot: false // Will be enabled based on wave
+             },
+             interceptor: { 
+                 name: "Interceptor", 
+                 health: 35, 
+                 maxHealth: 35,
+                 speed: 1.8, 
+                 damage: 15, 
+                 color: "#ff8800", 
+                 weapon: "plasma",
+                 ai: "aimed_shooter", // Shoots toward player
+                 fireRate: 2500,
+                 lastFireTime: 0,
+                 canShoot: false
+             },
+             destroyer: { 
+                 name: "Destroyer", 
+                 health: 50, 
+                 maxHealth: 50,
+                 speed: 1.0, 
+                 damage: 20, 
+                 color: "#ff0080", 
+                 weapon: "missile",
+                 ai: "kamikaze", // Tries to collide with player
+                 fireRate: 3000,
+                 lastFireTime: 0,
+                 canShoot: false
+             },
+             battleship: { 
+                 name: "Battleship", 
+                 health: 80, 
+                 maxHealth: 80,
+                 speed: 0.6, 
+                 damage: 25, 
+                 color: "#8000ff", 
+                 weapon: "cannon",
+                 ai: "straight_shooter",
+                 fireRate: 4000,
+                 lastFireTime: 0,
+                 canShoot: false
+             },
+             dreadnought: { 
+                 name: "Dreadnought", 
+                 health: 120, 
+                 maxHealth: 120,
+                 speed: 0.4, 
+                 damage: 30, 
+                 color: "#ff0000", 
+                 weapon: "quantum",
+                 ai: "aimed_shooter",
+                 fireRate: 5000,
+                 lastFireTime: 0,
+                 canShoot: false
+             }
+         };
+         
+        // Boss types
+        let bossTypes = {
+            boss1: { 
+                name: "Titan Destroyer", 
+                health: 500, 
+                maxHealth: 500,
+                speed: 0.8, 
+                damage: 40, 
+                color: "#ff0000", 
+                weapon: "plasma_cannon",
+                sprite: "Boss_01",
+                width: 120,
+                height: 120,
+                fireRate: 2000,
+                lastFireTime: 0,
+                phase: 1,
+                maxPhase: 3,
+                phaseHealth: 167, // Health per phase
+                specialAttack: "missile_barrage",
+                minionSpawnRate: 8000, // Spawn minions every 8 seconds
+                lastMinionSpawn: 0,
+                reward: { coins: 100, loyalty: 0.00001 }
+            },
+            boss2: { 
+                name: "Void Cruiser", 
+                health: 800, 
+                maxHealth: 800,
+                speed: 0.6, 
+                damage: 60, 
+                color: "#8000ff", 
+                weapon: "void_laser",
+                sprite: "Boss_02",
+                width: 140,
+                height: 140,
+                fireRate: 1500,
+                lastFireTime: 0,
+                phase: 1,
+                maxPhase: 4,
+                phaseHealth: 200,
+                specialAttack: "void_bomb",
+                minionSpawnRate: 6000, // Spawn minions every 6 seconds
+                lastMinionSpawn: 0,
+                reward: { coins: 200, loyalty: 0.00002 }
+            },
+            boss3: { 
+                name: "Omega Battleship", 
+                health: 1200, 
+                maxHealth: 1200,
+                speed: 0.4, 
+                damage: 80, 
+                color: "#ff00ff", 
+                weapon: "omega_cannon",
+                sprite: "Boss_03",
+                width: 160,
+                height: 160,
+                fireRate: 1000,
+                lastFireTime: 0,
+                phase: 1,
+                maxPhase: 5,
+                phaseHealth: 240,
+                specialAttack: "omega_storm",
+                minionSpawnRate: 4000, // Spawn minions every 4 seconds
+                lastMinionSpawn: 0,
+                reward: { coins: 300, loyalty: 0.00003 }
+            }
+        };
+         
+        // Powerups
+        let powerupsAvailable = {
+            shield: { name: "Shield", price: 50, duration: 10000 },
+            speed: { name: "Speed Boost", price: 30, duration: 8000 },
+            damage: { name: "Damage Boost", price: 40, duration: 12000 },
+            rapidFire: { name: "Rapid Fire", price: 60, duration: 15000 },
+            multipleShots: { name: "Multiple Shots", price: 80, duration: 12000 },
+            magnet: { name: "Magnet", price: 45, duration: 15000, pullRadius: 120, pullStrength: 3 },
+            droneAlly: { name: "Drone Ally", price: 70, duration: 20000, fireRate: 600 },
+            nanobotRepair: { name: "Nanobot Repair Kit", price: 100, duration: 0, healAmount: 20 },
+            piercingLaser: { name: "Piercing Laser", price: 90, duration: 0, shotsRemaining: 10 },
+            coinBoost: { name: "Coin Boost", price: 60, duration: 10000, multiplier: 2 }
+        };
+        
+        let activePowerups = {
+            shield: { charges: 0, maxCharges: 5 },
+            speed: null,
+            damage: null,
+            rapidFire: null,
+            multipleShots: null,
+            magnet: { active: false, endTime: 0, level: 0, pullRadius: 0, pullStrength: 0 },
+            droneAlly: null,
+            nanobotRepair: null,
+            piercingLaser: { active: false, shotsRemaining: 0 },
+            coinBoost: null
+        };
+        
+        let droneAlly = null;
+        let shipsUnderConstruction = {};
+        let levelCompleteMenuShouldBeShown = false;
+        let powerEffects = [];
+        let powerupMessages = [];
+        
+        // Premium weapons (superior to regular weapons)
+        let premiumWeapons = {
+            nuke: { 
+                name: "Nuke", 
+                price: 50, 
+                damage: 800, 
+                radius: 300, 
+                cooldown: 8000,
+                description: "Massive explosion that destroys all enemies in radius"
+            },
+            quantum: { 
+                name: "Quantum Blaster", 
+                price: 75, 
+                damage: 500, 
+                pierce: true, 
+                cooldown: 6000,
+                description: "Pierces through all enemies with massive damage"
+            },
+            blackhole: { 
+                name: "Black Hole", 
+                price: 100, 
+                damage: 600, 
+                radius: 250, 
+                duration: 8000, 
+                cooldown: 12000,
+                description: "Creates a black hole that sucks in and destroys enemies"
+            },
+            inferno: { 
+                name: "Inferno Cannon", 
+                price: 60, 
+                damage: 400, 
+                burn: true, 
+                duration: 5000, 
+                cooldown: 10000,
+                description: "Sets enemies on fire for continuous damage"
+            },
+            diamond: { 
+                name: "Diamond Laser", 
+                price: 90, 
+                damage: 1000, 
+                pierce: true, 
+                cooldown: 15000,
+                description: "Ultimate piercing laser with devastating damage"
+            }
+        };
+        
+        // Premium powerups (superior to regular powerups)
+        let premiumPowerups = {
+            megaShield: { 
+                name: "Mega Shield", 
+                price: 80, 
+                duration: 20000, 
+                charges: 10,
+                description: "Superior shield with 10 charges and longer duration"
+            },
+            hyperSpeed: { 
+                name: "Hyper Speed", 
+                price: 70, 
+                duration: 15000, 
+                multiplier: 3,
+                description: "3x speed boost for ultimate maneuverability"
+            },
+            ultimateDamage: { 
+                name: "Ultimate Damage", 
+                price: 90, 
+                duration: 18000, 
+                multiplier: 4,
+                description: "4x damage multiplier for devastating attacks"
+            },
+            infiniteRapidFire: { 
+                name: "Infinite Rapid Fire", 
+                price: 100, 
+                duration: 25000, 
+                fireRate: 100,
+                description: "Ultra-fast firing rate for maximum destruction"
+            },
+            superMagnet: { 
+                name: "Super Magnet", 
+                price: 85, 
+                duration: 20000, 
+                pullRadius: 300,
+                pullStrength: 8,
+                description: "Massive magnet that pulls powerups from far away"
+            }
+        };
+        
+        // Active premium weapons and powerups
+        let activePremiumWeapons = {};
+        let activePremiumPowerups = {};
+        
+        // Ad monetization variables
+        let adWatchedThisWave = false;
+        let adCooldown = 0;
+        let adRewardMultiplier = 2;
+        let adWatchCount = 0;
+        let adRevenue = 0;
+        let reviveCount = 0;
+        let maxRevives = 3;
+        let revCoins = 0;
+        let lastAdWatchTime = 0;
+        let adCooldownTime = 5 * 60 * 1000; // 5 minutes in milliseconds
+        
+        // Boss system variables
+        let bossActive = false;
+        let currentBoss = null;
+        let bossSpawnWave = 5; // Boss spawns every 5 waves
+        let bossWarningShown = false;
+
+        // ===== SPRITE LOADING =====
+        let sprites = {
+            playerShips: {},
+            enemyShips: {},
+            backgrounds: {},
+            effects: {},
+            ui: {}
+        };
+        
+        function loadSprites() {
+            console.log('Loading sprites...');
+            
+            // Load player ship sprites
+            sprites.playerShips[1] = new Image();
+            sprites.playerShips[1].src = '../Ship_LVL_1.png';
+            sprites.playerShips[2] = new Image();
+            sprites.playerShips[2].src = '../Ship_LVL_2.png';
+            sprites.playerShips[3] = new Image();
+            sprites.playerShips[3].src = '../Ship_LVL_3.png';
+            sprites.playerShips[4] = new Image();
+            sprites.playerShips[4].src = '../Ship_LVL_4.png';
+            sprites.playerShips[5] = new Image();
+            sprites.playerShips[5].src = '../Ship_LVL_5.png';
+            
+            // Load enemy ship sprites
+            sprites.enemyShips.fighter = new Image();
+            sprites.enemyShips.fighter.src = '../Ship_01.png';
+            sprites.enemyShips.interceptor = new Image();
+            sprites.enemyShips.interceptor.src = '../Ship_02.png';
+            sprites.enemyShips.destroyer = new Image();
+            sprites.enemyShips.destroyer.src = '../Ship_03.png';
+            sprites.enemyShips.battleship = new Image();
+            sprites.enemyShips.battleship.src = '../Ship_04.png';
+            sprites.enemyShips.dreadnought = new Image();
+            sprites.enemyShips.dreadnought.src = '../Ship_05.png';
+            
+            // Load boss sprites
+            sprites.bossShips = {};
+            sprites.bossShips.boss1 = new Image();
+            sprites.bossShips.boss1.src = '../Boss_01.png';
+            sprites.bossShips.boss2 = new Image();
+            sprites.bossShips.boss2.src = '../Boss_02.png';
+            sprites.bossShips.boss3 = new Image();
+            sprites.bossShips.boss3.src = '../Boss_03.png';
+            
+            // Load background
+            sprites.backgrounds.space = new Image();
+            sprites.backgrounds.space.src = '../Space_BG_02.png';
+            
+            // Load weapon effects
+            sprites.effects.laser = new Image();
+            sprites.effects.laser.src = '../Laser_Shot_1_001.png';
+            sprites.effects.fire = new Image();
+            sprites.effects.fire.src = '../Fire_Shot_1_1.png';
+            
+            // Load powerup sprites
+            sprites.powerups = {};
+            sprites.powerups.shield = new Image();
+            sprites.powerups.shield.src = '../Barrier_Bonus.png';
+            sprites.powerups.speed = new Image();
+            sprites.powerups.speed.src = '../Hero_Speed_Debuff.png'; // Using speed debuff as speed boost
+            sprites.powerups.damage = new Image();
+            sprites.powerups.damage.src = '../Damage_Bonus.png';
+            sprites.powerups.rapidFire = new Image();
+            sprites.powerups.rapidFire.src = '../Rockets_Bonus.png';
+            sprites.powerups.multipleShots = new Image();
+            sprites.powerups.multipleShots.src = '../Rockets_Bonus.png';
+            sprites.powerups.magnet = new Image();
+            sprites.powerups.magnet.src = '../Magnet_Bonus.png';
+            sprites.powerups.nanobotRepair = new Image();
+            sprites.powerups.nanobotRepair.src = '../HP_Bonus.png';
+            
+            // Load drone sprite with proper error handling
+            sprites.powerups.droneAlly = new Image();
+            sprites.powerups.droneAlly.onload = function() {
+                console.log('✅ Drone sprite loaded successfully!', this.naturalWidth, 'x', this.naturalHeight);
+            };
+            sprites.powerups.droneAlly.onerror = function() {
+                console.error('❌ Failed to load drone sprite from:', this.src);
+            };
+            sprites.powerups.droneAlly.src = '../drone.png';
+            
+            sprites.powerups.piercingLaser = new Image();
+            sprites.powerups.piercingLaser.src = '../Damage_Bonus.png';
+            sprites.powerups.coinBoost = new Image();
+            sprites.powerups.coinBoost.src = '../HP_Bonus.png'; // Using HP bonus as coin boost sprite
+            
+            // Load UI elements
+            sprites.ui.playButton = new Image();
+            sprites.ui.playButton.src = '../Play_BTN.png';
+            sprites.ui.closeButton = new Image();
+            sprites.ui.closeButton.src = '../Close_BTN.png';
+            
+            console.log('Sprites loading initiated...');
+        }
+        
+        // ===== INITIALIZATION =====
+         function init() {
+            console.log('Game initializing...');
+             canvas = document.getElementById('gameCanvas');
+             ctx = canvas.getContext('2d');
+            
+            // Load sprites
+            loadSprites();
+             
+             // Set canvas size
+                 canvas.width = window.innerWidth;
+                 canvas.height = window.innerHeight;
+            
+            // Initialize player position
+                 player.x = canvas.width / 2 - player.width / 2;
+            player.y = canvas.height - player.height - 50;
+             
+             // Create stars
+             for (let i = 0; i < 100; i++) {
+                 stars.push({
+                     x: Math.random() * canvas.width,
+                     y: Math.random() * canvas.height,
+                    speed: Math.random() * 2 + 0.5
+                 });
+             }
+             
+             // Setup event listeners
+             setupEventListeners();
+             
+            // Hide loading screen
+            document.getElementById('loadingScreen').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'block';
+            
+            console.log('Game initialized successfully!');
+        }
+
+        // ===== EVENT LISTENERS =====
+        function setupEventListeners() {
+            // Mobile detection
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                setupMobileControls();
+            }
+            
+            function setupMobileControls() {
+                // Add mobile control buttons
+                const mobileControls = document.createElement('div');
+                mobileControls.id = 'mobileControls';
+                mobileControls.innerHTML = `
+                    <div class="mobile-controls">
+                        <div class="control-pad">
+                            <button id="upBtn" class="control-btn">↑</button>
+                            <div class="control-row">
+                                <button id="leftBtn" class="control-btn">←</button>
+                                <button id="rightBtn" class="control-btn">→</button>
+                            </div>
+                            <button id="downBtn" class="control-btn">↓</button>
+                        </div>
+                        <div class="action-buttons">
+                            <button id="fireBtn" class="action-btn">🔥 FIRE</button>
+                            <button id="pauseBtn" class="action-btn">⏸️ PAUSE</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(mobileControls);
+                
+                // Mobile control event listeners
+                document.getElementById('upBtn').addEventListener('touchstart', () => keys.ArrowUp = true);
+                document.getElementById('upBtn').addEventListener('touchend', () => keys.ArrowUp = false);
+                document.getElementById('downBtn').addEventListener('touchstart', () => keys.ArrowDown = true);
+                document.getElementById('downBtn').addEventListener('touchend', () => keys.ArrowDown = false);
+                document.getElementById('leftBtn').addEventListener('touchstart', () => keys.ArrowLeft = true);
+                document.getElementById('leftBtn').addEventListener('touchend', () => keys.ArrowLeft = false);
+                document.getElementById('rightBtn').addEventListener('touchstart', () => keys.ArrowRight = true);
+                document.getElementById('rightBtn').addEventListener('touchend', () => keys.ArrowRight = false);
+                document.getElementById('fireBtn').addEventListener('touchstart', () => keys.Space = true);
+                document.getElementById('fireBtn').addEventListener('touchend', () => keys.Space = false);
+                document.getElementById('pauseBtn').addEventListener('click', togglePause);
+            }
+            // Keyboard events
+            document.addEventListener('keydown', (e) => {
+                keys[e.key] = true;
+            });
+            
+            document.addEventListener('keyup', (e) => {
+                keys[e.key] = false;
+            });
+            
+            // Mouse movement
+            canvas.addEventListener('mousemove', (e) => {
+                if (gameRunning && !gamePaused) {
+                    const rect = canvas.getBoundingClientRect();
+                    player.x = e.clientX - rect.left - player.width / 2;
+                    player.y = e.clientY - rect.top - player.height / 2;
+                    
+                    // Keep player in bounds
+                    if (player.x < 0) player.x = 0;
+                    if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
+                    if (player.y < 0) player.y = 0;
+                    if (player.y > canvas.height - player.height) player.y = canvas.height - player.height;
+                }
+            });
+            
+            // Button events
+            document.getElementById('startButton').addEventListener('click', startGame);
+            document.getElementById('shopButton').addEventListener('click', () => {
+                document.getElementById('shop').style.display = 'block';
+                updateShopDisplay();
+                // Only pause if game is running
+                if (gameRunning) {
+                    gamePaused = true;
+                }
+            });
+            
+            document.getElementById('closeShop').addEventListener('click', () => {
+                document.getElementById('shop').style.display = 'none';
+                // Only resume if we were actually playing (not from level complete)
+                if (gameRunning && !levelCompleteMenuShouldBeShown) {
+                    gamePaused = false;
+                    gameLoop();
+                }
+            });
+            
+                            document.getElementById('backToLevelComplete').addEventListener('click', () => {
+                    document.getElementById('shop').style.display = 'none';
+                    // Only show level complete if we actually completed a level
+                    if (levelCompleteMenuShouldBeShown) {
+                        document.getElementById('levelComplete').style.display = 'block';
+                    } else {
+                        // Resume the game if we didn't actually complete a level
+                        gamePaused = false;
+                        levelCompleteMenuShouldBeShown = false;
+                        gameLoop();
+                    }
+                });
+            
+            document.getElementById('continueToNextLevel').addEventListener('click', continueToNextLevel);
+            document.getElementById('restartGame').addEventListener('click', restartGame);
+            
+            // Ad monetization event listeners
+            document.getElementById('watchAdForDouble').addEventListener('click', showDoubleEarningsAd);
+            document.getElementById('watchAdForRevive').addEventListener('click', showReviveAd);
+            document.getElementById('earnRevCoinsButton').addEventListener('click', showRevCoinsAd);
+            
+            // Premium shop event listeners
+            document.getElementById('premiumShopButton').addEventListener('click', openPremiumShop);
+            document.getElementById('closePremiumShop').addEventListener('click', closePremiumShop);
+            document.getElementById('earnRevCoinsFromPremium').addEventListener('click', showRevCoinsAd);
+            
+            // Weapon shop event listeners
+            document.getElementById('weaponShopButton').addEventListener('click', openWeaponShop);
+            document.getElementById('closeWeaponShop').addEventListener('click', closeWeaponShop);
+            
+            // Speed up construction button
+            document.getElementById('speedUpConstructionButton').addEventListener('click', showSpeedUpBuildAd);
+            
+            // Weapon shop tab switching
+            document.querySelectorAll('.weapon-tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabName = btn.getAttribute('data-tab');
+                    switchWeaponTab(tabName);
+                });
+            });
+            
+            // Tab switching
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabName = btn.getAttribute('data-tab');
+                    switchTab(tabName);
+                });
+            });
+            
+            // Shop tab switching
+            document.querySelectorAll('.shop-tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabName = btn.getAttribute('data-tab');
+                    switchShopTab(tabName);
+                });
+            });
+            
+            // Add event listeners for level complete menu buttons
+            document.getElementById('upgradeShips').addEventListener('click', () => {
+                document.getElementById('levelComplete').style.display = 'none';
+                document.getElementById('shop').style.display = 'block';
+                updateShopDisplay();
+            });
+            
+            document.getElementById('repairShips').addEventListener('click', () => {
+                document.getElementById('levelComplete').style.display = 'none';
+                document.getElementById('shop').style.display = 'block';
+                updateShopDisplay();
+            });
+            
+            document.getElementById('buyWeapons').addEventListener('click', () => {
+                document.getElementById('levelComplete').style.display = 'none';
+                document.getElementById('shop').style.display = 'block';
+                updateShopDisplay();
+            });
+            
+            document.getElementById('buyPowerups').addEventListener('click', () => {
+                document.getElementById('levelComplete').style.display = 'none';
+                document.getElementById('shop').style.display = 'block';
+                updateShopDisplay();
+            });
+            
+            // Window resize
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+
+        // ===== GAME FUNCTIONS =====
+                 function startGame() {
+            console.log('Starting game...');
+            document.getElementById('startScreen').style.display = 'none';
+             gameRunning = true;
+             gamePaused = false;
+             gameLoop();
+         }
+        
+                 function gameLoop() {
+             if (!gameRunning || gamePaused) return;
+             
+             update();
+             draw();
+             requestAnimationFrame(gameLoop);
+         }
+        
+                         function update() {
+            // Update player movement
+            if (keys['ArrowLeft'] || keys['a'] || keys['A']) player.x -= player.speed;
+            if (keys['ArrowRight'] || keys['d'] || keys['D']) player.x += player.speed;
+            if (keys['ArrowUp'] || keys['w'] || keys['W']) player.y -= player.speed;
+            if (keys['ArrowDown'] || keys['s'] || keys['S']) player.y += player.speed;
+            
+            // Keep player in bounds
+            if (player.x < 0) player.x = 0;
+            if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
+            if (player.y < 0) player.y = 0;
+            if (player.y > canvas.height - player.height) player.y = canvas.height - player.height;
+             
+             // Auto-fire
+             const currentTime = Date.now();
+             let fireRate = ships[player.currentShip].fireRate;
+             
+             if (activePowerups.rapidFire && currentTime < activePowerups.rapidFire) {
+                fireRate = Math.max(50, fireRate / 3);
+             }
+             
+             if (currentTime - lastFireTime > fireRate) {
+                 fireShipWeapon();
+                 lastFireTime = currentTime;
+             }
+             
+            // Spawn enemies continuously until level is complete
+            if (enemiesKilledThisWave < enemiesRequiredForLevel) {
+                 spawnEnemies();
+             }
+            
+            // Update bullets
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const bullet = bullets[i];
+                
+                // Move bullet based on type
+                if (bullet.isEnemyBullet || bullet.isBossBullet) {
+                    bullet.x += bullet.vx || 0;
+                    bullet.y += bullet.vy || bullet.speed;
+                } else {
+                    bullet.y -= bullet.speed;
+                }
+                
+                // Remove bullet if off screen
+                if (bullet.y < -bullet.height || bullet.y > canvas.height || 
+                    bullet.x < -bullet.width || bullet.x > canvas.width) {
+                    bullets.splice(i, 1);
+                }
+                
+                // Check enemy bullets hitting player
+                if ((bullet.isEnemyBullet || bullet.isBossBullet) && checkCollision(bullet, player)) {
+                    if (activePowerups.shield.charges > 0) {
+                        activePowerups.shield.charges--;
+                        bullets.splice(i, 1);
+                    } else {
+                        health -= bullet.damage;
+                        bullets.splice(i, 1);
+                        if (health <= 0) {
+                            gameOver();
+                        }
+                    }
+                }
+            }
+            
+            // Update enemies with AI behaviors
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const enemy = enemies[i];
+                
+                // Enable enemy shooting based on wave progression
+                if (!enemy.canShoot && currentWave >= 3) {
+                    enemy.canShoot = true;
+                }
+                
+                // Enemy AI behavior
+                switch(enemy.ai) {
+                    case 'straight_shooter':
+                        // Move straight down
+                        enemy.y += enemy.speed;
+                        break;
+                        
+                    case 'aimed_shooter':
+                        // Move toward player horizontally while going down
+                        enemy.y += enemy.speed * 0.7;
+                        const targetX = player.x + player.width / 2;
+                        const currentX = enemy.x + enemy.width / 2;
+                        if (currentX < targetX) {
+                            enemy.x += enemy.speed * 0.5;
+                        } else if (currentX > targetX) {
+                            enemy.x -= enemy.speed * 0.5;
+                        }
+                        break;
+                        
+                    case 'kamikaze':
+                        // Move directly toward player
+                        const dx = (player.x + player.width / 2) - (enemy.x + enemy.width / 2);
+                        const dy = (player.y + player.height / 2) - (enemy.y + enemy.height / 2);
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance > 0) {
+                            enemy.x += (dx / distance) * enemy.speed;
+                            enemy.y += (dy / distance) * enemy.speed;
+                        }
+                        break;
+                }
+                
+                // Enemy shooting
+                if (enemy.canShoot && Date.now() - enemy.lastFireTime > enemy.fireRate) {
+                    fireEnemyWeapon(enemy);
+                    enemy.lastFireTime = Date.now();
+                }
+                
+                // Check bullet collisions
+                for (let j = bullets.length - 1; j >= 0; j--) {
+                    const bullet = bullets[j];
+                    if (checkCollision(bullet, enemy)) {
+                        enemy.health -= bullet.damage;
+                        if (!bullet.piercing) {
+                            bullets.splice(j, 1);
+                        }
+                        
+                        if (enemy.health <= 0) {
+                            score += 10;
+                            
+                            // Apply coin boost multiplier if active
+                            let coinReward = 5;
+                            if (activePowerups.coinBoost && Date.now() < activePowerups.coinBoost) {
+                                coinReward *= powerupsAvailable.coinBoost.multiplier;
+                            }
+                            
+                            coins += coinReward;
+                            coinsEarnedThisWave += coinReward;
+                            enemiesKilled++;
+                            enemiesKilledThisWave++;
+                            loyaltyEarnings += 0.000001;
+                            loyaltyEarnedThisWave += 0.000001;
+                            createExplosion(enemy.x, enemy.y);
+                            enemies.splice(i, 1);
+                            break;
+                        }
+                    }
+                }
+                
+                // Check player collision
+                if (checkCollision(enemy, player)) {
+                    if (activePowerups.shield.charges > 0) {
+                        activePowerups.shield.charges--;
+                    } else {
+                        health -= 20;
+                    }
+                    enemies.splice(i, 1);
+                    enemiesKilled++;
+                    createExplosion(enemy.x, enemy.y);
+                }
+                
+                // Remove enemies off screen
+                if (enemy.y > canvas.height || enemy.x < -enemy.width || enemy.x > canvas.width) {
+                    enemies.splice(i, 1);
+                }
+            }
+            
+            // Update powerups with optimized collision and magnet effect
+            for (let i = powerups.length - 1; i >= 0; i--) {
+                const powerup = powerups[i];
+                powerup.y += 2;
+                powerup.rotation += 0.1;
+                powerup.pulse += 0.2;
+                powerup.glow = Math.sin(powerup.pulse) * 0.5 + 0.5;
+                
+                // Magnet effect - pull powerups toward player if magnet is active
+                if (activePowerups.magnet.active && activePowerups.magnet.endTime > Date.now()) {
+                    const dx = player.x + player.width / 2 - (powerup.x + powerup.width / 2);
+                    const dy = player.y + player.height / 2 - (powerup.y + powerup.height / 2);
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < activePowerups.magnet.pullRadius) {
+                        // Stronger pull effect - the closer the powerup, the stronger the pull
+                        const pullStrength = activePowerups.magnet.pullStrength * (1 + (activePowerups.magnet.pullRadius - distance) / activePowerups.magnet.pullRadius);
+                        const pullSpeed = 0.3 + (activePowerups.magnet.level * 0.1); // Faster pull for higher levels
+                        
+                        powerup.x += dx * pullStrength * pullSpeed;
+                        powerup.y += dy * pullStrength * pullSpeed;
+                    }
+                }
+                
+                // Quick collision check - only check if powerup is near player
+                if (powerup.y + powerup.height > player.y - 20 && 
+                    powerup.y < player.y + player.height + 20 &&
+                    powerup.x + powerup.width > player.x - 20 && 
+                    powerup.x < player.x + player.width + 20) {
+                
+                if (checkCollision(powerup, player)) {
+                    activatePowerup(powerup.type);
+                    powerups.splice(i, 1);
+                        continue;
+                    }
+                }
+                
+                if (powerup.y > canvas.height) {
+                    powerups.splice(i, 1);
+                }
+            }
+            
+            // Update explosions
+            for (let i = explosions.length - 1; i >= 0; i--) {
+                explosions[i].life--;
+                if (explosions[i].life <= 0) {
+                    explosions.splice(i, 1);
+                }
+            }
+            
+            // Update power effects
+            for (let i = powerEffects.length - 1; i >= 0; i--) {
+                powerEffects[i].life--;
+                powerEffects[i].angle += 0.1;
+                if (powerEffects[i].life <= 0) {
+                    powerEffects.splice(i, 1);
+                }
+            }
+            
+            // Update powerup messages
+            for (let i = powerupMessages.length - 1; i >= 0; i--) {
+                powerupMessages[i].life--;
+                powerupMessages[i].y -= 0.5; // Float upward
+                if (powerupMessages[i].life <= 0) {
+                    powerupMessages.splice(i, 1);
+                }
+            }
+            
+            // Update drone ally
+            if (droneAlly && activePowerups.droneAlly && Date.now() < activePowerups.droneAlly) {
+                // Move drone to follow player with smooth movement
+                const targetX = player.x + player.width + 20;
+                const targetY = player.y;
+                
+                droneAlly.x += (targetX - droneAlly.x) * 0.1;
+                droneAlly.y += (targetY - droneAlly.y) * 0.1;
+                
+                // Drone fires at enemies
+                if (Date.now() - droneAlly.lastFireTime > droneAlly.fireRate) {
+                    // Find closest enemy for drone to target
+                    let closestEnemy = null;
+                    let closestDistance = Infinity;
+                    
+                    for (let enemy of enemies) {
+                        const distance = Math.sqrt(
+                            Math.pow(enemy.x - droneAlly.x, 2) + 
+                            Math.pow(enemy.y - droneAlly.y, 2)
+                        );
+                        if (distance < closestDistance && enemy.y < droneAlly.y) {
+                            closestDistance = distance;
+                            closestEnemy = enemy;
+                        }
+                    }
+                    
+                    if (closestEnemy) {
+                        bullets.push({
+                            x: droneAlly.x + droneAlly.width / 2 - 2,
+                            y: droneAlly.y,
+                            width: 4,
+                            height: 8,
+                            speed: 6,
+                            damage: 15,
+                            color: '#00ff00',
+                            isDroneBullet: true
+                        });
+                        droneAlly.lastFireTime = Date.now();
+                                    }
+            }
+        }
+        
+        // Check boss collision with player bullets
+        if (bossActive && currentBoss) {
+            for (let j = bullets.length - 1; j >= 0; j--) {
+                const bullet = bullets[j];
+                if (!bullet.isBossBullet && checkCollision(bullet, currentBoss)) {
+                    currentBoss.health -= bullet.damage;
+                    if (!bullet.piercing) {
+                        bullets.splice(j, 1);
+                    }
+                    createExplosion(bullet.x, bullet.y);
+                }
+            }
+        } else {
+                droneAlly = null;
+            }
+            
+            // Update stars
+            for (let star of stars) {
+                star.y += star.speed;
+                if (star.y > canvas.height) {
+                    star.y = 0;
+                    star.x = Math.random() * canvas.width;
+                }
+            }
+            
+                    // Check for boss spawn
+        if (currentWave % bossSpawnWave === 0 && !bossActive && !bossWarningShown && enemies.length === 0) {
+            showBossWarning();
+        }
+        
+        // Update boss
+        if (bossActive && currentBoss) {
+            updateBoss();
+        }
+        
+        // Check level completion (only if no boss is active)
+        if (enemiesKilledThisWave >= enemiesRequiredForLevel && !levelCompleteMenuShouldBeShown && gameRunning && !bossActive) {
+            console.log(`Level ${currentWave} Complete! Killed: ${enemiesKilledThisWave}/${enemiesRequiredForLevel}`);
+            showLevelCompleteMenu();
+        }
+         
+            // Check game over
+        if (health <= 0) {
+                gameOver();
+        }
+            
+            updateHUD();
+        }
+        
+                 function draw() {
+             // Draw background
+            if (sprites.backgrounds.space && sprites.backgrounds.space.complete) {
+                 // Create repeating background pattern
+                 const pattern = ctx.createPattern(sprites.backgrounds.space, 'repeat');
+                 ctx.fillStyle = pattern;
+                 ctx.fillRect(0, 0, canvas.width, canvas.height);
+             } else {
+                 // Fallback to black background
+                 ctx.fillStyle = '#000';
+                 ctx.fillRect(0, 0, canvas.width, canvas.height);
+             }
+             
+                      // Draw enhanced stars with twinkling effect
+         for (let star of stars) {
+             const twinkle = Math.sin(Date.now() * 0.001 + star.x * 0.01) * 0.5 + 0.5;
+             ctx.fillStyle = `rgba(255, 255, 255, ${twinkle})`;
+             ctx.shadowColor = '#fff';
+             ctx.shadowBlur = 2;
+             ctx.fillRect(star.x, star.y, 1, 1);
+             ctx.shadowBlur = 0;
+         }
+             
+                      // Draw player ship with enhanced visuals
+         const ship = ships[player.currentShip];
+         const playerSprite = sprites.playerShips[player.currentShip];
+         
+         // Draw player ship glow effect
+         ctx.shadowColor = ship.color;
+         ctx.shadowBlur = 15;
+         
+            try {
+                if (playerSprite && playerSprite.complete && playerSprite.naturalWidth > 0) {
+             // Draw ship sprite
+             ctx.drawImage(playerSprite, player.x, player.y, player.width, player.height);
+             
+             // Draw enhanced exhaust effect
+                 ctx.shadowColor = '#ffaa00';
+                 ctx.shadowBlur = 10;
+                    ctx.fillStyle = '#ffaa00';
+                    ctx.fillRect(player.x + player.width / 2 - 5, player.y + player.height, 10, 8);
+                 ctx.shadowBlur = 15;
+         } else {
+                    // Enhanced fallback with glow
+                    ctx.fillStyle = ship.color;
+                    ctx.fillRect(player.x, player.y, player.width, player.height);
+                }
+            } catch (e) {
+             // Enhanced fallback with glow
+             ctx.fillStyle = ship.color;
+             ctx.fillRect(player.x, player.y, player.width, player.height);
+         }
+         
+         ctx.shadowBlur = 0;
+         
+         // Draw enhanced ship details
+         ctx.fillStyle = '#fff';
+         ctx.font = 'bold 12px Arial';
+         ctx.textAlign = 'center';
+         ctx.fillText(ship.name, player.x + player.width / 2, player.y - 8);
+         ctx.textAlign = 'left';
+         
+         // Draw ship level indicator
+         ctx.fillStyle = ship.color;
+         ctx.font = '10px Arial';
+         ctx.textAlign = 'center';
+         ctx.fillText(`Level ${ship.level}`, player.x + player.width / 2, player.y + player.height + 12);
+         ctx.textAlign = 'left';
+         
+         // Draw shield indicator dots
+         if (activePowerups.shield.charges > 0) {
+             const dotSize = 6;
+             const dotSpacing = 8;
+             const totalWidth = (activePowerups.shield.maxCharges * dotSpacing) - dotSpacing;
+             const startX = player.x + player.width / 2 - totalWidth / 2;
+             const dotY = player.y + player.height + 25;
+             
+             for (let i = 0; i < activePowerups.shield.maxCharges; i++) {
+                 const dotX = startX + (i * dotSpacing);
+                 
+                 if (i < activePowerups.shield.charges) {
+                     // Active shield charge - glowing blue
+                     ctx.shadowColor = '#00ffff';
+                     ctx.shadowBlur = 8;
+                     ctx.fillStyle = '#00ffff';
+                 } else {
+                     // Empty charge - dim gray
+                     ctx.shadowBlur = 0;
+                     ctx.fillStyle = '#444444';
+                 }
+                 
+                 ctx.beginPath();
+                 ctx.arc(dotX, dotY, dotSize, 0, Math.PI * 2);
+                 ctx.fill();
+             }
+            }
+            
+            // Draw enhanced bullets with weapon effects
+         for (let bullet of bullets) {
+                ctx.shadowColor = bullet.color || '#ffff00';
+                ctx.shadowBlur = 5;
+                ctx.fillStyle = bullet.color || '#ffff00';
+                 ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+                 ctx.shadowBlur = 0;
+         }
+             
+            // Draw boss
+            if (bossActive && currentBoss) {
+                const bossSprite = sprites.bossShips[currentBoss.type];
+                
+                ctx.save();
+                
+                // Draw boss sprite
+                try {
+                    if (bossSprite && bossSprite.complete && bossSprite.naturalWidth > 0) {
+                        ctx.drawImage(bossSprite, currentBoss.x, currentBoss.y, currentBoss.width, currentBoss.height);
+                    } else {
+                        // Fallback boss drawing
+                        ctx.fillStyle = currentBoss.color;
+                        ctx.fillRect(currentBoss.x, currentBoss.y, currentBoss.width, currentBoss.height);
+                    }
+                } catch (e) {
+                    ctx.fillStyle = currentBoss.color;
+                    ctx.fillRect(currentBoss.x, currentBoss.y, currentBoss.width, currentBoss.height);
+                }
+                
+                // Draw boss health bar
+                const healthBarWidth = currentBoss.width;
+                const healthBarHeight = 10;
+                const healthPercent = currentBoss.health / currentBoss.maxHealth;
+                
+                ctx.fillStyle = '#333';
+                ctx.fillRect(currentBoss.x, currentBoss.y - 20, healthBarWidth, healthBarHeight);
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(currentBoss.x, currentBoss.y - 20, healthBarWidth * healthPercent, healthBarHeight);
+                
+                // Draw boss name
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(currentBoss.name, currentBoss.x + currentBoss.width / 2, currentBoss.y - 25);
+                
+                // Draw phase indicator
+                ctx.fillStyle = '#ffaa00';
+                ctx.font = 'bold 12px Arial';
+                ctx.fillText(`PHASE ${currentBoss.phase}/${currentBoss.maxPhase}`, currentBoss.x + currentBoss.width / 2, currentBoss.y - 5);
+                
+                ctx.restore();
+            }
+            
+            // Draw enemies with sprites
+         for (let enemy of enemies) {
+                const enemySprite = sprites.enemyShips[enemy.type] || sprites.enemyShips.fighter;
+                
+                try {
+                    if (enemySprite && enemySprite.complete && enemySprite.naturalWidth > 0) {
+                        ctx.drawImage(enemySprite, enemy.x, enemy.y, enemy.width, enemy.height);
+             } else {
+                        ctx.fillStyle = enemy.color;
+                        ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+                    }
+                } catch (e) {
+                 ctx.fillStyle = enemy.color;
+                 ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+             }
+             
+                // Draw enhanced health bar
+                const healthPercent = enemy.health / enemy.maxHealth;
+             ctx.fillStyle = '#333';
+                ctx.fillRect(enemy.x, enemy.y - 10, enemy.width, 5);
+                ctx.fillStyle = healthPercent > 0.5 ? '#00ff00' : healthPercent > 0.25 ? '#ffff00' : '#ff0000';
+                ctx.fillRect(enemy.x, enemy.y - 10, enemy.width * healthPercent, 5);
+            }
+            
+            // Draw enhanced powerups with sprites and cool effects
+         for (let powerup of powerups) {
+                const powerupSprite = sprites.powerups[powerup.type];
+                
+                ctx.save();
+                ctx.translate(powerup.x + powerup.width / 2, powerup.y + powerup.height / 2);
+                ctx.rotate(powerup.rotation);
+                
+                // Draw outer glow ring
+                const glowSize = 60 + (powerup.glow * 20);
+                ctx.shadowColor = powerup.color;
+                ctx.shadowBlur = 15 + (powerup.glow * 10);
+                ctx.strokeStyle = powerup.color;
+                  ctx.lineWidth = 3;
+                  ctx.beginPath();
+                ctx.arc(0, 0, glowSize / 2, 0, Math.PI * 2);
+                  ctx.stroke();
+                
+                // Draw inner pulsing circle
+                const innerSize = 40 + (powerup.glow * 10);
+                ctx.fillStyle = powerup.color;
+                ctx.globalAlpha = 0.3 + (powerup.glow * 0.4);
+                ctx.beginPath();
+                ctx.arc(0, 0, innerSize / 2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw sprite or fallback
+                try {
+                    if (powerupSprite && powerupSprite.complete && powerupSprite.naturalWidth > 0) {
+                        ctx.globalAlpha = 1;
+                        ctx.shadowColor = powerup.color;
+                        ctx.shadowBlur = 10;
+                        ctx.drawImage(powerupSprite, -powerup.width / 2, -powerup.height / 2, powerup.width, powerup.height);
+                  } else {
+                        ctx.globalAlpha = 1;
+                        ctx.shadowColor = powerup.color;
+                        ctx.shadowBlur = 10;
+                        ctx.fillStyle = powerup.color;
+                        ctx.fillRect(-powerup.width / 2, -powerup.height / 2, powerup.width, powerup.height);
+                    }
+                } catch (e) {
+                    ctx.globalAlpha = 1;
+                    ctx.shadowColor = powerup.color;
+                    ctx.shadowBlur = 10;
+                    ctx.fillStyle = powerup.color;
+                    ctx.fillRect(-powerup.width / 2, -powerup.height / 2, powerup.width, powerup.height);
+                }
+                
+                ctx.restore();
+                
+                // Draw floating powerup label with glow
+                ctx.save();
+                ctx.shadowColor = powerup.color;
+                ctx.shadowBlur = 5;
+              ctx.fillStyle = '#fff';
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(powerup.type.toUpperCase(), powerup.x + powerup.width / 2, powerup.y - 10);
+                ctx.restore();
+            }
+            
+            // Draw power effects
+            for (let effect of powerEffects) {
+             const alpha = effect.life / effect.maxLife;
+                const size = 30 * alpha;
+             
+             ctx.save();
+             ctx.globalAlpha = alpha;
+             
+                switch(effect.type) {
+                    case 'shieldActivate':
+                        ctx.fillStyle = '#0080ff';
+                     ctx.beginPath();
+                     ctx.arc(effect.x, effect.y, size, 0, Math.PI * 2);
+                     ctx.fill();
+                     break;
+                    case 'speedActivate':
+                    case 'speedStack':
+                     ctx.fillStyle = '#ffff00';
+                     ctx.beginPath();
+                        ctx.arc(effect.x, effect.y, size, 0, Math.PI * 2);
+                     ctx.fill();
+                     break;
+                    case 'damageActivate':
+                    case 'damageStack':
+                        ctx.fillStyle = '#ff4444';
+                     ctx.beginPath();
+                     ctx.arc(effect.x, effect.y, size, 0, Math.PI * 2);
+                     ctx.fill();
+                     break;
+                    case 'rapidFireActivate':
+                    case 'rapidFireStack':
+                        ctx.fillStyle = '#ff8800';
+                         ctx.beginPath();
+                        ctx.arc(effect.x, effect.y, size, 0, Math.PI * 2);
+                         ctx.fill();
+                     break;
+                    case 'multipleShotsActivate':
+                    case 'multipleShotsStack':
+                     ctx.fillStyle = '#8000ff';
+                     ctx.beginPath();
+                     ctx.arc(effect.x, effect.y, size, 0, Math.PI * 2);
+                     ctx.fill();
+                     break;
+                    case 'magnetActivate':
+                    case 'magnetStack':
+                        ctx.fillStyle = '#ff1493';
+                     ctx.beginPath();
+                     ctx.arc(effect.x, effect.y, size, 0, Math.PI * 2);
+                     ctx.fill();
+                     break;
+                    case 'droneActivate':
+                    case 'droneStack':
+                        ctx.fillStyle = '#00ff00';
+                     ctx.beginPath();
+                     ctx.arc(effect.x, effect.y, size, 0, Math.PI * 2);
+                     ctx.fill();
+                     break;
+                    case 'repairActivate':
+                        ctx.fillStyle = '#00ffff';
+                     ctx.beginPath();
+                     ctx.arc(effect.x, effect.y, size, 0, Math.PI * 2);
+                     ctx.fill();
+                     break;
+                    case 'piercingActivate':
+                    case 'piercingStack':
+                        ctx.fillStyle = '#ff00ff';
+                     ctx.beginPath();
+                     ctx.arc(effect.x, effect.y, size, 0, Math.PI * 2);
+                     ctx.fill();
+                     break;
+                    case 'coinBoostActivate':
+                    case 'coinBoostStack':
+                        ctx.fillStyle = '#ffd700';
+                    ctx.beginPath();
+                    ctx.arc(effect.x, effect.y, size, 0, Math.PI * 2);
+                    ctx.fill();
+                    break;
+                    case 'premiumActivate':
+                        ctx.fillStyle = '#00ffff';
+                    ctx.beginPath();
+                    ctx.arc(effect.x, effect.y, size, 0, Math.PI * 2);
+                    ctx.fill();
+                        break;
+                }
+                
+                ctx.restore();
+            }
+            
+            // Draw powerup messages
+            for (let message of powerupMessages) {
+                const alpha = message.life / message.maxLife;
+                ctx.save();
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = message.color;
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.shadowColor = '#000';
+                ctx.shadowBlur = 3;
+                ctx.fillText(message.text, message.x, message.y);
+                ctx.restore();
+            }
+            
+            // Draw drone ally with enhanced debugging
+            if (droneAlly && activePowerups.droneAlly && Date.now() < activePowerups.droneAlly) {
+                const droneSprite = sprites.powerups.droneAlly;
+                
+                // Debug logging (only once per second)
+                if (Math.floor(Date.now() / 1000) % 5 === 0) {
+                    console.log('🤖 Drone Status:', {
+                        sprite: droneSprite ? 'loaded' : 'missing',
+                        complete: droneSprite ? droneSprite.complete : false,
+                        naturalWidth: droneSprite ? droneSprite.naturalWidth : 0,
+                        src: droneSprite ? droneSprite.src : 'none',
+                        position: { x: droneAlly.x, y: droneAlly.y },
+                        size: { w: droneAlly.width, h: droneAlly.height }
+                    });
+                }
+                
+                ctx.save();
+                
+                try {
+                    if (droneSprite && droneSprite.complete && droneSprite.naturalWidth > 0) {
+                        // Draw drone sprite with enhanced glow effect
+                        ctx.shadowColor = '#00ff00';
+                        ctx.shadowBlur = 15;
+                        ctx.drawImage(droneSprite, droneAlly.x, droneAlly.y, droneAlly.width, droneAlly.height);
+                        console.log('✅ Drawing drone sprite at:', droneAlly.x, droneAlly.y);
+                    } else {
+                        // Enhanced fallback drone drawing
+                        ctx.shadowColor = '#00ff00';
+                        ctx.shadowBlur = 10;
+                        ctx.fillStyle = '#00ff00';
+                        ctx.fillRect(droneAlly.x, droneAlly.y, droneAlly.width, droneAlly.height);
+                        
+                        // Draw drone details
+                        ctx.shadowBlur = 0;
+                        ctx.fillStyle = '#fff';
+                        ctx.fillRect(droneAlly.x + 2, droneAlly.y + 2, droneAlly.width - 4, droneAlly.height - 4);
+                        ctx.fillStyle = '#00ff00';
+                        ctx.fillRect(droneAlly.x + droneAlly.width / 2 - 1, droneAlly.y - 3, 2, 6);
+                        
+                        // Add warning text for debugging
+                        ctx.fillStyle = '#ff0000';
+                        ctx.font = 'bold 8px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('FALLBACK', droneAlly.x + droneAlly.width / 2, droneAlly.y + droneAlly.height + 15);
+                    }
+                } catch (e) {
+                    console.error('❌ Error drawing drone:', e);
+                    // Fallback drone drawing
+                    ctx.shadowColor = '#ff0000';
+                    ctx.shadowBlur = 10;
+                    ctx.fillStyle = '#ff0000';
+                    ctx.fillRect(droneAlly.x, droneAlly.y, droneAlly.width, droneAlly.height);
+                }
+                
+                ctx.restore();
+                
+                // Draw drone label
+                ctx.fillStyle = '#00ff00';
+                ctx.font = 'bold 8px Arial';
+                ctx.textAlign = 'center';
+                ctx.shadowColor = '#000';
+                ctx.shadowBlur = 2;
+                ctx.fillText('DRONE', droneAlly.x + droneAlly.width / 2, droneAlly.y - 8);
+                ctx.shadowBlur = 0;
+                ctx.textAlign = 'left';
+                
+                // Draw drone duration bar
+                const timeLeft = Math.max(0, activePowerups.droneAlly - Date.now());
+                const timePercent = timeLeft / 20000;
+                ctx.fillStyle = '#333';
+                ctx.fillRect(droneAlly.x, droneAlly.y + droneAlly.height + 2, droneAlly.width, 3);
+                ctx.fillStyle = '#00ff00';
+                ctx.fillRect(droneAlly.x, droneAlly.y + droneAlly.height + 2, droneAlly.width * timePercent, 3);
+            }
+            
+            // Draw enhanced explosions
+            for (let explosion of explosions) {
+                const alpha = explosion.life / explosion.maxLife;
+                ctx.shadowColor = '#ffff00';
+                ctx.shadowBlur = 10;
+                ctx.fillStyle = `rgba(255, 255, 0, ${alpha})`;
+                    ctx.beginPath();
+                ctx.arc(explosion.x, explosion.y, explosion.size * alpha, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+        
+        // ===== HELPER FUNCTIONS =====
+        function spawnEnemies() {
+            if (Math.random() < 0.05) {
+                const enemyTypeKeys = Object.keys(enemyTypes);
+                const type = enemyTypeKeys[Math.floor(Math.random() * enemyTypeKeys.length)];
+                const enemyData = enemyTypes[type];
+                
+                const enemy = {
+                    x: Math.random() * (canvas.width - 40),
+                    y: -40,
+                    width: 40,
+                    height: 40,
+                    health: enemyData.health,
+                    maxHealth: enemyData.health,
+                    speed: enemyData.speed,
+                    damage: enemyData.damage,
+                    color: enemyData.color,
+                    weapon: enemyData.weapon,
+                    ai: enemyData.ai,
+                    fireRate: enemyData.fireRate,
+                    lastFireTime: Date.now(),
+                    canShoot: currentWave >= 3, // Enable shooting from wave 3
+                    type: type
+                };
+                
+                enemies.push(enemy);
+            }
+            
+            // Spawn powerups occasionally
+            if (Math.random() < 0.005) {
+                const powerupTypes = Object.keys(powerupsAvailable);
+                const type = powerupTypes[Math.floor(Math.random() * powerupTypes.length)];
+                
+                const powerup = {
+                    x: Math.random() * (canvas.width - 50),
+                    y: -50,
+                    width: 50,
+                    height: 50,
+                    type: type,
+                    color: powerupsAvailable[type].color,
+                    rotation: 0,
+                    pulse: 0,
+                    glow: 0
+                };
+                
+                powerups.push(powerup);
+            }
+        }
+        
+        function fireShipWeapon() {
+            const ship = ships[player.currentShip];
+            const bulletWidth = 4;
+            const bulletHeight = 8;
+            const bulletSpeed = 8;
+            
+            // Check if piercing laser is active
+            const isPiercing = activePowerups.piercingLaser.active && activePowerups.piercingLaser.shotsRemaining > 0;
+            
+            if (activePowerups.multipleShots && Date.now() < activePowerups.multipleShots) {
+                // Multiple shots
+                bullets.push({
+                    x: player.x + 5,
+                    y: player.y,
+                    width: bulletWidth,
+                    height: bulletHeight,
+                    speed: bulletSpeed,
+                    damage: ship.damage * (isPiercing ? 2 : 1),
+                    color: isPiercing ? '#ff00ff' : ship.color,
+                    piercing: isPiercing
+                });
+                bullets.push({
+                    x: player.x + player.width - 9,
+                    y: player.y,
+                    width: bulletWidth,
+                    height: bulletHeight,
+                    speed: bulletSpeed,
+                    damage: ship.damage * (isPiercing ? 2 : 1),
+                    color: isPiercing ? '#ff00ff' : ship.color,
+                    piercing: isPiercing
+                });
+            } else {
+                // Single shot
+                bullets.push({
+                    x: player.x + player.width / 2 - bulletWidth / 2,
+                    y: player.y,
+                    width: bulletWidth,
+                    height: bulletHeight,
+                    speed: bulletSpeed,
+                    damage: ship.damage * (isPiercing ? 2 : 1),
+                    color: isPiercing ? '#ff00ff' : ship.color,
+                    piercing: isPiercing
+                });
+            }
+            
+            // Decrease piercing laser shots if active
+            if (isPiercing) {
+                activePowerups.piercingLaser.shotsRemaining--;
+                if (activePowerups.piercingLaser.shotsRemaining <= 0) {
+                    activePowerups.piercingLaser.active = false;
+                }
+            }
+         }
+        
+        function checkCollision(rect1, rect2) {
+            return rect1.x < rect2.x + rect2.width &&
+                   rect1.x + rect1.width > rect2.x &&
+                   rect1.y < rect2.y + rect2.height &&
+                   rect1.y + rect1.height > rect2.y;
+        }
+        
+        function createExplosion(x, y) {
+            explosions.push({
+                x: x,
+                y: y,
+                size: 20,
+                life: 10,
+                maxLife: 10
+            });
+        }
+        
+                         function activatePowerup(type) {
+            console.log(`Powerup activated: ${type}`);
+            
+            if (type === 'shield') {
+                if (activePowerups.shield.charges < activePowerups.shield.maxCharges) {
+                    activePowerups.shield.charges++;
+                    createPowerEffect('shieldActivate', player.x + player.width / 2, player.y + player.height / 2);
+                }
+            } else if (type === 'speed') {
+                const currentTime = Date.now();
+                if (activePowerups.speed && activePowerups.speed > currentTime) {
+                    // Stack speed boost - extend duration
+                    activePowerups.speed += 8000;
+                } else {
+                    activePowerups.speed = currentTime + 8000;
+                createPowerEffect('speedActivate', player.x + player.width / 2, player.y + player.height / 2);
+                }
+                player.speed = 6;
+            } else if (type === 'damage') {
+                const currentTime = Date.now();
+                if (activePowerups.damage && activePowerups.damage > currentTime) {
+                    // Stack damage boost - extend duration
+                    activePowerups.damage += 12000;
+                } else {
+                    activePowerups.damage = currentTime + 12000;
+                createPowerEffect('damageActivate', player.x + player.width / 2, player.y + player.height / 2);
+                }
+            } else if (type === 'rapidFire') {
+                const currentTime = Date.now();
+                if (activePowerups.rapidFire && activePowerups.rapidFire > currentTime) {
+                    // Stack rapid fire - extend duration
+                    activePowerups.rapidFire += 15000;
+                } else {
+                    activePowerups.rapidFire = currentTime + 15000;
+                createPowerEffect('rapidFireActivate', player.x + player.width / 2, player.y + player.height / 2);
+                }
+            } else if (type === 'multipleShots') {
+                const currentTime = Date.now();
+                if (activePowerups.multipleShots && activePowerups.multipleShots > currentTime) {
+                    // Stack multiple shots - extend duration
+                    activePowerups.multipleShots += 12000;
+                } else {
+                    activePowerups.multipleShots = currentTime + 12000;
+                createPowerEffect('multipleShotsActivate', player.x + player.width / 2, player.y + player.height / 2);
+                }
+            } else if (type === 'magnet') {
+                const currentTime = Date.now();
+                if (activePowerups.magnet.active && activePowerups.magnet.endTime > currentTime) {
+                    // Stack magnet - extend duration and increase power significantly
+                    activePowerups.magnet.endTime += 15000;
+                    activePowerups.magnet.level++;
+                    activePowerups.magnet.pullRadius += 30; // Bigger radius increase
+                    activePowerups.magnet.pullStrength += 1.0; // Stronger pull increase
+                    createPowerEffect('magnetStack', player.x + player.width / 2, player.y + player.height / 2);
+                } else {
+                    activePowerups.magnet.active = true;
+                    activePowerups.magnet.endTime = currentTime + 15000;
+                    activePowerups.magnet.level = 1;
+                    activePowerups.magnet.pullRadius = 150; // Starting with bigger radius
+                    activePowerups.magnet.pullStrength = 4; // Starting with stronger pull
+                createPowerEffect('magnetActivate', player.x + player.width / 2, player.y + player.height / 2);
+                }
+            } else if (type === 'nanobotRepair') {
+                health = Math.min(100, health + 20);
+                createPowerEffect('repairActivate', player.x + player.width / 2, player.y + player.height / 2);
+            } else if (type === 'droneAlly') {
+                const currentTime = Date.now();
+                if (activePowerups.droneAlly && activePowerups.droneAlly > currentTime) {
+                    // Stack drone ally - extend duration
+                    activePowerups.droneAlly += 20000;
+                } else {
+                    activePowerups.droneAlly = currentTime + 20000;
+                droneAlly = {
+                    x: player.x + player.width + 20,
+                    y: player.y,
+                        width: 30,
+                        height: 30,
+                    speed: 2,
+                    lastFireTime: 0,
+                        fireRate: 600
+                };
+                createPowerEffect('droneActivate', player.x + player.width / 2, player.y + player.height / 2);
+                }
+            } else if (type === 'piercingLaser') {
+                if (activePowerups.piercingLaser.active) {
+                    // Stack piercing laser - add more shots
+                    activePowerups.piercingLaser.shotsRemaining += 10;
+                } else {
+                activePowerups.piercingLaser.active = true;
+                activePowerups.piercingLaser.shotsRemaining = 10;
+                createPowerEffect('piercingActivate', player.x + player.width / 2, player.y + player.height / 2);
+                }
+            } else if (type === 'coinBoost') {
+                const currentTime = Date.now();
+                if (activePowerups.coinBoost && activePowerups.coinBoost > currentTime) {
+                    // Stack coin boost - extend duration
+                    activePowerups.coinBoost += 10000;
+                    createPowerEffect('coinBoostStack', player.x + player.width / 2, player.y + player.height / 2);
+                } else {
+                    activePowerups.coinBoost = currentTime + 10000;
+                    createPowerEffect('coinBoostActivate', player.x + player.width / 2, player.y + player.height / 2);
+                }
+            }
+            
+            // Show powerup activation message (only for new activations, not stacking)
+            showPowerupMessage(type);
+        }
+        
+        function createPowerEffect(type, x, y) {
+            powerEffects.push({
+                type: type,
+                x: x,
+                y: y,
+                life: 60,
+                maxLife: 60,
+                angle: 0
+            });
+        }
+        
+        function showPowerupMessage(type) {
+            const messages = {
+                shield: { text: '🛡️ SHIELD CHARGE ADDED!', color: '#0080ff' },
+                speed: { text: '⚡ SPEED BOOST!', color: '#ffff00' },
+                damage: { text: '💥 DAMAGE BOOST!', color: '#ff4444' },
+                rapidFire: { text: '🔥 RAPID FIRE!', color: '#ff8800' },
+                multipleShots: { text: '🎯 MULTIPLE SHOTS!', color: '#8000ff' },
+                magnet: { text: '🧲 MAGNET POWER!', color: '#ff1493' },
+                droneAlly: { text: '🤖 DRONE ALLY DEPLOYED!', color: '#00ff00' },
+                nanobotRepair: { text: '🔧 +20 HP RESTORED!', color: '#00ffff' },
+                piercingLaser: { text: '⚡ PIERCING LASER READY!', color: '#ff00ff' },
+                coinBoost: { text: '💰 COIN BOOST ACTIVE!', color: '#ffd700' },
+                // Premium powerup messages
+                megaShield: { text: '💎 MEGA SHIELD ACTIVATED!', color: '#00ffff' },
+                hyperSpeed: { text: '💎 HYPER SPEED BOOST!', color: '#ff00ff' },
+                ultimateDamage: { text: '💎 ULTIMATE DAMAGE!', color: '#ff4444' },
+                infiniteRapidFire: { text: '💎 INFINITE RAPID FIRE!', color: '#ff8800' },
+                superMagnet: { text: '💎 SUPER MAGNET POWER!', color: '#ff1493' }
+            };
+            
+            const message = messages[type];
+            if (message) {
+                powerupMessages.push({
+                    text: message.text,
+                    color: message.color,
+                    x: player.x + player.width / 2,
+                    y: player.y - 50,
+                    life: 120,
+                    maxLife: 120
+                });
+            }
+        }
+        
+        // ===== AD MONETIZATION SYSTEM =====
+        function showAdModal(type, callback) {
+            const adModal = document.createElement('div');
+            adModal.id = 'adModal';
+            adModal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.9);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                z-index: 2000;
+                color: white;
+                font-family: Arial, sans-serif;
+            `;
+            
+            const adContent = document.createElement('div');
+            adContent.style.cssText = `
+                background: linear-gradient(45deg, #1a1a2e, #16213e);
+                border: 2px solid #00ffff;
+                border-radius: 15px;
+                padding: 30px;
+                text-align: center;
+                max-width: 400px;
+                box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+            `;
+            
+            let adTitle, adDescription, adReward;
+            
+            switch(type) {
+                case 'doubleEarnings':
+                    adTitle = '💰 Double Your Earnings!';
+                    adDescription = 'Watch a short ad to double your coins and loyalty earnings from this wave!';
+                    adReward = `Reward: ${coinsEarnedThisWave * 2} coins + $${(loyaltyEarnedThisWave * 2).toFixed(6)}`;
+                    break;
+                case 'revive':
+                    adTitle = '🛡️ Revive Your Ship!';
+                    adDescription = 'Watch an ad to revive your ship and continue the battle!';
+                    adReward = 'Reward: Full health restoration';
+                    break;
+                case 'bonusCoins':
+                    adTitle = '🎁 Bonus Coins!';
+                    adDescription = 'Watch an ad to get bonus coins for your next purchase!';
+                    adReward = 'Reward: 100 bonus coins';
+                    break;
+                case 'speedUpBuild':
+                    adTitle = '⚡ Speed Up Construction!';
+                    adDescription = 'Watch an ad to instantly complete ship construction!';
+                    adReward = 'Reward: Instant ship completion';
+                    break;
+                case 'revCoins':
+                    adTitle = '💎 Earn RevCoins!';
+                    adDescription = 'Watch an ad to earn RevCoins for premium weapons and powerups!';
+                    adReward = 'Reward: 25 RevCoins';
+                    break;
+            }
+            
+            adContent.innerHTML = `
+                <h2 style="color: #00ffff; margin-bottom: 20px;">${adTitle}</h2>
+                <p style="margin-bottom: 20px; line-height: 1.5;">${adDescription}</p>
+                <p style="color: #ffff00; margin-bottom: 30px; font-weight: bold;">${adReward}</p>
+                
+                <div style="margin-bottom: 30px;">
+                    <div style="background: #333; border-radius: 10px; padding: 20px; margin-bottom: 15px;">
+                        <p style="margin: 0; color: #888;">📺 Simulated Ad Playing...</p>
+                        <div style="background: #00ffff; height: 4px; border-radius: 2px; margin-top: 10px; animation: progress 3s linear;"></div>
+                    </div>
+                </div>
+                
+                <button id="watchAdBtn" style="
+                    background: linear-gradient(45deg, #00ff00, #008000);
+                    color: white;
+                    border: none;
+                    padding: 15px 30px;
+                    border-radius: 8px;
+                    font-size: 1.1rem;
+                    font-weight: bold;
+                    cursor: pointer;
+                    margin-right: 10px;
+                ">Watch Ad</button>
+                
+                <button id="skipAdBtn" style="
+                    background: linear-gradient(45deg, #ff4444, #cc0000);
+                    color: white;
+                    border: none;
+                    padding: 15px 30px;
+                    border-radius: 8px;
+                    font-size: 1.1rem;
+                    font-weight: bold;
+                    cursor: pointer;
+                ">Skip</button>
+            `;
+            
+            adModal.appendChild(adContent);
+            document.body.appendChild(adModal);
+            
+            // Add CSS animation
+         const style = document.createElement('style');
+         style.textContent = `
+                @keyframes progress {
+                    from { width: 0%; }
+                    to { width: 100%; }
+             }
+         `;
+         document.head.appendChild(style);
+         
+            // Event listeners
+            document.getElementById('watchAdBtn').addEventListener('click', () => {
+                simulateAdWatch(type, callback);
+                document.body.removeChild(adModal);
+            });
+            
+            document.getElementById('skipAdBtn').addEventListener('click', () => {
+                document.body.removeChild(adModal);
+            });
+        }
+        
+        function simulateAdWatch(type, callback) {
+            // Simulate ad loading and watching
+            console.log(`📺 Ad started: ${type}`);
+            
+            setTimeout(() => {
+                console.log(`✅ Ad completed: ${type}`);
+                adWatchCount++;
+                adRevenue += 0.01; // $0.01 per ad view
+                
+                // Track ad metrics
+                trackAdMetrics(type);
+                
+                // Execute callback
+                if (callback) callback();
+                
+            }, 3000); // 3 second simulated ad
+        }
+        
+        function trackAdMetrics(type) {
+            // Track ad performance metrics
+            const adMetrics = {
+                type: type,
+                timestamp: Date.now(),
+                revenue: 0.01,
+                userEngagement: Math.random() * 100
+            };
+            
+            console.log('📊 Ad Metrics:', adMetrics);
+            
+            // Store in localStorage for analytics
+            const metrics = JSON.parse(localStorage.getItem('adMetrics') || '[]');
+            metrics.push(adMetrics);
+            localStorage.setItem('adMetrics', JSON.stringify(metrics));
+        }
+        
+        function showDoubleEarningsAd() {
+            if (adWatchedThisWave) {
+                alert('You already watched an ad for this wave!');
+                return;
+            }
+            
+            showAdModal('doubleEarnings', () => {
+                // Double the earnings
+                coins += coinsEarnedThisWave;
+                loyaltyEarnings += loyaltyEarnedThisWave;
+                totalWallet += loyaltyEarnedThisWave;
+                
+                adWatchedThisWave = true;
+                updateHUD();
+                
+                // Show reward message
+                showRewardMessage(`💰 +${coinsEarnedThisWave} coins & $${loyaltyEarnedThisWave.toFixed(6)} earned!`);
+            });
+        }
+        
+        function showReviveAd() {
+            if (reviveCount >= maxRevives) {
+                alert('You have used all your revives! You must restart from level 1.');
+                return;
+            }
+            
+            showAdModal('revive', () => {
+                // Revive the player
+                health = 100;
+                reviveCount++;
+                gameRunning = true;
+                gamePaused = false;
+                
+                // Hide game over screen
+                document.getElementById('gameOver').style.display = 'none';
+                
+                // Update revive count display
+                updateReviveDisplay();
+                
+                // Restart game loop
+                gameLoop();
+                
+                showRewardMessage(`🛡️ Ship revived! (${reviveCount}/${maxRevives} revives used)`);
+            });
+        }
+        
+        function showBonusCoinsAd() {
+            showAdModal('bonusCoins', () => {
+                // Give bonus coins
+                coins += 100;
+                updateHUD();
+                
+                showRewardMessage('🎁 +100 bonus coins earned!');
+            });
+        }
+        
+        function showSpeedUpBuildAd() {
+            // Check if there are any ships under construction
+            const shipsInConstruction = Object.keys(shipsUnderConstruction);
+            if (shipsInConstruction.length === 0) {
+                alert('No ships are currently under construction!');
+                return;
+            }
+            
+            showAdModal('speedUpBuild', () => {
+                // Speed up construction by 30 seconds per ad
+                const speedUpTime = 30000; // 30 seconds
+                
+                for (let shipId in shipsUnderConstruction) {
+                    const ship = ships[shipId];
+                    ship.currentBuildTime -= speedUpTime;
+                    
+                    if (ship.currentBuildTime <= 0) {
+                        // Ship is complete
+                        ship.buildTime = 0;
+                        ship.currentBuildTime = 0;
+                        ship.destroyed = false;
+                        delete shipsUnderConstruction[shipId];
+                        showRewardMessage(`🚀 ${ship.name} construction completed!`);
+                    } else {
+                        // Update remaining time
+                        ship.buildTime = Date.now() + ship.currentBuildTime;
+                    }
+                }
+                
+                updateShopDisplay();
+                updateHUD();
+            });
+        }
+        
+        function showRevCoinsAd() {
+            const currentTime = Date.now();
+            const timeSinceLastAd = currentTime - lastAdWatchTime;
+            
+            if (timeSinceLastAd < adCooldownTime) {
+                const remainingTime = Math.ceil((adCooldownTime - timeSinceLastAd) / 1000 / 60);
+                alert(`Ad cooldown active! Please wait ${remainingTime} more minutes before watching another ad for RevCoins.`);
+                return;
+            }
+            
+            showAdModal('revCoins', () => {
+                // Give RevCoins
+                revCoins += 25;
+                lastAdWatchTime = currentTime;
+                updateHUD();
+                updatePremiumShopDisplay();
+                
+                showRewardMessage('💎 +25 RevCoins earned!');
+            });
+        }
+        
+        function updateReviveDisplay() {
+            const reviveButton = document.getElementById('watchAdForRevive');
+            if (reviveCount >= maxRevives) {
+                reviveButton.disabled = true;
+                reviveButton.textContent = 'No Revives Left';
+                reviveButton.style.background = 'linear-gradient(45deg, #666, #444)';
+            } else {
+                reviveButton.disabled = false;
+                reviveButton.textContent = `Watch Ad to Revive (${reviveCount}/${maxRevives})`;
+                reviveButton.style.background = 'linear-gradient(45deg, #00ff00, #008000)';
+            }
+        }
+        
+        function showBossWarning() {
+            const warningDiv = document.createElement('div');
+            warningDiv.id = 'bossWarning';
+            warningDiv.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(45deg, #ff0000, #800000);
+                color: white;
+                padding: 30px 50px;
+                border-radius: 15px;
+                font-size: 2rem;
+                font-weight: bold;
+                text-align: center;
+                z-index: 3000;
+                border: 3px solid #ff4444;
+                box-shadow: 0 0 50px rgba(255, 0, 0, 0.5);
+                animation: bossWarningPulse 2s ease-in-out;
+            `;
+            warningDiv.innerHTML = `
+                <div style="font-size: 3rem; margin-bottom: 20px;">🚨</div>
+                <div>BOSS INCOMING!</div>
+                <div style="font-size: 1.5rem; margin-top: 10px; color: #ffcccc;">Prepare for battle!</div>
+            `;
+            
+            // Add animation CSS
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes bossWarningPulse {
+                    0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+                    50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+                    100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(warningDiv);
+            
+            // Remove warning after 3 seconds
+            setTimeout(() => {
+                if (warningDiv.parentNode) {
+                    warningDiv.parentNode.removeChild(warningDiv);
+                }
+                spawnBoss();
+            }, 3000);
+        }
+        
+        function spawnBoss() {
+            // Determine which boss to spawn based on wave
+            let bossType;
+            if (currentWave <= 10) {
+                bossType = 'boss1';
+            } else if (currentWave <= 20) {
+                bossType = 'boss2';
+            } else {
+                bossType = 'boss3';
+            }
+            
+            const bossTemplate = bossTypes[bossType];
+            const boss = {
+                ...bossTemplate,
+                x: canvas.width / 2 - bossTemplate.width / 2,
+                y: -bossTemplate.height,
+                id: Date.now(),
+                type: bossType
+            };
+            
+            currentBoss = boss;
+            bossActive = true;
+            bossWarningShown = true;
+            
+            console.log(`🚨 Boss spawned: ${boss.name}`);
+        }
+        
+        function updateBoss() {
+            if (!currentBoss) return;
+            
+            // Move boss down to screen
+            if (currentBoss.y < 50) {
+                currentBoss.y += 1;
+            }
+            
+            // Boss movement pattern
+            const centerX = canvas.width / 2 - currentBoss.width / 2;
+            const time = Date.now() * 0.001;
+            currentBoss.x = centerX + Math.sin(time * 0.5) * 100;
+            
+            // Boss firing
+            if (Date.now() - currentBoss.lastFireTime > currentBoss.fireRate) {
+                fireBossWeapon();
+                currentBoss.lastFireTime = Date.now();
+            }
+            
+            // Boss minion spawning
+            if (Date.now() - currentBoss.lastMinionSpawn > currentBoss.minionSpawnRate) {
+                spawnBossMinion();
+                currentBoss.lastMinionSpawn = Date.now();
+            }
+            
+            // Check boss phase transitions
+            const healthPercent = currentBoss.health / currentBoss.maxHealth;
+            const newPhase = Math.ceil((1 - healthPercent) * currentBoss.maxPhase) + 1;
+            
+            if (newPhase > currentBoss.phase && newPhase <= currentBoss.maxPhase) {
+                currentBoss.phase = newPhase;
+                currentBoss.fireRate = Math.max(500, currentBoss.fireRate - 200); // Faster firing
+                currentBoss.minionSpawnRate = Math.max(2000, currentBoss.minionSpawnRate - 1000); // Spawn minions faster
+                showBossPhaseTransition();
+            }
+            
+            // Check if boss is defeated
+            if (currentBoss.health <= 0) {
+                defeatBoss();
+            }
+        }
+        
+        function fireBossWeapon() {
+            if (!currentBoss) return;
+            
+            // Create boss bullets
+            const bulletCount = currentBoss.phase; // More bullets in higher phases
+            
+            for (let i = 0; i < bulletCount; i++) {
+                const angle = (Math.PI * 2 * i) / bulletCount;
+                const bullet = {
+                    x: currentBoss.x + currentBoss.width / 2,
+                    y: currentBoss.y + currentBoss.height,
+                    width: 8,
+                    height: 8,
+                    speed: 3,
+                    damage: currentBoss.damage,
+                    color: currentBoss.color,
+                    vx: Math.cos(angle) * 3,
+                    vy: Math.sin(angle) * 3 + 2,
+                    isBossBullet: true
+                };
+                bullets.push(bullet);
+            }
+        }
+        
+        function fireEnemyWeapon(enemy) {
+            if (!enemy) return;
+            
+            let bullet;
+            
+            switch(enemy.ai) {
+                case 'straight_shooter':
+                    // Shoot straight down
+                    bullet = {
+                        x: enemy.x + enemy.width / 2 - 2,
+                        y: enemy.y + enemy.height,
+                        width: 4,
+                        height: 8,
+                        speed: 4,
+                        damage: enemy.damage,
+                        color: enemy.color,
+                        vy: 4,
+                        vx: 0,
+                        isEnemyBullet: true
+                    };
+                    break;
+                    
+                case 'aimed_shooter':
+                    // Shoot toward player
+                    const dx = (player.x + player.width / 2) - (enemy.x + enemy.width / 2);
+                    const dy = (player.y + player.height / 2) - (enemy.y + enemy.height / 2);
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    bullet = {
+                        x: enemy.x + enemy.width / 2 - 2,
+                        y: enemy.y + enemy.height,
+                        width: 4,
+                        height: 8,
+                        speed: 3,
+                        damage: enemy.damage,
+                        color: enemy.color,
+                        vx: distance > 0 ? (dx / distance) * 3 : 0,
+                        vy: distance > 0 ? (dy / distance) * 3 : 3,
+                        isEnemyBullet: true
+                    };
+                    break;
+                    
+                case 'kamikaze':
+                    // Shoot in random direction (kamikaze enemies focus on collision)
+                    const angle = Math.random() * Math.PI * 2;
+                    bullet = {
+                        x: enemy.x + enemy.width / 2 - 2,
+                        y: enemy.y + enemy.height,
+                        width: 4,
+                        height: 8,
+                        speed: 2,
+                        damage: enemy.damage,
+                        color: enemy.color,
+                        vx: Math.cos(angle) * 2,
+                        vy: Math.sin(angle) * 2 + 1,
+                        isEnemyBullet: true
+                    };
+                    break;
+            }
+            
+            if (bullet) {
+                bullets.push(bullet);
+            }
+        }
+        
+        function showBossPhaseTransition() {
+            const phaseDiv = document.createElement('div');
+            phaseDiv.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(45deg, #ff8800, #ff4400);
+                color: white;
+                padding: 20px 40px;
+                border-radius: 10px;
+                font-size: 1.5rem;
+                font-weight: bold;
+                text-align: center;
+                z-index: 2000;
+                border: 2px solid #ffaa00;
+                box-shadow: 0 0 30px rgba(255, 136, 0, 0.5);
+            `;
+            phaseDiv.textContent = `PHASE ${currentBoss.phase}!`;
+            
+            document.body.appendChild(phaseDiv);
+            
+            setTimeout(() => {
+                if (phaseDiv.parentNode) {
+                    phaseDiv.parentNode.removeChild(phaseDiv);
+                }
+            }, 2000);
+        }
+        
+        function spawnBossMinion() {
+            if (!currentBoss) return;
+            
+            // Determine minion type based on boss phase
+            const minionTypes = ['fighter', 'interceptor', 'destroyer'];
+            const minionType = minionTypes[Math.floor(Math.random() * minionTypes.length)];
+            const minionTemplate = enemyTypes[minionType];
+            
+            // Spawn minion from boss position
+            const minion = {
+                ...minionTemplate,
+                x: currentBoss.x + Math.random() * currentBoss.width,
+                y: currentBoss.y + currentBoss.height,
+                id: Date.now() + Math.random(),
+                type: minionType,
+                isBossMinion: true,
+                canShoot: true, // Boss minions can always shoot
+                lastFireTime: Date.now()
+            };
+            
+            enemies.push(minion);
+            console.log(`🚀 Boss spawned ${minion.name} minion`);
+        }
+        
+        function defeatBoss() {
+            if (!currentBoss) return;
+            
+            // Give boss rewards
+            coins += currentBoss.reward.coins;
+            loyaltyEarnings += currentBoss.reward.loyalty;
+            totalWallet += currentBoss.reward.loyalty;
+            coinsEarnedThisWave += currentBoss.reward.coins;
+            loyaltyEarnedThisWave += currentBoss.reward.loyalty;
+            
+            // Create boss explosion
+            for (let i = 0; i < 20; i++) {
+                createExplosion(
+                    currentBoss.x + Math.random() * currentBoss.width,
+                    currentBoss.y + Math.random() * currentBoss.height
+                );
+            }
+            
+            showRewardMessage(`🎉 BOSS DEFEATED! +${currentBoss.reward.coins} coins`);
+            
+            // Reset boss state
+            currentBoss = null;
+            bossActive = false;
+            bossWarningShown = false;
+            
+            // Continue to next wave
+            setTimeout(() => {
+                if (gameRunning && !levelCompleteMenuShouldBeShown) {
+                    showLevelCompleteMenu();
+                }
+            }, 2000);
+        }
+        
+        function showRewardMessage(message) {
+            const rewardDiv = document.createElement('div');
+            rewardDiv.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(45deg, #00ff00, #008000);
+                color: white;
+                padding: 20px 40px;
+                border-radius: 10px;
+                font-size: 1.2rem;
+                font-weight: bold;
+                z-index: 2001;
+                animation: fadeInOut 3s ease-in-out;
+            `;
+            rewardDiv.textContent = message;
+            
+            // Add animation CSS
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeInOut {
+                    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+                    20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+                    80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(rewardDiv);
+            
+            setTimeout(() => {
+                document.body.removeChild(rewardDiv);
+            }, 3000);
+        }
+        
+        function updateHUD() {
+            // Update all HUD elements
+            document.getElementById('score').textContent = score;
+            document.getElementById('wave').textContent = currentWave;
+            
+            const healthPercent = Math.max(0, Math.min(100, health));
+            document.getElementById('healthPercent').textContent = healthPercent + '%';
+            document.getElementById('healthBar').style.width = healthPercent + '%';
+            
+            const progressPercent = Math.min(100, (enemiesKilledThisWave / enemiesRequiredForLevel) * 100);
+            document.getElementById('progressPercent').textContent = Math.round(progressPercent) + '%';
+            const waveProgress = document.getElementById('waveProgress');
+            if (waveProgress) {
+                waveProgress.style.width = progressPercent + '%';
+            }
+            
+            document.getElementById('coins').textContent = coins;
+            document.getElementById('empireCoins').textContent = empireCoins;
+            document.getElementById('enemiesLeft').textContent = enemies.length;
+            document.getElementById('earnings').textContent = '$' + loyaltyEarnings.toFixed(6);
+            document.getElementById('wallet').textContent = '$' + totalWallet.toFixed(6);
+            document.getElementById('revCoins').textContent = revCoins;
+            document.getElementById('revives').textContent = `${reviveCount}/${maxRevives}`;
+        }
+        
+                function showLevelCompleteMenu() {
+            // Only show if we actually completed a level (enemies killed >= required)
+            if (enemiesKilledThisWave < enemiesRequiredForLevel) {
+                return;
+            }
+            
+            gamePaused = true;
+            levelCompleteMenuShouldBeShown = true;
+            
+            document.getElementById('completedWave').textContent = currentWave;
+            document.getElementById('enemiesDefeated').textContent = enemiesKilledThisWave;
+            document.getElementById('coinsEarned').textContent = coinsEarnedThisWave;
+            document.getElementById('loyaltyEarned').textContent = '$' + loyaltyEarnedThisWave.toFixed(6);
+            
+            // Reset ad state for new wave
+            adWatchedThisWave = false;
+            
+            // Enable/disable ad button based on earnings
+            const adButton = document.getElementById('watchAdForDouble');
+            if (coinsEarnedThisWave > 0 || loyaltyEarnedThisWave > 0) {
+                adButton.disabled = false;
+                adButton.textContent = 'Watch Ad to Double Earnings';
+            } else {
+                adButton.disabled = true;
+                adButton.textContent = 'No Earnings to Double';
+            }
+            
+            document.getElementById('levelComplete').style.display = 'block';
+        }
+        
+        function continueToNextLevel() {
+            console.log(`Continuing to level ${currentWave + 1}`);
+            currentWave++;
+            enemiesKilledThisWave = 0;
+            coinsEarnedThisWave = 0;
+            loyaltyEarnedThisWave = 0;
+            levelCompleteMenuShouldBeShown = false;
+            
+            enemies = [];
+            bullets = [];
+            
+            enemiesRequiredForLevel = Math.floor(30 * Math.pow(1.1, currentWave - 1));
+            
+                 document.getElementById('levelComplete').style.display = 'none';
+            
+            // 🚀 Cool wave transition effect
+            const waveTransition = document.createElement('div');
+            waveTransition.style.cssText = `
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 255, 255, 0.9);
+                color: #000;
+                padding: 20px 40px;
+                border-radius: 15px;
+                font-size: 2rem;
+                font-weight: bold;
+                z-index: 1000;
+                text-align: center;
+                box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            `;
+            waveTransition.innerHTML = `🚀 WAVE ${currentWave} 🚀<br><small>Prepare for battle!</small>`;
+            document.getElementById('gameContainer').appendChild(waveTransition);
+            
+            // Remove transition after 2 seconds and start game
+                 setTimeout(() => {
+                document.getElementById('gameContainer').removeChild(waveTransition);
+                gamePaused = false;
+                gameLoop();
+            }, 2000);
+        }
+        
+        function gameOver() {
+            gameRunning = false;
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalWave').textContent = currentWave;
+            updateReviveDisplay();
+            document.getElementById('gameOver').style.display = 'block';
+        }
+        
+                function updateShopDisplay() {
+            // Update ship list
+            const shipList = document.getElementById('shipList');
+            shipList.innerHTML = '';
+            
+            for (let shipId in ships) {
+                const ship = ships[shipId];
+                const shipDiv = document.createElement('div');
+                shipDiv.className = 'shop-item';
+                
+                if (ship.owned) {
+                    if (ship.destroyed) {
+                        shipDiv.innerHTML = `
+                            <span>${ship.name} (Destroyed)</span>
+                            <button onclick="repairShip(${shipId})">Repair (${ship.repairCost} coins)</button>
+                        `;
+                    } else if (shipsUnderConstruction[shipId]) {
+                        const remainingTime = Math.max(0, ship.buildTime - Date.now());
+                        const timePercent = Math.max(0, (remainingTime / ship.baseBuildTime) * 100);
+                        shipDiv.innerHTML = `
+                            <span>${ship.name} (Under Construction)</span>
+                            <div style="width: 100%; background: #333; border-radius: 5px; margin: 5px 0;">
+                                <div style="width: ${100 - timePercent}%; height: 20px; background: #00ff00; border-radius: 5px; transition: width 0.3s;"></div>
+                            </div>
+                            <span>Time remaining: ${Math.ceil(remainingTime / 1000)}s</span>
+                        `;
+                    } else {
+                        const isCurrentShip = currentShip == shipId;
+                        shipDiv.innerHTML = `
+                            <span>${ship.name} (Owned)</span>
+                            <button onclick="selectShip(${shipId})" ${isCurrentShip ? 'disabled' : ''}>
+                                ${isCurrentShip ? 'CURRENT SHIP' : 'SELECT SHIP'}
+                            </button>
+                        `;
+                    }
+                } else {
+                    shipDiv.innerHTML = `
+                        <span>${ship.name} - Level ${ship.level}</span>
+                        <button onclick="buyShip(${shipId})">Buy (${ship.price} coins)</button>
+                    `;
+                }
+                
+                shipList.appendChild(shipDiv);
+            }
+            
+            // Update shipyard list
+            const shipyardList = document.getElementById('shipyardList');
+            shipyardList.innerHTML = '';
+            
+            for (let shipId in ships) {
+                const ship = ships[shipId];
+                if (ship.owned && ship.destroyed) {
+                    const shipDiv = document.createElement('div');
+                    shipDiv.className = 'shop-item';
+                    shipDiv.innerHTML = `
+                        <span>${ship.name} - Under Construction</span>
+                        <span>Time remaining: ${Math.ceil(ship.buildTime / 1000)}s</span>
+                    `;
+                    shipyardList.appendChild(shipDiv);
+                }
+            }
+            
+            // Update powerup list
+            const powerupList = document.getElementById('powerupList');
+            powerupList.innerHTML = '';
+            
+            for (let powerupType in powerupsAvailable) {
+                const powerup = powerupsAvailable[powerupType];
+                const powerupDiv = document.createElement('div');
+                powerupDiv.className = 'shop-item';
+                powerupDiv.innerHTML = `
+                    <span>${powerup.name}</span>
+                    <button onclick="buyPowerup('${powerupType}')">Buy (${powerup.price} coins)</button>
+                `;
+                powerupList.appendChild(powerupDiv);
+            }
+        }
+        
+                         function buyShip(shipId) {
+            const ship = ships[shipId];
+            if (coins >= ship.price) {
+                coins -= ship.price;
+                ship.owned = true;
+                ship.destroyed = false;
+                
+                // Set build time for higher level ships
+                if (ship.level > 1) {
+                    ship.buildTime = Date.now() + ship.baseBuildTime;
+                    ship.currentBuildTime = ship.baseBuildTime;
+                    shipsUnderConstruction[shipId] = ship.buildTime;
+                }
+                
+                updateShopDisplay();
+                updateHUD();
+                
+                if (ship.level > 1) {
+                    showRewardMessage(`🚀 ${ship.name} construction started! Build time: ${ship.baseBuildTime/1000}s`);
+                } else {
+                    showRewardMessage(`🚀 ${ship.name} purchased!`);
+                }
+            } else {
+                alert('Not enough coins!');
+            }
+        }
+        
+        function repairShip(shipId) {
+            const ship = ships[shipId];
+            if (coins >= ship.repairCost) {
+                coins -= ship.repairCost;
+                ship.destroyed = false;
+                ship.health = ship.maxHealth; // Restore full health
+                updateShopDisplay();
+                updateHUD();
+                showRewardMessage(`🔧 ${ship.name} repaired to full health!`);
+            } else {
+                alert('Not enough coins!');
+            }
+        }
+        
+        function buyPowerup(powerupType) {
+            const powerup = powerupsAvailable[powerupType];
+            if (coins >= powerup.price) {
+                coins -= powerup.price;
+                activatePowerup(powerupType);
+                updateShopDisplay();
+                updateHUD();
+            } else {
+                alert('Not enough coins!');
+            }
+        }
+        
+        function buyPremiumWeapon(weaponType) {
+            const weapon = premiumWeapons[weaponType];
+            if (revCoins >= weapon.price) {
+                revCoins -= weapon.price;
+                activePremiumWeapons[weaponType] = {
+                    lastUsed: 0,
+                    cooldown: weapon.cooldown
+                };
+                alert(`Purchased ${weapon.name}! Use it in battle!`);
+                updateHUD();
+                updatePremiumShopDisplay();
+            } else {
+                alert('Not enough RevCoins! Watch ads to earn RevCoins.');
+            }
+        }
+        
+        function buyPremiumPowerup(powerupType) {
+            const powerup = premiumPowerups[powerupType];
+            if (revCoins >= powerup.price) {
+                revCoins -= powerup.price;
+                activatePremiumPowerup(powerupType);
+                alert(`Purchased and activated ${powerup.name}!`);
+                updateHUD();
+                updatePremiumShopDisplay();
+            } else {
+                alert('Not enough RevCoins! Watch ads to earn RevCoins.');
+            }
+        }
+        
+        function activatePremiumPowerup(type) {
+            const powerup = premiumPowerups[type];
+            const currentTime = Date.now();
+            
+            switch(type) {
+                case 'megaShield':
+                    activePowerups.shield.charges = Math.min(activePowerups.shield.charges + powerup.charges, activePowerups.shield.maxCharges);
+                    activePowerups.shield.maxCharges = Math.max(activePowerups.shield.maxCharges, powerup.charges);
+                    break;
+                case 'hyperSpeed':
+                    if (activePowerups.speed && activePowerups.speed > currentTime) {
+                        activePowerups.speed += powerup.duration;
+                    } else {
+                        activePowerups.speed = currentTime + powerup.duration;
+                    }
+                    player.speed = 4 * powerup.multiplier;
+                    break;
+                case 'ultimateDamage':
+                    if (activePowerups.damage && activePowerups.damage > currentTime) {
+                        activePowerups.damage += powerup.duration;
+                    } else {
+                        activePowerups.damage = currentTime + powerup.duration;
+                    }
+                    break;
+                case 'infiniteRapidFire':
+                    if (activePowerups.rapidFire && activePowerups.rapidFire > currentTime) {
+                        activePowerups.rapidFire += powerup.duration;
+                    } else {
+                        activePowerups.rapidFire = currentTime + powerup.duration;
+                    }
+                    break;
+                case 'superMagnet':
+                    if (activePowerups.magnet.active && activePowerups.magnet.endTime > currentTime) {
+                        activePowerups.magnet.endTime += powerup.duration;
+                        activePowerups.magnet.pullRadius = Math.max(activePowerups.magnet.pullRadius, powerup.pullRadius);
+                        activePowerups.magnet.pullStrength = Math.max(activePowerups.magnet.pullStrength, powerup.pullStrength);
+                    } else {
+                        activePowerups.magnet.active = true;
+                        activePowerups.magnet.endTime = currentTime + powerup.duration;
+                        activePowerups.magnet.pullRadius = powerup.pullRadius;
+                        activePowerups.magnet.pullStrength = powerup.pullStrength;
+                    }
+                    break;
+            }
+            
+            createPowerEffect('premiumActivate', player.x + player.width / 2, player.y + player.height / 2);
+            showPowerupMessage(type);
+        }
+        
+        // Premium Shop Functions
+        function openPremiumShop() {
+            document.getElementById('premiumShop').style.display = 'flex';
+            updatePremiumShopDisplay();
+        }
+        
+        function closePremiumShop() {
+            document.getElementById('premiumShop').style.display = 'none';
+        }
+        
+        function switchTab(tabName) {
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab and content
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(`premium${tabName.charAt(0).toUpperCase() + tabName.slice(1)}Tab`).classList.add('active');
+        }
+        
+        function switchShopTab(tabName) {
+            // Remove active class from all shop tabs and content
+            document.querySelectorAll('.shop-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.shop-tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab and content
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(`${tabName}Tab`).classList.add('active');
+        }
+        
+        function switchWeaponTab(tabName) {
+            // Remove active class from all weapon tabs and content
+            document.querySelectorAll('.weapon-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.weapon-tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab and content
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(`${tabName}WeaponsTab`).classList.add('active');
+        }
+        
+        function openWeaponShop() {
+            document.getElementById('weaponShop').style.display = 'flex';
+            updateWeaponShopDisplay();
+        }
+        
+        function closeWeaponShop() {
+            document.getElementById('weaponShop').style.display = 'none';
+        }
+        
+        function updateWeaponShopDisplay() {
+            // Update coins display
+            document.getElementById('weaponShopCoins').textContent = coins;
+            
+            // Populate regular weapons (ship-based)
+            const regularWeaponsList = document.getElementById('regularWeaponsList');
+            regularWeaponsList.innerHTML = '';
+            
+            for (let shipId in ships) {
+                const ship = ships[shipId];
+                if (ship.owned && !ship.destroyed) {
+                    const weaponDiv = document.createElement('div');
+                    weaponDiv.className = 'weapon-item';
+                    
+                    weaponDiv.innerHTML = `
+                        <div class="weapon-item-header">
+                            <div class="weapon-item-name">${ship.name} Weapons</div>
+                            <div class="weapon-item-price">OWNED</div>
+                        </div>
+                        <div class="weapon-item-description">Standard weapons for ${ship.name}</div>
+                        <div class="weapon-item-stats">
+                            <div class="weapon-stat">Damage: ${ship.damage}</div>
+                            <div class="weapon-stat">Fire Rate: ${ship.fireRate}ms</div>
+                            <div class="weapon-stat">Speed: ${ship.speed}</div>
+                            <div class="weapon-stat">Health: ${ship.health}</div>
+                        </div>
+                        <button class="weapon-buy-btn" onclick="selectShip(${shipId})" 
+                                ${currentShip == shipId ? 'disabled' : ''}>
+                            ${currentShip == shipId ? 'CURRENT SHIP' : 'SELECT SHIP'}
+                        </button>
+                    `;
+                    
+                    regularWeaponsList.appendChild(weaponDiv);
+                }
+            }
+            
+            // Populate premium weapons
+            const premiumWeaponsList = document.getElementById('premiumWeaponsList');
+            premiumWeaponsList.innerHTML = '';
+            
+            for (let weaponId in premiumWeapons) {
+                const weapon = premiumWeapons[weaponId];
+                const weaponDiv = document.createElement('div');
+                weaponDiv.className = 'weapon-item';
+                
+                const isOwned = activePremiumWeapons[weaponId];
+                const canAfford = revCoins >= weapon.price;
+                
+                weaponDiv.innerHTML = `
+                    <div class="weapon-item-header">
+                        <div class="weapon-item-name">${weapon.name}</div>
+                        <div class="weapon-item-price">${weapon.price} 💎</div>
+                    </div>
+                    <div class="weapon-item-description">${weapon.description}</div>
+                    <div class="weapon-item-stats">
+                        <div class="weapon-stat">Damage: ${weapon.damage}</div>
+                        <div class="weapon-stat">Cooldown: ${weapon.cooldown/1000}s</div>
+                        ${weapon.radius ? `<div class="weapon-stat">Radius: ${weapon.radius}</div>` : ''}
+                        ${weapon.pierce ? `<div class="weapon-stat">Piercing</div>` : ''}
+                    </div>
+                    <button class="weapon-buy-btn" onclick="buyPremiumWeapon('${weaponId}')" 
+                            ${isOwned ? 'disabled' : ''} ${!canAfford ? 'disabled' : ''}>
+                        ${isOwned ? 'OWNED' : canAfford ? 'PURCHASE' : 'NOT ENOUGH REVCOINS'}
+                    </button>
+                `;
+                
+                premiumWeaponsList.appendChild(weaponDiv);
+            }
+        }
+        
+        function selectShip(shipId) {
+            currentShip = shipId;
+            const ship = ships[shipId];
+            
+            // Update player stats based on selected ship
+            player.damage = ship.damage;
+            player.fireRate = ship.fireRate;
+            player.speed = ship.speed;
+            player.maxHealth = ship.maxHealth;
+            player.health = ship.health;
+            
+            updateWeaponShopDisplay();
+            updateHUD();
+            
+            showRewardMessage(`🚀 ${ship.name} selected!`);
+        }
+        
+        function updatePremiumShopDisplay() {
+            // Update RevCoins display
+            document.getElementById('premiumRevCoins').textContent = revCoins;
+            
+            // Populate premium weapons
+            const weaponsList = document.getElementById('premiumWeaponsList');
+            weaponsList.innerHTML = '';
+            
+            for (let weaponId in premiumWeapons) {
+                const weapon = premiumWeapons[weaponId];
+                const weaponDiv = document.createElement('div');
+                weaponDiv.className = 'premium-item';
+                
+                const isOwned = activePremiumWeapons[weaponId];
+                const canAfford = revCoins >= weapon.price;
+                
+                weaponDiv.innerHTML = `
+                    <div class="premium-item-header">
+                        <div class="premium-item-name">${weapon.name}</div>
+                        <div class="premium-item-price">${weapon.price} 💎</div>
+                    </div>
+                    <div class="premium-item-description">${weapon.description}</div>
+                    <div class="premium-item-stats">
+                        <div class="premium-stat">Damage: ${weapon.damage}</div>
+                        <div class="premium-stat">Cooldown: ${weapon.cooldown/1000}s</div>
+                        ${weapon.radius ? `<div class="premium-stat">Radius: ${weapon.radius}</div>` : ''}
+                        ${weapon.pierce ? `<div class="premium-stat">Piercing</div>` : ''}
+                    </div>
+                    <button class="premium-buy-btn" onclick="buyPremiumWeapon('${weaponId}')" 
+                            ${isOwned ? 'disabled' : ''} ${!canAfford ? 'disabled' : ''}>
+                        ${isOwned ? 'OWNED' : canAfford ? 'PURCHASE' : 'NOT ENOUGH REVCOINS'}
+                    </button>
+                `;
+                
+                weaponsList.appendChild(weaponDiv);
+            }
+            
+            // Populate premium powerups
+            const powerupsList = document.getElementById('premiumPowerupsList');
+            powerupsList.innerHTML = '';
+            
+            for (let powerupId in premiumPowerups) {
+                const powerup = premiumPowerups[powerupId];
+                const powerupDiv = document.createElement('div');
+                powerupDiv.className = 'premium-item';
+                
+                const canAfford = revCoins >= powerup.price;
+                
+                powerupDiv.innerHTML = `
+                    <div class="premium-item-header">
+                        <div class="premium-item-name">${powerup.name}</div>
+                        <div class="premium-item-price">${powerup.price} 💎</div>
+                    </div>
+                    <div class="premium-item-description">${powerup.description}</div>
+                    <div class="premium-item-stats">
+                        <div class="premium-stat">Duration: ${powerup.duration/1000}s</div>
+                        ${powerup.charges ? `<div class="premium-stat">Charges: ${powerup.charges}</div>` : ''}
+                        ${powerup.multiplier ? `<div class="premium-stat">Multiplier: ${powerup.multiplier}x</div>` : ''}
+                        ${powerup.pullRadius ? `<div class="premium-stat">Radius: ${powerup.pullRadius}</div>` : ''}
+                    </div>
+                    <button class="premium-buy-btn" onclick="buyPremiumPowerup('${powerupId}')" 
+                            ${!canAfford ? 'disabled' : ''}>
+                        ${canAfford ? 'PURCHASE & ACTIVATE' : 'NOT ENOUGH REVCOINS'}
+                    </button>
+                `;
+                
+                powerupsList.appendChild(powerupDiv);
+            }
+        }
+        
+        function restartGame() {
+            // Reset all game variables
+            score = 0;
+            coins = 0;
+            health = 100;
+            currentWave = 1;
+            enemiesRequiredForLevel = 30;
+            enemiesKilled = 0;
+            enemiesKilledThisWave = 0;
+            coinsEarnedThisWave = 0;
+            loyaltyEarnedThisWave = 0;
+            
+            // Clear game objects
+            bullets = [];
+            enemies = [];
+            powerups = [];
+            explosions = [];
+            
+            // Reset player position
+            player.x = canvas.width / 2 - player.width / 2;
+            player.y = canvas.height - player.height - 50;
+            
+            // Reset powerups
+            activePowerups = {
+                shield: { charges: 0, maxCharges: 5 },
+                speed: null,
+                damage: null,
+                rapidFire: null,
+                multipleShots: null,
+                magnet: { active: false, endTime: 0, level: 0, pullRadius: 0, pullStrength: 0 },
+                droneAlly: null,
+                nanobotRepair: null,
+                piercingLaser: { active: false, shotsRemaining: 0 },
+                coinBoost: null
+            };
+            
+            // Reset ad state
+            adWatchedThisWave = false;
+            adCooldown = 0;
+            reviveCount = 0;
+            revCoins = 0;
+            lastAdWatchTime = 0;
+            activePremiumWeapons = {};
+            activePremiumPowerups = {};
+            
+            // Reset boss state
+            bossActive = false;
+            currentBoss = null;
+            bossWarningShown = false;
+            
+            // Hide menus
+            document.getElementById('gameOver').style.display = 'none';
+            document.getElementById('levelComplete').style.display = 'none';
+            document.getElementById('shop').style.display = 'none';
+            
+            // Start game
+            gameRunning = true;
+            gamePaused = false;
+            levelCompleteMenuShouldBeShown = false;
+
+            // Restart the game loop after resetting state
+            gameLoop();
+        }
+
+        // ===== START GAME =====
+         window.addEventListener('load', init);
+    </script>
+</body>
+</html>
