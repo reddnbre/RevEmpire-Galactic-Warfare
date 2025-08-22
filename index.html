@@ -1390,6 +1390,34 @@
                     ">Submit Score</button>
                 </div>
                 
+                <!-- Leaderboard Tabs -->
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;">
+                    <button id="weeklyTab" class="leaderboard-tab active" style="
+                        background: linear-gradient(45deg, #ffd700, #ffa500);
+                        color: #000;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 5px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">🗓️ This Week</button>
+                    <button id="allTimeTab" class="leaderboard-tab" style="
+                        background: linear-gradient(45deg, #666, #444);
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 5px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">🏆 All Time</button>
+                </div>
+                
+                <!-- Week Info -->
+                <div id="weekInfo" style="text-align: center; margin-bottom: 15px; color: #00ffff; font-size: 0.9em;">
+                    <p>🗓️ Weekly competition resets every Sunday at midnight</p>
+                    <p>⏰ <span id="timeUntilReset">Loading...</span></p>
+                </div>
+                
                 <!-- Leaderboard Table -->
                 <div id="leaderboardTable" style="background: rgba(0, 0, 0, 0.8); border-radius: 10px; padding: 20px; margin-bottom: 20px;">
                     <div style="display: grid; grid-template-columns: 60px 1fr 100px 100px 120px; gap: 10px; padding: 10px; background: rgba(0, 255, 255, 0.2); border-radius: 5px; font-weight: bold; margin-bottom: 10px;">
@@ -1507,11 +1535,15 @@
         
         // ===== LEADERBOARD SYSTEM =====
         let leaderboardData = [];
+        let weeklyLeaderboard = [];
+        let currentWeekStart = null;
         let playerStats = {
             gamesPlayed: 0,
             totalScore: 0,
             personalBest: 0,
             personalBestWave: 1,
+            weeklyBest: 0,
+            weeklyBestWave: 1,
             virtualRewards: {
                 championBadges: 0,
                 exclusiveCurrency: 0,
@@ -4812,6 +4844,48 @@
         }
 
         // ===== LEADERBOARD FUNCTIONS =====
+        function getWeekStart() {
+            const now = new Date();
+            const dayOfWeek = now.getDay();
+            const diff = now.getDate() - dayOfWeek;
+            const weekStart = new Date(now.setDate(diff));
+            weekStart.setHours(0, 0, 0, 0);
+            return weekStart.getTime();
+        }
+        
+        function checkWeeklyReset() {
+            const thisWeekStart = getWeekStart();
+            
+            if (currentWeekStart !== thisWeekStart) {
+                // New week detected - reset weekly leaderboard and award previous week's winners
+                if (currentWeekStart !== null && weeklyLeaderboard.length > 0) {
+                    awardWeeklyRewards();
+                }
+                
+                // Reset weekly data
+                weeklyLeaderboard = [];
+                currentWeekStart = thisWeekStart;
+                playerStats.weeklyBest = 0;
+                playerStats.weeklyBestWave = 1;
+                
+                console.log('🗓️ New week started! Weekly leaderboard reset.');
+                saveLeaderboardData();
+            }
+        }
+        
+        function awardWeeklyRewards() {
+            // Award rewards to top 5 players from previous week
+            weeklyLeaderboard.sort((a, b) => b.score - a.score);
+            
+            for (let i = 0; i < Math.min(5, weeklyLeaderboard.length); i++) {
+                const player = weeklyLeaderboard[i];
+                const rank = i + 1;
+                
+                // Add weekly champion rewards (these would be stored per player if we had user accounts)
+                console.log(`🏆 Week ${rank} Champion: ${player.name} with ${player.score} points!`);
+            }
+        }
+        
         function loadLeaderboardData() {
             try {
                 const saved = localStorage.getItem('galacticWarfareLeaderboard');
@@ -4819,18 +4893,39 @@
                     leaderboardData = JSON.parse(saved);
                 }
                 
+                const savedWeekly = localStorage.getItem('galacticWarfareWeekly');
+                if (savedWeekly) {
+                    const weeklyData = JSON.parse(savedWeekly);
+                    weeklyLeaderboard = weeklyData.leaderboard || [];
+                    currentWeekStart = weeklyData.weekStart || null;
+                }
+                
                 const savedStats = localStorage.getItem('galacticWarfareStats');
                 if (savedStats) {
                     playerStats = JSON.parse(savedStats);
                 }
+                
+                // Check if we need to reset for new week
+                checkWeeklyReset();
+                
             } catch (error) {
                 console.error('Error loading leaderboard data:', error);
                 leaderboardData = [];
+                weeklyLeaderboard = [];
+                currentWeekStart = getWeekStart();
                 playerStats = {
                     gamesPlayed: 0,
                     totalScore: 0,
                     personalBest: 0,
-                    personalBestWave: 1
+                    personalBestWave: 1,
+                    weeklyBest: 0,
+                    weeklyBestWave: 1,
+                    virtualRewards: {
+                        championBadges: 0,
+                        exclusiveCurrency: 0,
+                        specialSkins: [],
+                        achievements: []
+                    }
                 };
             }
         }
@@ -4839,6 +4934,10 @@
             try {
                 localStorage.setItem('galacticWarfareLeaderboard', JSON.stringify(leaderboardData));
                 localStorage.setItem('galacticWarfareStats', JSON.stringify(playerStats));
+                localStorage.setItem('galacticWarfareWeekly', JSON.stringify({
+                    leaderboard: weeklyLeaderboard,
+                    weekStart: currentWeekStart
+                }));
             } catch (error) {
                 console.error('Error saving leaderboard data:', error);
             }
@@ -4852,9 +4951,15 @@
                 date: new Date().toLocaleDateString()
             };
             
+            // Add to all-time leaderboard
             leaderboardData.push(entry);
-            leaderboardData.sort((a, b) => b.score - a.score); // Sort by score descending
-            leaderboardData = leaderboardData.slice(0, 50); // Keep top 50 scores
+            leaderboardData.sort((a, b) => b.score - a.score);
+            leaderboardData = leaderboardData.slice(0, 50);
+            
+            // Add to weekly leaderboard
+            weeklyLeaderboard.push({...entry});
+            weeklyLeaderboard.sort((a, b) => b.score - a.score);
+            weeklyLeaderboard = weeklyLeaderboard.slice(0, 50);
             
             // Update player stats
             playerStats.gamesPlayed++;
@@ -4863,13 +4968,17 @@
                 playerStats.personalBest = finalScore;
                 playerStats.personalBestWave = finalWave;
             }
+            if (finalScore > playerStats.weeklyBest) {
+                playerStats.weeklyBest = finalScore;
+                playerStats.weeklyBestWave = finalWave;
+            }
             
-            // Check for virtual rewards
-            const rank = leaderboardData.findIndex(entry => entry.score === finalScore && entry.name === playerName.trim()) + 1;
-            checkAndAwardVirtualRewards(rank, finalScore, finalWave);
+            // Check for virtual rewards based on WEEKLY ranking
+            const weeklyRank = weeklyLeaderboard.findIndex(entry => entry.score === finalScore && entry.name === playerName.trim()) + 1;
+            checkAndAwardVirtualRewards(weeklyRank, finalScore, finalWave);
             
             saveLeaderboardData();
-            return rank;
+            return weeklyRank;
         }
         
         function checkAndAwardVirtualRewards(rank, score, wave) {
@@ -4941,16 +5050,24 @@
             return currentScore > leaderboardData[leaderboardData.length - 1].score;
         }
         
-        function displayLeaderboard() {
+        let currentLeaderboardView = 'weekly'; // Track current view
+        
+        function displayLeaderboard(viewType = 'weekly') {
+            currentLeaderboardView = viewType;
             const entriesContainer = document.getElementById('leaderboardEntries');
             entriesContainer.innerHTML = '';
             
-            if (leaderboardData.length === 0) {
-                entriesContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: #888;">No scores yet. Be the first to set a record!</div>';
+            const dataToShow = viewType === 'weekly' ? weeklyLeaderboard : leaderboardData;
+            
+            if (dataToShow.length === 0) {
+                const message = viewType === 'weekly' ? 
+                    'No scores this week yet. Be the first to compete!' : 
+                    'No scores yet. Be the first to set a record!';
+                entriesContainer.innerHTML = `<div style="text-align: center; padding: 20px; color: #888;">${message}</div>`;
                 return;
             }
             
-            leaderboardData.forEach((entry, index) => {
+            dataToShow.forEach((entry, index) => {
                 const rank = index + 1;
                 let rankStyle = '';
                 let medalIcon = '';
@@ -5151,6 +5268,61 @@
                     document.getElementById('submitScore').click();
                 }
             });
+            
+            // Leaderboard tab switching
+            document.getElementById('weeklyTab').addEventListener('click', () => {
+                switchLeaderboardTab('weekly');
+            });
+            
+            document.getElementById('allTimeTab').addEventListener('click', () => {
+                switchLeaderboardTab('alltime');
+            });
+            
+            // Update time until reset every minute
+            setInterval(updateTimeUntilReset, 60000);
+        });
+        
+        function switchLeaderboardTab(tabType) {
+            // Update tab appearance
+            document.querySelectorAll('.leaderboard-tab').forEach(tab => {
+                if (tab.id === (tabType === 'weekly' ? 'weeklyTab' : 'allTimeTab')) {
+                    tab.style.background = 'linear-gradient(45deg, #ffd700, #ffa500)';
+                    tab.style.color = '#000';
+                } else {
+                    tab.style.background = 'linear-gradient(45deg, #666, #444)';
+                    tab.style.color = 'white';
+                }
+            });
+            
+            // Show/hide week info
+            document.getElementById('weekInfo').style.display = tabType === 'weekly' ? 'block' : 'none';
+            
+            // Display appropriate leaderboard
+            displayLeaderboard(tabType);
+            updatePlayerStats();
+        }
+        
+        function updateTimeUntilReset() {
+            const now = new Date();
+            const nextSunday = new Date(now);
+            const daysUntilSunday = (7 - now.getDay()) % 7;
+            nextSunday.setDate(now.getDate() + (daysUntilSunday === 0 ? 7 : daysUntilSunday));
+            nextSunday.setHours(0, 0, 0, 0);
+            
+            const timeLeft = nextSunday - now;
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            
+            let timeString = '';
+            if (days > 0) timeString += `${days}d `;
+            if (hours > 0) timeString += `${hours}h `;
+            timeString += `${minutes}m until reset`;
+            
+            const timeElement = document.getElementById('timeUntilReset');
+            if (timeElement) {
+                timeElement.textContent = timeString;
+            }
         });
 
         // ===== START GAME =====
