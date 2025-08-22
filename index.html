@@ -1371,7 +1371,7 @@
          let empireCoins = 1000;
          let health = 100;
          let currentWave = 1;
-         let enemiesRequiredForLevel = 30;
+         let enemiesRequiredForLevel = 15; // Start with easier Level 1
          let enemiesKilled = 0;
          let enemiesKilledThisWave = 0;
          let coinsEarnedThisWave = 0;
@@ -3884,7 +3884,17 @@
             enemies = [];
             bullets = [];
             
-            enemiesRequiredForLevel = Math.floor(30 * Math.pow(1.1, currentWave - 1));
+            // More balanced difficulty scaling - easier start, gradual progression
+            if (currentWave <= 5) {
+                // Early levels: much easier and more gradual
+                enemiesRequiredForLevel = Math.floor(10 + (currentWave * 5)); // 15, 20, 25, 30, 35
+            } else if (currentWave <= 10) {
+                // Mid levels: moderate scaling
+                enemiesRequiredForLevel = Math.floor(30 + ((currentWave - 5) * 6)); // 36, 42, 48, 54, 60
+            } else {
+                // Late levels: more aggressive scaling for challenge
+                enemiesRequiredForLevel = Math.floor(30 * Math.pow(1.08, currentWave - 1)); // Reduced from 1.1 to 1.08
+            }
             
                  document.getElementById('levelComplete').style.display = 'none';
             
@@ -4448,7 +4458,7 @@
             coins = 0;
             health = 100;
             currentWave = 1;
-            enemiesRequiredForLevel = 30;
+            enemiesRequiredForLevel = 15; // Start with easier Level 1
             enemiesKilled = 0;
             enemiesKilledThisWave = 0;
             coinsEarnedThisWave = 0;
