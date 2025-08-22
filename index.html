@@ -1397,6 +1397,7 @@
         let powerups = [];
         let explosions = [];
         let stars = [];
+        let particles = []; // New particle system
         
         // Input
         let keys = {};
@@ -2464,6 +2465,9 @@
                 gameOver();
         }
             
+            // Update particles
+            updateParticles();
+            
             updateHUD();
         }
         
@@ -2509,6 +2513,11 @@
                     ctx.fillStyle = '#ffaa00';
                     ctx.fillRect(player.x + player.width / 2 - 5, player.y + player.height, 10, 8);
                  ctx.shadowBlur = 15;
+                 
+                 // Add engine trail particles
+                 if (Math.random() < 0.7) { // 70% chance to spawn particles each frame
+                     createParticles(player.x + player.width / 2, player.y + player.height + 5, 'engine_trail', 2);
+                 }
          } else {
                     // Enhanced fallback with glow
                     ctx.fillStyle = ship.color;
@@ -2890,6 +2899,9 @@
                 ctx.fill();
                 ctx.shadowBlur = 0;
             }
+            
+            // Draw particles (explosions, trails, effects)
+            drawParticles();
         }
         
         // ===== HELPER FUNCTIONS =====
@@ -3018,15 +3030,143 @@
                 life: 10,
                 maxLife: 10
             });
+            
+            // Add explosion particles for enhanced visual effect
+            createParticles(x, y, 'explosion', 15);
+        }
+        
+        // ===== PARTICLE SYSTEM =====
+        function createParticles(x, y, type, count = 10) {
+            for (let i = 0; i < count; i++) {
+                let particle = {
+                    x: x,
+                    y: y,
+                    life: 1.0,
+                    maxLife: 1.0
+                };
+                
+                switch(type) {
+                    case 'explosion':
+                        particle.vx = (Math.random() - 0.5) * 8;
+                        particle.vy = (Math.random() - 0.5) * 8;
+                        particle.size = Math.random() * 6 + 2;
+                        particle.color = ['#ff4444', '#ff8844', '#ffaa00', '#ffffff'][Math.floor(Math.random() * 4)];
+                        particle.life = Math.random() * 0.8 + 0.4;
+                        particle.maxLife = particle.life;
+                        particle.gravity = 0.1;
+                        break;
+                        
+                    case 'powerup_pickup':
+                        particle.vx = (Math.random() - 0.5) * 4;
+                        particle.vy = (Math.random() - 0.5) * 4;
+                        particle.size = Math.random() * 4 + 1;
+                        particle.color = ['#00ff00', '#00ffff', '#ffff00'][Math.floor(Math.random() * 3)];
+                        particle.life = Math.random() * 0.6 + 0.3;
+                        particle.maxLife = particle.life;
+                        particle.sparkle = true;
+                        break;
+                        
+                    case 'engine_trail':
+                        particle.vx = (Math.random() - 0.5) * 2;
+                        particle.vy = Math.random() * 3 + 1;
+                        particle.size = Math.random() * 3 + 1;
+                        particle.color = ['#0088ff', '#00aaff', '#ffffff'][Math.floor(Math.random() * 3)];
+                        particle.life = Math.random() * 0.4 + 0.2;
+                        particle.maxLife = particle.life;
+                        break;
+                        
+                    case 'bullet_trail':
+                        particle.vx = (Math.random() - 0.5) * 1;
+                        particle.vy = (Math.random() - 0.5) * 1;
+                        particle.size = Math.random() * 2 + 0.5;
+                        particle.color = '#00ffff';
+                        particle.life = Math.random() * 0.3 + 0.1;
+                        particle.maxLife = particle.life;
+                        break;
+                        
+                    case 'hit_spark':
+                        particle.vx = (Math.random() - 0.5) * 6;
+                        particle.vy = (Math.random() - 0.5) * 6;
+                        particle.size = Math.random() * 3 + 1;
+                        particle.color = ['#ffffff', '#ffff00', '#ff8800'][Math.floor(Math.random() * 3)];
+                        particle.life = Math.random() * 0.5 + 0.2;
+                        particle.maxLife = particle.life;
+                        break;
+                }
+                
+                particles.push(particle);
+            }
+        }
+        
+        function updateParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let particle = particles[i];
+                
+                // Update position
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                
+                // Apply gravity if applicable
+                if (particle.gravity) {
+                    particle.vy += particle.gravity;
+                }
+                
+                // Update life
+                particle.life -= 0.02;
+                
+                // Remove dead particles
+                if (particle.life <= 0) {
+                    particles.splice(i, 1);
+                    continue;
+                }
+                
+                // Fade particles over time
+                particle.alpha = particle.life / particle.maxLife;
+                
+                // Shrink particles over time for some effects
+                if (particle.sparkle) {
+                    particle.size *= 0.98;
+                }
+            }
+        }
+        
+        function drawParticles() {
+            ctx.save();
+            
+            for (let particle of particles) {
+                ctx.globalAlpha = particle.alpha;
+                ctx.fillStyle = particle.color;
+                
+                if (particle.sparkle) {
+                    // Add glow effect for special particles
+                    ctx.shadowColor = particle.color;
+                    ctx.shadowBlur = 10;
+                }
+                
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                if (particle.sparkle) {
+                    ctx.shadowBlur = 0;
+                }
+            }
+            
+            ctx.restore();
         }
         
                          function activatePowerup(type) {
             console.log(`Powerup activated: ${type}`);
             
+            // Add powerup pickup particles
+            createParticles(player.x + player.width / 2, player.y + player.height / 2, 'powerup_pickup', 8);
+            
             if (type === 'shield') {
                 if (activePowerups.shield.charges < activePowerups.shield.maxCharges) {
                     activePowerups.shield.charges++;
                     createPowerEffect('shieldActivate', player.x + player.width / 2, player.y + player.height / 2);
+                    // Add shield activation particles
+                    createParticles(player.x + player.width / 2, player.y + player.height / 2, 'hit_spark', 12);
                 }
             } else if (type === 'speed') {
                 const currentTime = Date.now();
@@ -4469,6 +4609,7 @@
             enemies = [];
             powerups = [];
             explosions = [];
+            particles = []; // Clear particles on restart
             
             // Reset player position
             player.x = canvas.width / 2 - player.width / 2;
