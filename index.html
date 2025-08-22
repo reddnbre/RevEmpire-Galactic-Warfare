@@ -3951,7 +3951,7 @@
                             <span>Time remaining: ${Math.ceil(remainingTime / 1000)}s</span>
                         `;
                     } else {
-                        const isCurrentShip = currentShip == shipId;
+                        const isCurrentShip = player.currentShip == shipId;
                         shipDiv.innerHTML = `
                             <span>${ship.name} (Owned)</span>
                             <button onclick="selectShip(${shipId})" ${isCurrentShip ? 'disabled' : ''}>
@@ -4047,6 +4047,57 @@
             } catch (error) {
                 console.error('❌ Error buying ship:', error);
                 alert('Error purchasing ship. Please try again.');
+            }
+        }
+        
+        function selectShip(shipId) {
+            try {
+                console.log('🚀 Selecting ship:', shipId);
+                
+                const ship = ships[shipId];
+                if (!ship) {
+                    console.error('❌ Ship not found:', shipId);
+                    return;
+                }
+                
+                if (!ship.owned) {
+                    console.log('❌ Ship not owned:', shipId);
+                    return;
+                }
+                
+                if (ship.destroyed) {
+                    console.log('❌ Ship is destroyed:', shipId);
+                    alert('Cannot select a destroyed ship. Please repair it first.');
+                    return;
+                }
+                
+                // Update current ship
+                player.currentShip = shipId;
+                
+                // Update player stats based on selected ship
+                player.damage = ship.damage;
+                player.fireRate = ship.fireRate;
+                player.speed = ship.speed;
+                player.maxHealth = ship.maxHealth;
+                player.health = ship.health;
+                
+                console.log('✅ Ship selected:', ship.name);
+                console.log('📊 Updated stats:', {
+                    damage: player.damage,
+                    fireRate: player.fireRate,
+                    speed: player.speed,
+                    health: player.health,
+                    maxHealth: player.maxHealth
+                });
+                
+                // Update UI
+                updateShopDisplay();
+                updateHUD();
+                
+                showRewardMessage(`🚀 ${ship.name} selected as current ship!`);
+            } catch (error) {
+                console.error('❌ Error selecting ship:', error);
+                alert('Error selecting ship. Please try again.');
             }
         }
         
