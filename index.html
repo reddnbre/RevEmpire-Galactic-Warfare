@@ -2410,6 +2410,9 @@
                             color: '#00ff00',
                             isDroneBullet: true
                         });
+                        
+                        // Add drone bullet trail particles
+                        createParticles(droneAlly.x + droneAlly.width / 2, droneAlly.y + 8, 'bullet_trail', 2);
                         droneAlly.lastFireTime = Date.now();
                                     }
             }
@@ -2994,6 +2997,9 @@
                     color: isPiercing ? '#ff00ff' : '#00ffff',
                     piercing: isPiercing
                 });
+                
+                // Add bullet trail particles
+                createParticles(bulletX + bulletWidth / 2, player.y + bulletHeight, 'bullet_trail', 3);
             }
             
             // Decrease piercing laser shots if active
@@ -3079,9 +3085,10 @@
                         particle.vx = (Math.random() - 0.5) * 1;
                         particle.vy = (Math.random() - 0.5) * 1;
                         particle.size = Math.random() * 2 + 0.5;
-                        particle.color = '#00ffff';
+                        particle.color = ['#00ffff', '#0088ff', '#ffffff'][Math.floor(Math.random() * 3)];
                         particle.life = Math.random() * 0.3 + 0.1;
                         particle.maxLife = particle.life;
+                        particle.sparkle = true;
                         break;
                         
                     case 'hit_spark':
@@ -3750,6 +3757,9 @@
                     isBossBullet: true
                 };
                 bullets.push(bullet);
+                
+                // Add boss bullet trail particles
+                createParticles(bullet.x + bullet.width / 2, bullet.y + bullet.height, 'bullet_trail', 3);
             }
         }
         
@@ -3815,6 +3825,9 @@
             
             if (bullet) {
                 bullets.push(bullet);
+                
+                // Add enemy bullet trail particles
+                createParticles(bullet.x + bullet.width / 2, bullet.y + bullet.height, 'bullet_trail', 2);
             }
         }
         
