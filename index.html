@@ -1380,7 +1380,18 @@
          let loyaltyEarnings = 0;
         
         // Game objects
-        let player = { x: 0, y: 0, width: 40, height: 40, speed: 3, currentShip: 1 };
+        let player = { 
+            x: 0, 
+            y: 0, 
+            width: 40, 
+            height: 40, 
+            speed: 3, 
+            currentShip: 1,
+            damage: 20,  // Default ship damage
+            fireRate: 500,  // Default ship fire rate
+            health: 100,  // Default ship health
+            maxHealth: 100  // Default ship max health
+        };
                          let bullets = [];
         let enemies = [];
         let powerups = [];
@@ -1859,6 +1870,9 @@
             
             // Load sprites
             loadSprites();
+            
+            // Initialize player with current ship stats
+            initializePlayerStats();
              
              // Set canvas size
                  canvas.width = window.innerWidth;
@@ -1885,6 +1899,23 @@
             document.getElementById('startScreen').style.display = 'block';
             
             console.log('Game initialized successfully!');
+        }
+        
+        function initializePlayerStats() {
+            const ship = ships[currentShip];
+            if (ship) {
+                player.damage = ship.damage;
+                player.fireRate = ship.fireRate;
+                player.speed = ship.speed;
+                player.maxHealth = ship.maxHealth;
+                player.health = ship.health;
+                console.log('✅ Player stats initialized with ship:', ship.name, {
+                    damage: player.damage,
+                    fireRate: player.fireRate,
+                    speed: player.speed,
+                    health: player.health
+                });
+            }
         }
 
         // ===== EVENT LISTENERS =====
@@ -2130,17 +2161,38 @@
                     bullets.splice(i, 1);
                 }
                 
-                // Check enemy bullets hitting player
+                // Check enemy bullets hitting player (only center/core of ship)
                 if ((bullet.isEnemyBullet || bullet.isBossBullet) && checkCollision(bullet, player)) {
-                    if (activePowerups.shield.charges > 0) {
-                        activePowerups.shield.charges--;
-                        bullets.splice(i, 1);
-                    } else {
-                        health -= bullet.damage;
-                        bullets.splice(i, 1);
-                        if (health <= 0) {
-                            gameOver();
+                    // Calculate ship center area (smaller collision box for more realistic evasion)
+                    const shipCenterX = player.x + player.width / 2;
+                    const shipCenterY = player.y + player.height / 2;
+                    const centerRadius = player.width * 0.3; // 30% of ship width for center hit
+                    
+                    const bulletCenterX = bullet.x + bullet.width / 2;
+                    const bulletCenterY = bullet.y + bullet.height / 2;
+                    
+                    const distance = Math.sqrt(
+                        Math.pow(bulletCenterX - shipCenterX, 2) + 
+                        Math.pow(bulletCenterY - shipCenterY, 2)
+                    );
+                    
+                    // Only damage if bullet hits the center/core of the ship
+                    if (distance < centerRadius) {
+                        if (activePowerups.shield.charges > 0) {
+                            activePowerups.shield.charges--;
+                            bullets.splice(i, 1);
+                            console.log('🛡️ Shield blocked enemy shot!');
+                        } else {
+                            health -= bullet.damage;
+                            bullets.splice(i, 1);
+                            console.log('💥 Ship hit! Health:', health);
+                            if (health <= 0) {
+                                gameOver();
+                            }
                         }
+                    } else {
+                        // Bullet missed the center - ship "evaded" it
+                        console.log('✨ Ship evaded enemy shot!');
                     }
                 }
             }
@@ -2259,8 +2311,20 @@
                         const pullStrength = activePowerups.magnet.pullStrength * (1 + (activePowerups.magnet.pullRadius - distance) / activePowerups.magnet.pullRadius);
                         const pullSpeed = 0.3 + (activePowerups.magnet.level * 0.1); // Faster pull for higher levels
                         
-                        powerup.x += dx * pullStrength * pullSpeed;
-                        powerup.y += dy * pullStrength * pullSpeed;
+                        // Normalize direction and apply pull
+                        const normalizedDx = dx / distance;
+                        const normalizedDy = dy / distance;
+                        
+                        powerup.x += normalizedDx * pullStrength * pullSpeed;
+                        powerup.y += normalizedDy * pullStrength * pullSpeed;
+                        
+                        // ABSORB powerup when it gets very close to player (within 30 pixels)
+                        if (distance < 30) {
+                            console.log('🧲 Magnet absorbed powerup:', powerup.type, 'at distance:', distance);
+                            activatePowerup(powerup.type);
+                            powerups.splice(i, 1);
+                            continue;
+                        }
                     }
                 }
                 
@@ -2362,9 +2426,13 @@
                     createExplosion(bullet.x, bullet.y);
                 }
             }
-        } else {
-                droneAlly = null;
-            }
+        }
+        
+        // Remove drone only when powerup expires (not when boss is inactive)
+        if (droneAlly && (!activePowerups.droneAlly || Date.now() >= activePowerups.droneAlly)) {
+            console.log('🤖 Drone powerup expired, removing drone');
+            droneAlly = null;
+        }
             
             // Update stars
             for (let star of stars) {
@@ -2874,46 +2942,44 @@
         }
         
         function fireShipWeapon() {
-            const ship = ships[player.currentShip];
             const bulletWidth = 4;
             const bulletHeight = 8;
             const bulletSpeed = 8;
+            const currentTime = Date.now();
             
             // Check if piercing laser is active
             const isPiercing = activePowerups.piercingLaser.active && activePowerups.piercingLaser.shotsRemaining > 0;
             
-            if (activePowerups.multipleShots && Date.now() < activePowerups.multipleShots) {
-                // Multiple shots
+            // Check if multiple shots is active
+            const hasMultipleShots = activePowerups.multipleShots && currentTime < activePowerups.multipleShots;
+            
+            // ALWAYS fire at least one shot (default)
+            let shotsToFire = 1;
+            
+            // If multiple shots is active, fire 2 shots instead
+            if (hasMultipleShots) {
+                shotsToFire = 2;
+            }
+            
+            // Fire all shots
+            for (let i = 0; i < shotsToFire; i++) {
+                let bulletX;
+                if (hasMultipleShots) {
+                    // Multiple shots: left and right positions
+                    bulletX = i === 0 ? player.x + 5 : player.x + player.width - 9;
+                } else {
+                    // Single shot: center position
+                    bulletX = player.x + player.width / 2 - bulletWidth / 2;
+                }
+                
                 bullets.push({
-                    x: player.x + 5,
+                    x: bulletX,
                     y: player.y,
                     width: bulletWidth,
                     height: bulletHeight,
                     speed: bulletSpeed,
-                    damage: ship.damage * (isPiercing ? 2 : 1),
-                    color: isPiercing ? '#ff00ff' : ship.color,
-                    piercing: isPiercing
-                });
-                bullets.push({
-                    x: player.x + player.width - 9,
-                    y: player.y,
-                    width: bulletWidth,
-                    height: bulletHeight,
-                    speed: bulletSpeed,
-                    damage: ship.damage * (isPiercing ? 2 : 1),
-                    color: isPiercing ? '#ff00ff' : ship.color,
-                    piercing: isPiercing
-                });
-            } else {
-                // Single shot
-                bullets.push({
-                    x: player.x + player.width / 2 - bulletWidth / 2,
-                    y: player.y,
-                    width: bulletWidth,
-                    height: bulletHeight,
-                    speed: bulletSpeed,
-                    damage: ship.damage * (isPiercing ? 2 : 1),
-                    color: isPiercing ? '#ff00ff' : ship.color,
+                    damage: player.damage * (isPiercing ? 2 : 1),
+                    color: isPiercing ? '#ff00ff' : '#00ffff',
                     piercing: isPiercing
                 });
             }
@@ -2924,6 +2990,16 @@
                 if (activePowerups.piercingLaser.shotsRemaining <= 0) {
                     activePowerups.piercingLaser.active = false;
                 }
+            }
+            
+            // Debug logging for powerup stacking
+            if (hasMultipleShots || isPiercing) {
+                console.log('🔫 Fired weapon with:', {
+                    multipleShots: hasMultipleShots,
+                    piercing: isPiercing,
+                    shotsFired: shotsToFire,
+                    damage: player.damage * (isPiercing ? 2 : 1)
+                });
             }
          }
         
@@ -2955,39 +3031,52 @@
             } else if (type === 'speed') {
                 const currentTime = Date.now();
                 if (activePowerups.speed && activePowerups.speed > currentTime) {
-                    // Stack speed boost - extend duration
+                    // Stack speed boost - extend duration and increase speed
                     activePowerups.speed += 8000;
+                    player.speed = Math.min(10, player.speed + 1); // Increase speed up to max 10
+                    console.log('⚡ Speed stacked! New speed:', player.speed);
+                    createPowerEffect('speedStack', player.x + player.width / 2, player.y + player.height / 2);
                 } else {
                     activePowerups.speed = currentTime + 8000;
-                createPowerEffect('speedActivate', player.x + player.width / 2, player.y + player.height / 2);
+                    player.speed = 6;
+                    console.log('⚡ Speed activated! Speed:', player.speed);
+                    createPowerEffect('speedActivate', player.x + player.width / 2, player.y + player.height / 2);
                 }
-                player.speed = 6;
             } else if (type === 'damage') {
                 const currentTime = Date.now();
                 if (activePowerups.damage && activePowerups.damage > currentTime) {
-                    // Stack damage boost - extend duration
-                    activePowerups.damage += 12000;
+                    // Stack damage boost - extend duration significantly
+                    activePowerups.damage += 15000; // Longer duration for stacking
+                    console.log('💥 Damage stacked! Extended duration');
+                    createPowerEffect('damageStack', player.x + player.width / 2, player.y + player.height / 2);
                 } else {
                     activePowerups.damage = currentTime + 12000;
-                createPowerEffect('damageActivate', player.x + player.width / 2, player.y + player.height / 2);
+                    console.log('💥 Damage activated!');
+                    createPowerEffect('damageActivate', player.x + player.width / 2, player.y + player.height / 2);
                 }
             } else if (type === 'rapidFire') {
                 const currentTime = Date.now();
                 if (activePowerups.rapidFire && activePowerups.rapidFire > currentTime) {
-                    // Stack rapid fire - extend duration
-                    activePowerups.rapidFire += 15000;
+                    // Stack rapid fire - extend duration significantly
+                    activePowerups.rapidFire += 18000; // Longer duration for stacking
+                    console.log('🔥 Rapid Fire stacked! Extended duration');
+                    createPowerEffect('rapidFireStack', player.x + player.width / 2, player.y + player.height / 2);
                 } else {
                     activePowerups.rapidFire = currentTime + 15000;
-                createPowerEffect('rapidFireActivate', player.x + player.width / 2, player.y + player.height / 2);
+                    console.log('🔥 Rapid Fire activated!');
+                    createPowerEffect('rapidFireActivate', player.x + player.width / 2, player.y + player.height / 2);
                 }
             } else if (type === 'multipleShots') {
                 const currentTime = Date.now();
                 if (activePowerups.multipleShots && activePowerups.multipleShots > currentTime) {
-                    // Stack multiple shots - extend duration
-                    activePowerups.multipleShots += 12000;
+                    // Stack multiple shots - extend duration significantly
+                    activePowerups.multipleShots += 15000; // Longer duration for stacking
+                    console.log('🎯 Multiple Shots stacked! Extended duration');
+                    createPowerEffect('multipleShotsStack', player.x + player.width / 2, player.y + player.height / 2);
                 } else {
                     activePowerups.multipleShots = currentTime + 12000;
-                createPowerEffect('multipleShotsActivate', player.x + player.width / 2, player.y + player.height / 2);
+                    console.log('🎯 Multiple Shots activated!');
+                    createPowerEffect('multipleShotsActivate', player.x + player.width / 2, player.y + player.height / 2);
                 }
             } else if (type === 'magnet') {
                 const currentTime = Date.now();
@@ -2997,6 +3086,7 @@
                     activePowerups.magnet.level++;
                     activePowerups.magnet.pullRadius += 30; // Bigger radius increase
                     activePowerups.magnet.pullStrength += 1.0; // Stronger pull increase
+                    console.log('🧲 Magnet stacked! Level:', activePowerups.magnet.level, 'Radius:', activePowerups.magnet.pullRadius, 'Strength:', activePowerups.magnet.pullStrength);
                     createPowerEffect('magnetStack', player.x + player.width / 2, player.y + player.height / 2);
                 } else {
                     activePowerups.magnet.active = true;
@@ -3004,28 +3094,34 @@
                     activePowerups.magnet.level = 1;
                     activePowerups.magnet.pullRadius = 150; // Starting with bigger radius
                     activePowerups.magnet.pullStrength = 4; // Starting with stronger pull
-                createPowerEffect('magnetActivate', player.x + player.width / 2, player.y + player.height / 2);
+                    console.log('🧲 Magnet activated! Level:', activePowerups.magnet.level, 'Radius:', activePowerups.magnet.pullRadius, 'Strength:', activePowerups.magnet.pullStrength);
+                    createPowerEffect('magnetActivate', player.x + player.width / 2, player.y + player.height / 2);
                 }
             } else if (type === 'nanobotRepair') {
                 health = Math.min(100, health + 20);
                 createPowerEffect('repairActivate', player.x + player.width / 2, player.y + player.height / 2);
             } else if (type === 'droneAlly') {
                 const currentTime = Date.now();
+                console.log('🤖 Drone powerup activated!');
+                
                 if (activePowerups.droneAlly && activePowerups.droneAlly > currentTime) {
                     // Stack drone ally - extend duration
                     activePowerups.droneAlly += 20000;
+                    console.log('🤖 Drone stacked! Extended duration');
+                    createPowerEffect('droneStack', player.x + player.width / 2, player.y + player.height / 2);
                 } else {
                     activePowerups.droneAlly = currentTime + 20000;
-                droneAlly = {
-                    x: player.x + player.width + 20,
-                    y: player.y,
+                    droneAlly = {
+                        x: player.x + player.width + 20,
+                        y: player.y,
                         width: 30,
                         height: 30,
-                    speed: 2,
-                    lastFireTime: 0,
+                        speed: 2,
+                        lastFireTime: 0,
                         fireRate: 600
-                };
-                createPowerEffect('droneActivate', player.x + player.width / 2, player.y + player.height / 2);
+                    };
+                    console.log('🤖 Drone created! Position:', droneAlly.x, droneAlly.y, 'Duration:', activePowerups.droneAlly);
+                    createPowerEffect('droneActivate', player.x + player.width / 2, player.y + player.height / 2);
                 }
             } else if (type === 'piercingLaser') {
                 if (activePowerups.piercingLaser.active) {
@@ -3636,7 +3732,11 @@
         }
         
         function defeatBoss() {
-            if (!currentBoss) return;
+            console.log('🎉 Boss defeated! Starting defeat sequence...');
+            if (!currentBoss) {
+                console.log('❌ No current boss to defeat');
+                return;
+            }
             
             // Give boss rewards
             coins += currentBoss.reward.coins;
@@ -3662,8 +3762,21 @@
             
             // Continue to next wave
             setTimeout(() => {
-                if (gameRunning && !levelCompleteMenuShouldBeShown) {
-                    showLevelCompleteMenu();
+                try {
+                    if (gameRunning && !levelCompleteMenuShouldBeShown) {
+                        // Force level completion for boss defeat
+                        enemiesKilledThisWave = enemiesRequiredForLevel;
+                        console.log('🎯 Showing level complete menu after boss defeat');
+                        showLevelCompleteMenu();
+                    }
+                } catch (error) {
+                    console.error('❌ Error in boss defeat sequence:', error);
+                    // Fallback: just continue to next wave
+                    currentWave++;
+                    enemiesKilledThisWave = 0;
+                    enemies = [];
+                    bullets = [];
+                    gamePaused = false;
                 }
             }, 2000);
         }
@@ -3890,29 +4003,50 @@
         }
         
                          function buyShip(shipId) {
-            const ship = ships[shipId];
-            if (coins >= ship.price) {
-                coins -= ship.price;
-                ship.owned = true;
-                ship.destroyed = false;
+            try {
+                console.log('🛒 Buying ship:', shipId);
                 
-                // Set build time for higher level ships
-                if (ship.level > 1) {
-                    ship.buildTime = Date.now() + ship.baseBuildTime;
-                    ship.currentBuildTime = ship.baseBuildTime;
-                    shipsUnderConstruction[shipId] = ship.buildTime;
+                const ship = ships[shipId];
+                if (!ship) {
+                    console.error('❌ Ship not found:', shipId);
+                    return;
                 }
                 
-                updateShopDisplay();
-                updateHUD();
+                if (ship.owned) {
+                    console.log('ℹ️ Ship already owned:', shipId);
+                    return;
+                }
                 
-                if (ship.level > 1) {
-                    showRewardMessage(`🚀 ${ship.name} construction started! Build time: ${ship.baseBuildTime/1000}s`);
+                if (coins >= ship.price) {
+                    coins -= ship.price;
+                    ship.owned = true;
+                    ship.destroyed = false;
+                    
+                    console.log('✅ Ship purchased:', ship.name);
+                    
+                    // Set build time for higher level ships
+                    if (ship.level > 1) {
+                        ship.buildTime = Date.now() + ship.baseBuildTime;
+                        ship.currentBuildTime = ship.baseBuildTime;
+                        shipsUnderConstruction[shipId] = ship.buildTime;
+                        console.log('🔨 Ship construction started:', ship.name);
+                    }
+                    
+                    updateShopDisplay();
+                    updateHUD();
+                    
+                    if (ship.level > 1) {
+                        showRewardMessage(`🚀 ${ship.name} construction started! Build time: ${ship.baseBuildTime/1000}s`);
+                    } else {
+                        showRewardMessage(`🚀 ${ship.name} purchased!`);
+                    }
                 } else {
-                    showRewardMessage(`🚀 ${ship.name} purchased!`);
+                    console.log('❌ Not enough coins for ship:', ship.name);
+                    alert('Not enough coins!');
                 }
-            } else {
-                alert('Not enough coins!');
+            } catch (error) {
+                console.error('❌ Error buying ship:', error);
+                alert('Error purchasing ship. Please try again.');
             }
         }
         
@@ -4140,20 +4274,51 @@
         }
         
         function selectShip(shipId) {
-            currentShip = shipId;
-            const ship = ships[shipId];
-            
-            // Update player stats based on selected ship
-            player.damage = ship.damage;
-            player.fireRate = ship.fireRate;
-            player.speed = ship.speed;
-            player.maxHealth = ship.maxHealth;
-            player.health = ship.health;
-            
-            updateWeaponShopDisplay();
-            updateHUD();
-            
-            showRewardMessage(`🚀 ${ship.name} selected!`);
+            try {
+                console.log('🚀 Selecting ship:', shipId);
+                
+                // Validate ship exists and is owned
+                if (!ships[shipId]) {
+                    console.error('❌ Ship not found:', shipId);
+                    return;
+                }
+                
+                const ship = ships[shipId];
+                if (!ship.owned) {
+                    console.error('❌ Ship not owned:', shipId);
+                    return;
+                }
+                
+                if (ship.destroyed) {
+                    console.error('❌ Ship is destroyed:', shipId);
+                    return;
+                }
+                
+                currentShip = shipId;
+                
+                // Update player stats based on selected ship
+                player.damage = ship.damage;
+                player.fireRate = ship.fireRate;
+                player.speed = ship.speed;
+                player.maxHealth = ship.maxHealth;
+                player.health = ship.health;
+                
+                console.log('✅ Ship stats updated:', {
+                    damage: player.damage,
+                    fireRate: player.fireRate,
+                    speed: player.speed,
+                    health: player.health
+                });
+                
+                updateWeaponShopDisplay();
+                updateHUD();
+                
+                showRewardMessage(`🚀 ${ship.name} selected!`);
+                
+            } catch (error) {
+                console.error('❌ Error selecting ship:', error);
+                alert('Error selecting ship. Please try again.');
+            }
         }
         
         function updatePremiumShopDisplay() {
