@@ -12,10 +12,35 @@
         }
 
         body {
-            background: #000;
-            font-family: 'Arial', sans-serif;
+            background: radial-gradient(ellipse at center, #0a0a2e 0%, #1a1a3e 25%, #2a2a4e 50%, #1a1a3e 75%, #0a0a2e 100%);
+            font-family: 'Orbitron', 'Arial', sans-serif;
             overflow: hidden;
             color: white;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(2px 2px at 160px 30px, #ddd, transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            animation: twinkle 20s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes twinkle {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-100px); }
         }
 
         #gameContainer {
@@ -39,12 +64,24 @@
         }
 
         .loading-title {
-            font-size: 3rem;
+            font-size: 4rem;
             font-weight: bold;
             color: #00ffff;
-            text-shadow: 0 0 20px #00ffff;
+            text-shadow: 
+                0 0 20px #00ffff,
+                0 0 40px #00ffff,
+                0 0 60px #00ffff,
+                2px 2px 4px rgba(0,0,0,0.8);
             margin-bottom: 2rem;
             text-align: center;
+            font-family: 'Orbitron', 'Arial', sans-serif;
+            letter-spacing: 4px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff, 0 0 60px #00ffff, 2px 2px 4px rgba(0,0,0,0.8); }
+            to { text-shadow: 0 0 30px #00ffff, 0 0 50px #00ffff, 0 0 70px #00ffff, 2px 2px 4px rgba(0,0,0,0.8); }
         }
 
         .loading-subtitle {
@@ -86,12 +123,16 @@
              z-index: 100;
              font-size: 16px;
              color: white;
-             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-             background: rgba(0, 0, 0, 0.7);
-             padding: 15px;
-             border-radius: 10px;
-             border: 2px solid #00ffff;
+             text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+             background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(26, 26, 62, 0.3));
+             padding: 20px;
+             border-radius: 15px;
+             border: 2px solid rgba(0, 255, 255, 0.7);
+             box-shadow: 
+                 0 0 20px rgba(0, 255, 255, 0.2),
+                 inset 0 0 20px rgba(0, 255, 255, 0.05);
              backdrop-filter: blur(5px);
+             font-family: 'Orbitron', 'Arial', sans-serif;
          }
 
          #hud div {
@@ -105,11 +146,13 @@
          #hud .stat-label {
              color: #00ffff;
              font-weight: bold;
+             text-shadow: 2px 2px 4px rgba(0,0,0,0.9), 0 0 10px rgba(0, 255, 255, 0.5);
          }
 
          #hud .stat-value {
              color: #fff;
-             text-shadow: 0 0 5px currentColor;
+             font-weight: bold;
+             text-shadow: 2px 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(255, 255, 255, 0.5);
          }
 
          #hud .health-bar {
@@ -1163,12 +1206,142 @@
 <body>
     <div id="gameContainer">
         <div id="loadingScreen">
-            <div class="loading-title">RevEmpire: Galactic Warfare</div>
-            <div class="loading-subtitle">Game by RevEmpire.Net</div>
-            <div class="loading-bar">
-                <div class="loading-progress" id="loadingProgress"></div>
+            <div style="
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                text-align: center;
+                position: relative;
+                background: radial-gradient(ellipse at center, #0a0a2e 0%, #1a1a3e 25%, #2a2a4e 50%, #1a1a3e 75%, #0a0a2e 100%);
+            ">
+                <!-- AAA Game Logo -->
+                <div style="
+                    width: 120px;
+                    height: 120px;
+                    background: linear-gradient(135deg, #00ffff, #0080ff, #8000ff);
+                    border-radius: 30px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 3.5rem;
+                    margin-bottom: 30px;
+                    box-shadow: 
+                        0 0 50px rgba(0, 255, 255, 0.6),
+                        0 0 100px rgba(128, 0, 255, 0.3);
+                    animation: aaaPulse 3s ease-in-out infinite;
+                    position: relative;
+                ">
+                    🚀
+                    <div style="
+                        position: absolute;
+                        top: -10px;
+                        right: -10px;
+                        background: linear-gradient(45deg, #ffd700, #ffa500);
+                        color: #000;
+                        font-size: 0.7rem;
+                        padding: 5px 8px;
+                        border-radius: 10px;
+                        font-weight: bold;
+                        box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+                    ">AAA</div>
+                </div>
+                
+                <div style="
+                    font-size: 4rem;
+                    font-weight: bold;
+                    color: #00ffff;
+                    text-shadow: 
+                        0 0 20px #00ffff,
+                        0 0 40px #00ffff,
+                        0 0 60px #00ffff;
+                    margin-bottom: 10px;
+                    letter-spacing: 4px;
+                    animation: glow 2s ease-in-out infinite alternate;
+                    font-family: 'Orbitron', 'Arial', sans-serif;
+                ">RevEmpire</div>
+                
+                <div style="
+                    font-size: 1.3rem;
+                    color: #ffffff;
+                    margin-bottom: 40px;
+                    opacity: 0.9;
+                    letter-spacing: 2px;
+                ">Galactic Warfare</div>
+                
+                <!-- Loading Bar -->
+                <div style="
+                    width: 400px;
+                    height: 8px;
+                    background: rgba(0, 0, 0, 0.5);
+                    border-radius: 4px;
+                    overflow: hidden;
+                    margin-bottom: 20px;
+                    border: 1px solid rgba(0, 255, 255, 0.3);
+                ">
+                    <div id="loadingProgress" style="
+                        height: 100%;
+                        background: linear-gradient(90deg, #00ffff, #0080ff, #8000ff);
+                        width: 0%;
+                        transition: width 0.5s ease;
+                        box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+                    "></div>
+                </div>
+                
+                <!-- Loading Text -->
+                <div id="loadingText" style="
+                    color: #00ffff;
+                    font-size: 1.1rem;
+                    margin-bottom: 30px;
+                    font-family: 'Orbitron', 'Arial', sans-serif;
+                    min-height: 60px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                ">Initializing game engine...</div>
+                
+                <!-- Game Tips -->
+                <div id="gameTip" style="
+                    background: rgba(0, 0, 0, 0.7);
+                    border: 1px solid rgba(0, 255, 255, 0.3);
+                    border-radius: 15px;
+                    padding: 20px;
+                    margin: 20px;
+                    max-width: 600px;
+                    color: #ffffff;
+                    font-size: 0.9rem;
+                    line-height: 1.5;
+                ">
+                    <div style="color: #00ffff; font-weight: bold; margin-bottom: 10px;">💡 GAME TIP:</div>
+                    <div id="tipContent">Use WASD or arrow keys to move your ship. Spacebar to fire!</div>
+                </div>
+                
+                <!-- Developer Info -->
+                <div style="
+                    position: absolute;
+                    bottom: 30px;
+                    font-size: 0.9rem;
+                    color: #888;
+                    font-family: 'Orbitron', 'Arial', sans-serif;
+                ">
+                    <div style="margin-bottom: 5px;">Developed by RevEmpire.Net</div>
+                    <div style="font-size: 0.8rem; color: #666;">© 2024 All Rights Reserved</div>
+                </div>
             </div>
-            <div class="loading-text" id="loadingText">Loading...</div>
+            
+            <style>
+                @keyframes aaaPulse {
+                    0% { transform: scale(1) rotate(0deg); box-shadow: 0 0 50px rgba(0, 255, 255, 0.6), 0 0 100px rgba(128, 0, 255, 0.3); }
+                    50% { transform: scale(1.05) rotate(2deg); box-shadow: 0 0 70px rgba(0, 255, 255, 0.8), 0 0 140px rgba(128, 0, 255, 0.5); }
+                    100% { transform: scale(1) rotate(0deg); box-shadow: 0 0 50px rgba(0, 255, 255, 0.6), 0 0 100px rgba(128, 0, 255, 0.3); }
+                }
+                
+                @keyframes glow {
+                    from { text-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff, 0 0 60px #00ffff; }
+                    to { text-shadow: 0 0 30px #00ffff, 0 0 50px #00ffff, 0 0 70px #00ffff; }
+                }
+            </style>
         </div>
         
         <canvas id="gameCanvas"></canvas>
@@ -1189,22 +1362,258 @@
             <div><span class="stat-label">Coins:</span> <span class="stat-value" id="coins">0</span></div>
             <div><span class="stat-label">Empire Coins:</span> <span class="stat-value" id="empireCoins">1000</span></div>
             <div><span class="stat-label">Enemies:</span> <span class="stat-value" id="enemiesLeft">0</span></div>
-            <div><span class="stat-label">Loyalty Earnings:</span> <span class="stat-value" id="earnings">$0.00</span></div>
-            <div><span class="stat-label">Total Wallet:</span> <span class="stat-value" id="wallet">$0.00</span></div>
+            <div><span class="stat-label">All-Time Earnings:</span> <span class="stat-value" id="earnings">$0.00</span></div>
+            <div><span class="stat-label">Available Wallet:</span> <span class="stat-value" id="wallet">$0.00</span></div>
             <div><span class="stat-label">RevCoins:</span> <span class="stat-value" id="revCoins">0</span></div>
             <div><span class="stat-label">Revives:</span> <span class="stat-value" id="revives">0/3</span></div>
          </div>
         
-        <div id="startScreen">
-            <h1>RevEmpire: Galactic Warfare</h1>
-            <button id="startButton">START GAME</button>
-        <button id="shopButton">SHOP</button>
+
+        
+        <!-- Stats Page Modal -->
+        <div id="statsPage" style="display: none;">
+            <div style="
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(26, 26, 62, 0.95));
+                border: 2px solid #8000ff;
+                border-radius: 20px;
+                padding: 30px;
+                max-width: 800px;
+                max-height: 80vh;
+                overflow-y: auto;
+                z-index: 2000;
+                font-family: 'Orbitron', 'Arial', sans-serif;
+                box-shadow: 0 0 50px rgba(128, 0, 255, 0.3);
+            ">
+                <div style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 30px;
+                    border-bottom: 2px solid #8000ff;
+                    padding-bottom: 15px;
+                ">
+                    <h2 style="
+                        color: #8000ff;
+                        font-size: 2rem;
+                        margin: 0;
+                        text-shadow: 0 0 20px #8000ff;
+                    ">📊 PLAYER STATS</h2>
+                    <button id="closeStats" style="
+                        background: linear-gradient(45deg, #666, #444);
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 8px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        font-family: 'Orbitron', 'Arial', sans-serif;
+                    ">← Back</button>
+                </div>
+                
+                <div style="
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 30px;
+                ">
+                    <!-- Game Performance Stats -->
+                    <div style="
+                        background: rgba(128, 0, 255, 0.1);
+                        border: 1px solid #8000ff;
+                        border-radius: 15px;
+                        padding: 20px;
+                    ">
+                        <h3 style="
+                            color: #8000ff;
+                            margin-bottom: 20px;
+                            font-size: 1.3rem;
+                            text-align: center;
+                        ">🎮 Game Performance</h3>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">Games Played:</span>
+                            <span style="color: white; float: right;" id="statsGamesPlayed">0</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">Highest Score:</span>
+                            <span style="color: white; float: right;" id="statsHighestScore">0</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">Highest Wave:</span>
+                            <span style="color: white; float: right;" id="statsHighestWave">0</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">Total Enemies Defeated:</span>
+                            <span style="color: white; float: right;" id="statsTotalEnemies">0</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">Bosses Defeated:</span>
+                            <span style="color: white; float: right;" id="statsBossesDefeated">0</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">Powerups Collected:</span>
+                            <span style="color: white; float: right;" id="statsPowerupsCollected">0</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Financial Stats -->
+                    <div style="
+                        background: rgba(255, 215, 0, 0.1);
+                        border: 1px solid #ffd700;
+                        border-radius: 15px;
+                        padding: 20px;
+                    ">
+                        <h3 style="
+                            color: #ffd700;
+                            margin-bottom: 20px;
+                            font-size: 1.3rem;
+                            text-align: center;
+                        ">💰 Financial Overview</h3>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">All-Time Earnings:</span>
+                            <span style="color: white; float: right;" id="statsAllTimeEarnings">$0.00</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">Available Wallet:</span>
+                            <span style="color: white; float: right;" id="statsAvailableWallet">$0.00</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">Total Withdrawn:</span>
+                            <span style="color: white; float: right;" id="statsTotalWithdrawn">$0.00</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">Total Coins Earned:</span>
+                            <span style="color: white; float: right;" id="statsTotalCoinsEarned">0</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">RevCoins Earned:</span>
+                            <span style="color: white; float: right;" id="statsRevCoinsEarned">0</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">Ads Watched:</span>
+                            <span style="color: white; float: right;" id="statsAdsWatched">0</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">Revives Used:</span>
+                            <span style="color: white; float: right;" id="statsRevivesUsed">0</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Ship Fleet Stats -->
+                    <div style="
+                        background: rgba(0, 255, 255, 0.1);
+                        border: 1px solid #00ffff;
+                        border-radius: 15px;
+                        padding: 20px;
+                    ">
+                        <h3 style="
+                            color: #00ffff;
+                            margin-bottom: 20px;
+                            font-size: 1.3rem;
+                            text-align: center;
+                        ">🚀 Ship Fleet</h3>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">Ships Owned:</span>
+                            <span style="color: white; float: right;" id="statsShipsOwned">1</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">Current Ship Level:</span>
+                            <span style="color: white; float: right;" id="statsCurrentShipLevel">1</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">Ships Under Construction:</span>
+                            <span style="color: white; float: right;" id="statsShipsUnderConstruction">0</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">Ships Destroyed:</span>
+                            <span style="color: white; float: right;" id="statsShipsDestroyed">0</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">Total Ship Repairs:</span>
+                            <span style="color: white; float: right;" id="statsTotalRepairs">0</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Achievement Stats -->
+                    <div style="
+                        background: rgba(255, 68, 68, 0.1);
+                        border: 1px solid #ff4444;
+                        border-radius: 15px;
+                        padding: 20px;
+                    ">
+                        <h3 style="
+                            color: #ff4444;
+                            margin-bottom: 20px;
+                            font-size: 1.3rem;
+                            text-align: center;
+                        ">🏆 Achievements</h3>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">Virtual Rewards:</span>
+                            <span style="color: white; float: right;" id="statsVirtualRewards">0</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">Weekly Rank:</span>
+                            <span style="color: white; float: right;" id="statsWeeklyRank">N/A</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">All-Time Rank:</span>
+                            <span style="color: white; float: right;" id="statsAllTimeRank">N/A</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">Longest Survival:</span>
+                            <span style="color: white; float: right;" id="statsLongestSurvival">0s</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <span style="color: #00ffff;">Perfect Waves:</span>
+                            <span style="color: white; float: right;" id="statsPerfectWaves">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <div id="shop" style="display: none;">
             <div class="shop-container">
-                <button id="closeShop">×</button>
+
                 <h2>🚀 REVEMPIRE HANGAR 🚀</h2>
+                <div class="coins-display" style="
+                    text-align: center;
+                    margin: 10px 0;
+                    padding: 10px;
+                    background: linear-gradient(45deg, #ffd700, #ffa500);
+                    border-radius: 10px;
+                    color: #000;
+                    font-weight: bold;
+                    font-size: 1.2rem;
+                ">
+                    <span class="coins-icon">💰</span>
+                    <span id="shopCoins">0</span> Coins Available
+                </div>
                 
                 <div class="shop-tabs">
                     <button class="shop-tab-btn active" data-tab="ships">🛸 Ships</button>
@@ -1234,10 +1643,33 @@
                 </div>
                 
                             <div class="shop-actions">
+
                 <button id="weaponShopButton">🎯 WEAPON SHOP</button>
-                <button id="earnRevCoinsButton">💎 EARN REVCOINS</button>
+                <button id="earnRevCoinsButton">💎 Watch Ad to Earn RevCoins</button>
                 <button id="premiumShopButton">💎 PREMIUM SHOP</button>
-                <button id="speedUpConstructionButton">⚡ SPEED UP CONSTRUCTION</button>
+                <button id="speedUpConstructionButton">⚡ Watch Ad to Speed Up Construction</button>
+                <button id="viewStats" style="
+                    background: linear-gradient(45deg, #8000ff, #400080);
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 8px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    margin: 5px;
+                    font-family: 'Orbitron', 'Arial', sans-serif;
+                ">📊 STATS</button>
+                <button id="viewLeaderboard" style="
+                    background: linear-gradient(45deg, #ffd700, #ffa500);
+                    color: #000;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 8px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    margin: 5px;
+                    font-family: 'Orbitron', 'Arial', sans-serif;
+                ">🏆 LEADERBOARD</button>
                 <button id="backToLevelComplete">← Back to Level Complete</button>
             </div>
             </div>
@@ -1252,7 +1684,7 @@
                         <span class="coins-icon">💰</span>
                         <span id="weaponShopCoins">0</span> Coins
                     </div>
-                    <button id="closeWeaponShop" class="close-btn">×</button>
+    
                 </div>
                 
                 <div class="weapon-shop-tabs">
@@ -1269,6 +1701,17 @@
                 </div>
                 
                 <div class="weapon-shop-footer">
+                    <button id="closeWeaponShop" style="
+                        background: linear-gradient(45deg, #666, #444);
+                        color: white;
+                        border: none;
+                        padding: 12px 25px;
+                        border-radius: 8px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        margin-right: 15px;
+                        font-family: 'Orbitron', 'Arial', sans-serif;
+                    ">← Back to Menu</button>
                     <p class="weapon-note">💡 Weapons can be used in battle with keyboard shortcuts!</p>
                 </div>
             </div>
@@ -1283,7 +1726,7 @@
                         <span class="revcoins-icon">💎</span>
                         <span id="premiumRevCoins">0</span> RevCoins
                     </div>
-                    <button id="closePremiumShop" class="close-btn">×</button>
+    
                 </div>
                 
                 <div class="premium-tabs">
@@ -1300,6 +1743,17 @@
                 </div>
                 
                 <div class="premium-footer">
+                    <button id="closePremiumShop" style="
+                        background: linear-gradient(45deg, #666, #444);
+                        color: white;
+                        border: none;
+                        padding: 12px 25px;
+                        border-radius: 8px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        margin-right: 15px;
+                        font-family: 'Orbitron', 'Arial', sans-serif;
+                    ">← Back to Menu</button>
                     <button id="earnRevCoinsFromPremium">💎 Watch Ad to Earn RevCoins</button>
                     <p class="premium-note">💡 Premium items are superior to regular items and can only be purchased with RevCoins!</p>
                 </div>
@@ -1481,15 +1935,7 @@
                 
                 <!-- Action Buttons -->
                 <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                    <button id="closeLeaderboard" style="
-                        background: linear-gradient(45deg, #666, #444);
-                        color: white;
-                        border: none;
-                        padding: 12px 25px;
-                        border-radius: 5px;
-                        font-weight: bold;
-                        cursor: pointer;
-                    ">Close</button>
+
                     <button id="clearLeaderboard" style="
                         background: linear-gradient(45deg, #ff4444, #cc0000);
                         color: white;
@@ -1532,6 +1978,7 @@
          let loyaltyEarnedThisWave = 0;
                  let totalWallet = 0;
         let loyaltyEarnings = 0;
+        let totalWithdrawn = 0; // Track total amount withdrawn
         
         // ===== LEADERBOARD SYSTEM =====
         let leaderboardData = [];
@@ -1596,7 +2043,7 @@
             },
             2: { 
                 name: "Level 2 Cruiser", 
-                price: 250, 
+                price: 1500, 
                 level: 2, 
                 damage: 35, 
                 fireRate: 450, 
@@ -1605,14 +2052,14 @@
                 maxHealth: 150,
                 owned: false, 
                 destroyed: false, 
-                repairCost: 75, 
+                repairCost: 150, 
                 buildTime: 0,
                 currentBuildTime: 0,
                 baseBuildTime: 30000 // 30 seconds
             },
             3: { 
                 name: "Level 3 Destroyer", 
-                price: 500, 
+                price: 4500, 
                 level: 3, 
                 damage: 50, 
                 fireRate: 400, 
@@ -1621,14 +2068,14 @@
                 maxHealth: 200,
                 owned: false, 
                 destroyed: false, 
-                repairCost: 100, 
+                repairCost: 200, 
                 buildTime: 0,
                 currentBuildTime: 0,
                 baseBuildTime: 60000 // 1 minute
             },
             4: { 
                 name: "Level 4 Battleship", 
-                price: 1000, 
+                price: 13500, 
                 level: 4, 
                 damage: 70, 
                 fireRate: 350, 
@@ -1637,14 +2084,14 @@
                 maxHealth: 300,
                 owned: false, 
                 destroyed: false, 
-                repairCost: 150, 
+                repairCost: 300, 
                 buildTime: 0,
                 currentBuildTime: 0,
                 baseBuildTime: 120000 // 2 minutes
             },
             5: { 
                 name: "Level 5 Dreadnought", 
-                price: 2000, 
+                price: 40500, 
                 level: 5, 
                 damage: 100, 
                 fireRate: 300, 
@@ -1653,15 +2100,14 @@
                 maxHealth: 500,
                 owned: false, 
                 destroyed: false, 
-                repairCost: 250, 
+                repairCost: 500, 
                 buildTime: 0,
                 currentBuildTime: 0,
                 baseBuildTime: 300000 // 5 minutes
             }
         };
         
-        // Current active ship
-        let currentShip = 1;
+
         
         // Enemy types with AI behaviors
          let enemyTypes = {
@@ -1732,70 +2178,82 @@
              }
          };
          
-        // Boss types
+        // Boss types with scaling difficulty based on wave level
         let bossTypes = {
             boss1: { 
                 name: "Titan Destroyer", 
-                health: 500, 
-                maxHealth: 500,
+                health: 1200, 
+                maxHealth: 1200,
+                shield: 400,
+                maxShield: 400,
                 speed: 0.8, 
-                damage: 40, 
+                damage: 50, 
                 color: "#ff0000", 
                 weapon: "plasma_cannon",
                 sprite: "Boss_01",
                 width: 120,
                 height: 120,
-                fireRate: 2000,
+                fireRate: 1800,
                 lastFireTime: 0,
                 phase: 1,
                 maxPhase: 3,
-                phaseHealth: 167, // Health per phase
+                phaseHealth: 400, // Health per phase
                 specialAttack: "missile_barrage",
-                minionSpawnRate: 8000, // Spawn minions every 8 seconds
+                minionSpawnRate: 7000, // Spawn minions every 7 seconds
                 lastMinionSpawn: 0,
-                reward: { coins: 100, loyalty: 0.00001 }
+                reward: { coins: 200, loyalty: 0.00002 },
+                weakPoints: 1, // Single weak point
+                scalingFactor: 1.5 // Health and shield increase per wave
             },
             boss2: { 
                 name: "Void Cruiser", 
-                health: 800, 
-                maxHealth: 800,
+                health: 2000, 
+                maxHealth: 2000,
+                shield: 800,
+                maxShield: 800,
                 speed: 0.6, 
-                damage: 60, 
+                damage: 70, 
                 color: "#8000ff", 
                 weapon: "void_laser",
                 sprite: "Boss_02",
                 width: 140,
                 height: 140,
-                fireRate: 1500,
+                fireRate: 1200,
                 lastFireTime: 0,
                 phase: 1,
                 maxPhase: 4,
-                phaseHealth: 200,
+                phaseHealth: 500,
                 specialAttack: "void_bomb",
-                minionSpawnRate: 6000, // Spawn minions every 6 seconds
+                minionSpawnRate: 5000, // Spawn minions every 5 seconds
                 lastMinionSpawn: 0,
-                reward: { coins: 200, loyalty: 0.00002 }
+                reward: { coins: 400, loyalty: 0.00004 },
+                weakPoints: 2, // Two weak points
+                scalingFactor: 2.0 // Health and shield increase per wave
             },
             boss3: { 
                 name: "Omega Battleship", 
-                health: 1200, 
-                maxHealth: 1200,
+                health: 3500, 
+                maxHealth: 3500,
+                shield: 1500,
+                maxShield: 1500,
                 speed: 0.4, 
-                damage: 80, 
+                damage: 100, 
                 color: "#ff00ff", 
                 weapon: "omega_cannon",
                 sprite: "Boss_03",
                 width: 160,
                 height: 160,
-                fireRate: 1000,
+                fireRate: 800,
                 lastFireTime: 0,
                 phase: 1,
                 maxPhase: 5,
-                phaseHealth: 240,
+                phaseHealth: 700,
                 specialAttack: "omega_storm",
-                minionSpawnRate: 4000, // Spawn minions every 4 seconds
+                minionSpawnRate: 3000, // Spawn minions every 3 seconds
                 lastMinionSpawn: 0,
-                reward: { coins: 300, loyalty: 0.00003 }
+                reward: { coins: 600, loyalty: 0.00006 },
+                weakPoints: 3, // Three weak points
+                scalingFactor: 2.5 // Health and shield increase per wave
             }
         };
          
@@ -1952,88 +2410,136 @@
         function loadSprites() {
             console.log('Loading sprites...');
             
+            let totalAssets = 0;
+            let loadedAssets = 0;
+            
+            // Game tips array
+            const gameTips = [
+                'Use WASD or arrow keys to move your ship. Spacebar to fire!',
+                'Collect powerups to enhance your ship\'s capabilities during battle.',
+                'Shield powerups give you temporary invincibility - use them wisely!',
+                'Speed powerups increase your ship\'s maneuverability for better evasion.',
+                'Damage powerups boost your weapon damage for more powerful attacks.',
+                'Rapid Fire powerups increase your firing rate for maximum destruction.',
+                'Multiple Shots powerups allow you to fire multiple bullets simultaneously.',
+                'Magnet powerups automatically pull nearby powerups toward your ship.',
+                'Drone Ally powerups provide an AI companion that fights alongside you.',
+                'Nanobot Repair Kits can repair damaged ships in the Shipyard.',
+                'Piercing Laser powerups allow bullets to pass through multiple enemies.',
+                'Coin Boost powerups double the coins you earn for a limited time.',
+                'Visit the Shipyard to repair damaged ships and manage your fleet.',
+                'Higher level ships have more firepower - Level 1=1 shot, Level 5=5 shots!',
+                'RevCoins are premium currency earned by watching ads.',
+                'Loyalty earnings accumulate over time and can be withdrawn.',
+                'Boss battles occur every 5 waves - prepare for intense combat!',
+                'Bosses have shields that must be depleted before damaging their health.',
+                'Use the Weapon Shop to purchase special weapons for devastating attacks.',
+                'Premium weapons in the Premium Shop offer superior firepower.',
+                'Watch ads to double your earnings after completing waves.',
+                'Revive power allows you to continue after being destroyed (3 per game).',
+                'Check your stats to track your progress and achievements.',
+                'Compete on the leaderboard to see how you rank against other players.'
+            ];
+            
+            let currentTipIndex = 0;
+            let tipChangeInterval;
+            
+            function updateLoadingProgress() {
+                loadedAssets++;
+                const progress = (loadedAssets / totalAssets) * 100;
+                document.getElementById('loadingProgress').style.width = progress + '%';
+                
+                // Update loading text
+                const loadingTexts = [
+                    'Initializing quantum engines...',
+                    'Calibrating neural networks...',
+                    'Loading stellar navigation data...',
+                    'Synchronizing weapon systems...',
+                    'Establishing communication arrays...',
+                    'Preparing tactical databases...',
+                    'Optimizing performance matrices...',
+                    'Final security protocols...'
+                ];
+                
+                const textIndex = Math.floor((progress / 100) * loadingTexts.length);
+                document.getElementById('loadingText').textContent = loadingTexts[Math.min(textIndex, loadingTexts.length - 1)];
+                
+                if (loadedAssets >= totalAssets) {
+                    setTimeout(() => {
+                        document.getElementById('loadingText').textContent = 'All systems operational! 🚀';
+                        setTimeout(() => {
+                            document.getElementById('loadingScreen').style.display = 'none';
+                            startGame(); // Go directly to game
+                        }, 2000); // 2 second delay before starting
+                    }, 1000);
+                }
+            }
+            
+            // Start tip rotation
+            function startTipRotation() {
+                tipChangeInterval = setInterval(() => {
+                    currentTipIndex = (currentTipIndex + 1) % gameTips.length;
+                    document.getElementById('tipContent').textContent = gameTips[currentTipIndex];
+                }, 3000); // Change tip every 3 seconds
+            }
+            
+            function createImageWithLoader(src) {
+                totalAssets++;
+                const img = new Image();
+                img.onload = updateLoadingProgress;
+                img.onerror = updateLoadingProgress; // Count failed loads too
+                img.src = src;
+                return img;
+            }
+            
             // Load player ship sprites
-            sprites.playerShips[1] = new Image();
-            sprites.playerShips[1].src = '../Ship_LVL_1.png';
-            sprites.playerShips[2] = new Image();
-            sprites.playerShips[2].src = '../Ship_LVL_2.png';
-            sprites.playerShips[3] = new Image();
-            sprites.playerShips[3].src = '../Ship_LVL_3.png';
-            sprites.playerShips[4] = new Image();
-            sprites.playerShips[4].src = '../Ship_LVL_4.png';
-            sprites.playerShips[5] = new Image();
-            sprites.playerShips[5].src = '../Ship_LVL_5.png';
+            sprites.playerShips[1] = createImageWithLoader('../Ship_LVL_1.png');
+            sprites.playerShips[2] = createImageWithLoader('../Ship_LVL_2.png');
+            sprites.playerShips[3] = createImageWithLoader('../Ship_LVL_3.png');
+            sprites.playerShips[4] = createImageWithLoader('../Ship_LVL_4.png');
+            sprites.playerShips[5] = createImageWithLoader('../Ship_LVL_5.png');
             
             // Load enemy ship sprites
-            sprites.enemyShips.fighter = new Image();
-            sprites.enemyShips.fighter.src = '../Ship_01.png';
-            sprites.enemyShips.interceptor = new Image();
-            sprites.enemyShips.interceptor.src = '../Ship_02.png';
-            sprites.enemyShips.destroyer = new Image();
-            sprites.enemyShips.destroyer.src = '../Ship_03.png';
-            sprites.enemyShips.battleship = new Image();
-            sprites.enemyShips.battleship.src = '../Ship_04.png';
-            sprites.enemyShips.dreadnought = new Image();
-            sprites.enemyShips.dreadnought.src = '../Ship_05.png';
+            sprites.enemyShips.fighter = createImageWithLoader('../Ship_01.png');
+            sprites.enemyShips.interceptor = createImageWithLoader('../Ship_02.png');
+            sprites.enemyShips.destroyer = createImageWithLoader('../Ship_03.png');
+            sprites.enemyShips.battleship = createImageWithLoader('../Ship_04.png');
+            sprites.enemyShips.dreadnought = createImageWithLoader('../Ship_05.png');
             
             // Load boss sprites
             sprites.bossShips = {};
-            sprites.bossShips.boss1 = new Image();
-            sprites.bossShips.boss1.src = '../Boss_01.png';
-            sprites.bossShips.boss2 = new Image();
-            sprites.bossShips.boss2.src = '../Boss_02.png';
-            sprites.bossShips.boss3 = new Image();
-            sprites.bossShips.boss3.src = '../Boss_03.png';
+            sprites.bossShips.boss1 = createImageWithLoader('../Boss_01.png');
+            sprites.bossShips.boss2 = createImageWithLoader('../Boss_02.png');
+            sprites.bossShips.boss3 = createImageWithLoader('../Boss_03.png');
             
             // Load background
-            sprites.backgrounds.space = new Image();
-            sprites.backgrounds.space.src = '../Space_BG_02.png';
+            sprites.backgrounds.space = createImageWithLoader('../Space_BG_02.png');
             
             // Load weapon effects
-            sprites.effects.laser = new Image();
-            sprites.effects.laser.src = '../Laser_Shot_1_001.png';
-            sprites.effects.fire = new Image();
-            sprites.effects.fire.src = '../Fire_Shot_1_1.png';
+            sprites.effects.laser = createImageWithLoader('../Laser_Shot_1_001.png');
+            sprites.effects.fire = createImageWithLoader('../Fire_Shot_1_1.png');
             
             // Load powerup sprites
             sprites.powerups = {};
-            sprites.powerups.shield = new Image();
-            sprites.powerups.shield.src = '../Barrier_Bonus.png';
-            sprites.powerups.speed = new Image();
-            sprites.powerups.speed.src = '../Hero_Speed_Debuff.png'; // Using speed debuff as speed boost
-            sprites.powerups.damage = new Image();
-            sprites.powerups.damage.src = '../Damage_Bonus.png';
-            sprites.powerups.rapidFire = new Image();
-            sprites.powerups.rapidFire.src = '../Rockets_Bonus.png';
-            sprites.powerups.multipleShots = new Image();
-            sprites.powerups.multipleShots.src = '../Rockets_Bonus.png';
-            sprites.powerups.magnet = new Image();
-            sprites.powerups.magnet.src = '../Magnet_Bonus.png';
-            sprites.powerups.nanobotRepair = new Image();
-            sprites.powerups.nanobotRepair.src = '../HP_Bonus.png';
-            
-            // Load drone sprite with proper error handling
-            sprites.powerups.droneAlly = new Image();
-            sprites.powerups.droneAlly.onload = function() {
-                console.log('✅ Drone sprite loaded successfully!', this.naturalWidth, 'x', this.naturalHeight);
-            };
-            sprites.powerups.droneAlly.onerror = function() {
-                console.error('❌ Failed to load drone sprite from:', this.src);
-            };
-            sprites.powerups.droneAlly.src = '../drone.png';
-            
-            sprites.powerups.piercingLaser = new Image();
-            sprites.powerups.piercingLaser.src = '../Damage_Bonus.png';
-            sprites.powerups.coinBoost = new Image();
-            sprites.powerups.coinBoost.src = '../HP_Bonus.png'; // Using HP bonus as coin boost sprite
+            sprites.powerups.shield = createImageWithLoader('../Barrier_Bonus.png');
+            sprites.powerups.speed = createImageWithLoader('../Hero_Speed_Debuff.png');
+            sprites.powerups.damage = createImageWithLoader('../Damage_Bonus.png');
+            sprites.powerups.rapidFire = createImageWithLoader('../Rockets_Bonus.png');
+            sprites.powerups.multipleShots = createImageWithLoader('../Rockets_Bonus.png');
+            sprites.powerups.magnet = createImageWithLoader('../Magnet_Bonus.png');
+            sprites.powerups.nanobotRepair = createImageWithLoader('../HP_Bonus.png');
+            sprites.powerups.droneAlly = createImageWithLoader('../drone.png');
+            sprites.powerups.piercingLaser = createImageWithLoader('../Damage_Bonus.png');
+            sprites.powerups.coinBoost = createImageWithLoader('../HP_Bonus.png');
             
             // Load UI elements
-            sprites.ui.playButton = new Image();
-            sprites.ui.playButton.src = '../Play_BTN.png';
-            sprites.ui.closeButton = new Image();
-            sprites.ui.closeButton.src = '../Close_BTN.png';
+            sprites.ui.playButton = createImageWithLoader('../Play_BTN.png');
+            sprites.ui.closeButton = createImageWithLoader('../Close_BTN.png');
             
             console.log('Sprites loading initiated...');
+            
+            // Start tip rotation for AAA loading experience
+            startTipRotation();
         }
         
         // ===== INITIALIZATION =====
@@ -2056,27 +2562,23 @@
                  player.x = canvas.width / 2 - player.width / 2;
             player.y = canvas.height - player.height - 50;
              
-             // Create stars
-             for (let i = 0; i < 100; i++) {
-                 stars.push({
-                     x: Math.random() * canvas.width,
-                     y: Math.random() * canvas.height,
-                    speed: Math.random() * 2 + 0.5
-                 });
-             }
+                         // Create stars (high-performance optimized)
+            for (let i = 0; i < 30; i++) { // Further reduced for maximum performance
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                   speed: Math.random() * 1.0 + 0.2 // Optimized speed
+                });
+            }
              
-             // Setup event listeners
-             setupEventListeners();
-             
-            // Hide loading screen
-            document.getElementById('loadingScreen').style.display = 'none';
-            document.getElementById('startScreen').style.display = 'block';
+                         // Setup event listeners
+            setupEventListeners();
             
             console.log('Game initialized successfully!');
         }
         
         function initializePlayerStats() {
-            const ship = ships[currentShip];
+            const ship = ships[player.currentShip];
             if (ship) {
                 player.damage = ship.damage;
                 player.fireRate = ship.fireRate;
@@ -2160,25 +2662,16 @@
                 }
             });
             
-            // Button events
-            document.getElementById('startButton').addEventListener('click', startGame);
-            document.getElementById('shopButton').addEventListener('click', () => {
-                document.getElementById('shop').style.display = 'block';
-                updateShopDisplay();
-                // Only pause if game is running
-                if (gameRunning) {
+            // Shop button event (for when accessed from game)
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && gameRunning) {
+                    document.getElementById('shop').style.display = 'block';
+                    updateShopDisplay();
                     gamePaused = true;
                 }
             });
             
-            document.getElementById('closeShop').addEventListener('click', () => {
-                document.getElementById('shop').style.display = 'none';
-                // Only resume if we were actually playing (not from level complete)
-                if (gameRunning && !levelCompleteMenuShouldBeShown) {
-                    gamePaused = false;
-                    gameLoop();
-                }
-            });
+
             
                             document.getElementById('backToLevelComplete').addEventListener('click', () => {
                     document.getElementById('shop').style.display = 'none';
@@ -2201,6 +2694,8 @@
             document.getElementById('watchAdForRevive').addEventListener('click', showReviveAd);
             document.getElementById('earnRevCoinsButton').addEventListener('click', showRevCoinsAd);
             
+
+
             // Premium shop event listeners
             document.getElementById('premiumShopButton').addEventListener('click', openPremiumShop);
             document.getElementById('closePremiumShop').addEventListener('click', closePremiumShop);
@@ -2209,6 +2704,11 @@
             // Weapon shop event listeners
             document.getElementById('weaponShopButton').addEventListener('click', openWeaponShop);
             document.getElementById('closeWeaponShop').addEventListener('click', closeWeaponShop);
+            
+            // Stats page event listeners
+            document.getElementById('viewStats').addEventListener('click', openStatsPage);
+            document.getElementById('closeStats').addEventListener('click', closeStatsPage);
+
             
             // Speed up construction button
             document.getElementById('speedUpConstructionButton').addEventListener('click', showSpeedUpBuildAd);
@@ -2272,11 +2772,10 @@
         // ===== GAME FUNCTIONS =====
                  function startGame() {
             console.log('Starting game...');
-            document.getElementById('startScreen').style.display = 'none';
-             gameRunning = true;
-             gamePaused = false;
-             gameLoop();
-         }
+            gameRunning = true;
+            gamePaused = false;
+            gameLoop();
+        }
         
                  function gameLoop() {
              if (!gameRunning || gamePaused) return;
@@ -2593,14 +3092,38 @@
         
         // Check boss collision with player bullets
         if (bossActive && currentBoss) {
+            console.log(`🎯 Checking boss collision. Boss active: ${bossActive}, Boss: ${currentBoss.name}, Bullets: ${bullets.length}`);
             for (let j = bullets.length - 1; j >= 0; j--) {
                 const bullet = bullets[j];
-                if (!bullet.isBossBullet && checkCollision(bullet, currentBoss)) {
-                    currentBoss.health -= bullet.damage;
-                    if (!bullet.piercing) {
-                        bullets.splice(j, 1);
+                if (!bullet.isBossBullet) {
+                    const collision = checkCollision(bullet, currentBoss);
+                    if (collision) {
+                        console.log(`🎯 COLLISION DETECTED! Bullet at (${bullet.x}, ${bullet.y}), Boss at (${currentBoss.x}, ${currentBoss.y})`);
+                        console.log(`🎯 BULLET HIT BOSS! Bullet damage: ${bullet.damage}`);
+                        
+                        // Simple damage system - just damage the boss directly
+                        // Handle boss shield first
+                        if (currentBoss.shield > 0) {
+                            currentBoss.shield -= bullet.damage;
+                            if (currentBoss.shield < 0) {
+                                // Excess damage goes to health
+                                currentBoss.health += currentBoss.shield;
+                                currentBoss.shield = 0;
+                            }
+                            createExplosion(bullet.x, bullet.y);
+                            console.log(`🛡️ Shield hit! Damage: ${bullet.damage}, Shield: ${Math.max(0, currentBoss.shield)}/${currentBoss.maxShield}`);
+                            showPurchaseNotification("🛡️ Shield Hit!", `Shield: ${Math.max(0, currentBoss.shield)}/${currentBoss.maxShield}`, '#00ffff');
+                        } else {
+                            // Direct health damage
+                            currentBoss.health -= bullet.damage;
+                            createExplosion(bullet.x, bullet.y);
+                            console.log(`💥 Health hit! Damage: ${bullet.damage}, Health: ${currentBoss.health}/${currentBoss.maxHealth}`);
+                        }
+                        
+                        if (!bullet.piercing) {
+                            bullets.splice(j, 1);
+                        }
                     }
-                    createExplosion(bullet.x, bullet.y);
                 }
             }
         }
@@ -2621,7 +3144,11 @@
             }
             
                     // Check for boss spawn
+        console.log(`🎯 Boss spawn check: Wave ${currentWave}, BossSpawnWave ${bossSpawnWave}, Wave % BossSpawnWave = ${currentWave % bossSpawnWave}`);
+        console.log(`🎯 Boss conditions: !bossActive = ${!bossActive}, !bossWarningShown = ${!bossWarningShown}, enemies.length = ${enemies.length}`);
+        
         if (currentWave % bossSpawnWave === 0 && !bossActive && !bossWarningShown && enemies.length === 0) {
+            console.log(`🚨 BOSS SPAWN TRIGGERED! Wave ${currentWave}`);
             showBossWarning();
         }
         
@@ -2778,21 +3305,32 @@
                     ctx.fillRect(currentBoss.x, currentBoss.y, currentBoss.width, currentBoss.height);
                 }
                 
-                // Draw boss health bar
-                const healthBarWidth = currentBoss.width;
-                const healthBarHeight = 10;
+                // Draw boss health and shield bars
+                const barWidth = currentBoss.width;
+                const barHeight = 8;
                 const healthPercent = currentBoss.health / currentBoss.maxHealth;
+                const shieldPercent = currentBoss.shield / currentBoss.maxShield;
                 
+                // Shield bar (top)
+                if (currentBoss.shield > 0) {
+                    ctx.fillStyle = '#333';
+                    ctx.fillRect(currentBoss.x, currentBoss.y - 30, barWidth, barHeight);
+                    ctx.fillStyle = '#00ffff';
+                    ctx.fillRect(currentBoss.x, currentBoss.y - 30, barWidth * shieldPercent, barHeight);
+                }
+                
+                // Health bar (bottom)
                 ctx.fillStyle = '#333';
-                ctx.fillRect(currentBoss.x, currentBoss.y - 20, healthBarWidth, healthBarHeight);
+                ctx.fillRect(currentBoss.x, currentBoss.y - 20, barWidth, barHeight);
                 ctx.fillStyle = '#ff0000';
-                ctx.fillRect(currentBoss.x, currentBoss.y - 20, healthBarWidth * healthPercent, healthBarHeight);
+                ctx.fillRect(currentBoss.x, currentBoss.y - 20, barWidth * healthPercent, barHeight);
                 
                 // Draw boss name
                 ctx.fillStyle = '#fff';
                 ctx.font = 'bold 14px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText(currentBoss.name, currentBoss.x + currentBoss.width / 2, currentBoss.y - 25);
+                const nameY = currentBoss.shield > 0 ? currentBoss.y - 40 : currentBoss.y - 25;
+                ctx.fillText(currentBoss.name, currentBoss.x + currentBoss.width / 2, nameY);
                 
                 // Draw phase indicator
                 ctx.fillStyle = '#ffaa00';
@@ -3135,29 +3673,35 @@
             const bulletSpeed = 8;
             const currentTime = Date.now();
             
+            // Get current ship data
+            const currentShip = ships[player.currentShip];
+            const shipLevel = currentShip ? currentShip.level : 1;
+            
             // Check if piercing laser is active
             const isPiercing = activePowerups.piercingLaser.active && activePowerups.piercingLaser.shotsRemaining > 0;
             
             // Check if multiple shots is active
             const hasMultipleShots = activePowerups.multipleShots && currentTime < activePowerups.multipleShots;
             
-            // ALWAYS fire at least one shot (default)
-            let shotsToFire = 1;
+            // Base shots based on ship level (Level 1 = 1 shot, Level 2 = 2 shots, etc.)
+            let baseShots = shipLevel;
             
-            // If multiple shots is active, fire 2 shots instead
+            // If multiple shots powerup is active, double the base shots
             if (hasMultipleShots) {
-                shotsToFire = 2;
+                baseShots *= 2;
             }
             
             // Fire all shots
-            for (let i = 0; i < shotsToFire; i++) {
+            for (let i = 0; i < baseShots; i++) {
                 let bulletX;
-                if (hasMultipleShots) {
-                    // Multiple shots: left and right positions
-                    bulletX = i === 0 ? player.x + 5 : player.x + player.width - 9;
-                } else {
+                
+                if (baseShots === 1) {
                     // Single shot: center position
                     bulletX = player.x + player.width / 2 - bulletWidth / 2;
+                } else {
+                    // Multiple shots: distribute across ship width
+                    const spacing = (player.width - bulletWidth) / (baseShots - 1);
+                    bulletX = player.x + (i * spacing);
                 }
                 
                 bullets.push({
@@ -3171,8 +3715,10 @@
                     piercing: isPiercing
                 });
                 
-                // Add bullet trail particles
-                createParticles(bulletX + bulletWidth / 2, player.y + bulletHeight, 'bullet_trail', 3);
+                // Add bullet trail particles (optimized)
+                if (Math.random() < 0.3) { // Only 30% chance to create particles for performance
+                    createParticles(bulletX + bulletWidth / 2, player.y + bulletHeight, 'bullet_trail', 2);
+                }
             }
             
             // Decrease piercing laser shots if active
@@ -3183,12 +3729,14 @@
                 }
             }
             
-            // Debug logging for powerup stacking
-            if (hasMultipleShots || isPiercing) {
+            // Debug logging for ship level and powerup stacking
+            if (baseShots > 1 || isPiercing) {
                 console.log('🔫 Fired weapon with:', {
+                    shipLevel: shipLevel,
+                    baseShots: baseShots,
                     multipleShots: hasMultipleShots,
                     piercing: isPiercing,
-                    shotsFired: shotsToFire,
+                    shotsFired: baseShots,
                     damage: player.damage * (isPiercing ? 2 : 1)
                 });
             }
@@ -3210,8 +3758,8 @@
                 maxLife: 10
             });
             
-            // Add explosion particles for enhanced visual effect
-            createParticles(x, y, 'explosion', 15);
+            // Add explosion particles for enhanced visual effect (high-performance)
+            createParticles(x, y, 'explosion', 5); // Further reduced for maximum performance
         }
         
         // ===== PARTICLE SYSTEM =====
@@ -3574,6 +4122,7 @@
             }
             
             adContent.innerHTML = `
+                <div style="background: #ff4444; color: white; padding: 5px 10px; border-radius: 5px; margin-bottom: 15px; font-size: 0.9rem; font-weight: bold;">📺 SPONSORED AD</div>
                 <h2 style="color: #00ffff; margin-bottom: 20px;">${adTitle}</h2>
                 <p style="margin-bottom: 20px; line-height: 1.5;">${adDescription}</p>
                 <p style="color: #ffff00; margin-bottom: 30px; font-weight: bold;">${adReward}</p>
@@ -3678,7 +4227,6 @@
                 // Double the earnings
                 coins += coinsEarnedThisWave;
                 loyaltyEarnings += loyaltyEarnedThisWave;
-                totalWallet += loyaltyEarnedThisWave;
                 
                 adWatchedThisWave = true;
                 updateHUD();
@@ -3852,8 +4400,19 @@
             }
             
             const bossTemplate = bossTypes[bossType];
+            
+            // Apply scaling based on wave level
+            const waveMultiplier = Math.max(1, (currentWave - 5) * 0.5); // Start scaling after wave 5
+            const scalingFactor = bossTemplate.scalingFactor || 1.5;
+            const totalScaling = 1 + (waveMultiplier * scalingFactor);
+            
             const boss = {
                 ...bossTemplate,
+                health: Math.floor(bossTemplate.maxHealth * totalScaling),
+                maxHealth: Math.floor(bossTemplate.maxHealth * totalScaling),
+                shield: Math.floor(bossTemplate.maxShield * totalScaling),
+                maxShield: Math.floor(bossTemplate.maxShield * totalScaling),
+                damage: Math.floor(bossTemplate.damage * (1 + waveMultiplier * 0.3)),
                 x: canvas.width / 2 - bossTemplate.width / 2,
                 y: -bossTemplate.height,
                 id: Date.now(),
@@ -3864,7 +4423,9 @@
             bossActive = true;
             bossWarningShown = true;
             
-            console.log(`🚨 Boss spawned: ${boss.name}`);
+            console.log(`🚨 Boss spawned: ${boss.name} (Wave ${currentWave}, Scaling: ${totalScaling.toFixed(2)}x)`);
+            console.log(`📊 Boss stats: HP ${boss.health}, Shield ${boss.shield}, Damage ${boss.damage}`);
+            console.log(`🎯 Boss damage zones: Center (100%), Middle (75%), Outer (50%)`);
         }
         
         function updateBoss() {
@@ -4067,7 +4628,6 @@
             // Give boss rewards
             coins += currentBoss.reward.coins;
             loyaltyEarnings += currentBoss.reward.loyalty;
-            totalWallet += currentBoss.reward.loyalty;
             coinsEarnedThisWave += currentBoss.reward.coins;
             loyaltyEarnedThisWave += currentBoss.reward.loyalty;
             
@@ -4143,6 +4703,60 @@
                 document.body.removeChild(rewardDiv);
             }, 3000);
         }
+
+        function showPurchaseNotification(title, subtitle, color) {
+            const notificationDiv = document.createElement('div');
+            notificationDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(26, 26, 62, 0.9));
+                color: white;
+                padding: 20px;
+                border-radius: 15px;
+                border: 2px solid ${color};
+                box-shadow: 0 0 30px ${color}40;
+                z-index: 2001;
+                animation: slideInRight 0.5s ease-out;
+                font-family: 'Orbitron', 'Arial', sans-serif;
+                min-width: 300px;
+            `;
+            
+            notificationDiv.innerHTML = `
+                <div style="font-size: 1.3rem; font-weight: bold; margin-bottom: 8px; color: ${color};">${title}</div>
+                <div style="font-size: 1rem; opacity: 0.9;">${subtitle}</div>
+            `;
+            
+            // Add animation CSS
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideInRight {
+                    0% { transform: translateX(100%); opacity: 0; }
+                    100% { transform: translateX(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(notificationDiv);
+            
+            setTimeout(() => {
+                notificationDiv.style.animation = 'slideOutRight 0.5s ease-in';
+                const slideOutStyle = document.createElement('style');
+                slideOutStyle.textContent = `
+                    @keyframes slideOutRight {
+                        0% { transform: translateX(0); opacity: 1; }
+                        100% { transform: translateX(100%); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(slideOutStyle);
+                
+                setTimeout(() => {
+                    if (notificationDiv.parentNode) {
+                        document.body.removeChild(notificationDiv);
+                    }
+                }, 500);
+            }, 3000);
+        }
         
         function updateHUD() {
             // Update all HUD elements
@@ -4163,6 +4777,9 @@
             document.getElementById('coins').textContent = coins;
             document.getElementById('empireCoins').textContent = empireCoins;
             document.getElementById('enemiesLeft').textContent = enemies.length;
+            // Calculate wallet as earnings minus withdrawals
+            totalWallet = loyaltyEarnings - totalWithdrawn;
+            
             document.getElementById('earnings').textContent = '$' + loyaltyEarnings.toFixed(6);
             document.getElementById('wallet').textContent = '$' + totalWallet.toFixed(6);
             document.getElementById('revCoins').textContent = revCoins;
@@ -4202,10 +4819,12 @@
         function continueToNextLevel() {
             console.log(`Continuing to level ${currentWave + 1}`);
             currentWave++;
+            console.log(`🎯 Wave incremented to ${currentWave}. Boss spawn check: ${currentWave % bossSpawnWave === 0 ? 'YES' : 'NO'}`);
             enemiesKilledThisWave = 0;
             coinsEarnedThisWave = 0;
             loyaltyEarnedThisWave = 0;
             levelCompleteMenuShouldBeShown = false;
+            bossWarningShown = false; // Reset boss warning for new wave
             
             enemies = [];
             bullets = [];
@@ -4261,12 +4880,27 @@
         }
         
                 function updateShopDisplay() {
+            console.log('🛒 Updating shop display...');
+            
+            // Update coin display
+            const shopCoins = document.getElementById('shopCoins');
+            if (shopCoins) {
+                shopCoins.textContent = coins;
+                console.log('💰 Updated coin display:', coins);
+            }
+            
             // Update ship list
             const shipList = document.getElementById('shipList');
+            if (!shipList) {
+                console.error('❌ Ship list element not found!');
+                return;
+            }
             shipList.innerHTML = '';
+            console.log('🚀 Updating ship list...');
             
             for (let shipId in ships) {
                 const ship = ships[shipId];
+                console.log(`🚀 Processing ship ${shipId}:`, ship.name, 'Owned:', ship.owned);
                 const shipDiv = document.createElement('div');
                 shipDiv.className = 'shop-item';
                 
@@ -4311,13 +4945,38 @@
             
             for (let shipId in ships) {
                 const ship = ships[shipId];
-                if (ship.owned && ship.destroyed) {
+                if (ship.owned) {
                     const shipDiv = document.createElement('div');
                     shipDiv.className = 'shop-item';
-                    shipDiv.innerHTML = `
-                        <span>${ship.name} - Under Construction</span>
-                        <span>Time remaining: ${Math.ceil(ship.buildTime / 1000)}s</span>
-                    `;
+                    
+                    if (ship.destroyed) {
+                        // Show destroyed ships that need to be rebuilt
+                        shipDiv.innerHTML = `
+                            <span>${ship.name} - DESTROYED</span>
+                            <span style="color: #ff4444;">❌ Cannot be repaired - Must rebuild</span>
+                        `;
+                    } else if (ship.buildTime > Date.now()) {
+                        // Show ships under construction
+                        const remainingTime = Math.max(0, ship.buildTime - Date.now());
+                        shipDiv.innerHTML = `
+                            <span>${ship.name} - Under Construction</span>
+                            <span>Time remaining: ${Math.ceil(remainingTime / 1000)}s</span>
+                        `;
+                    } else if (ship.health < ship.maxHealth) {
+                        // Show damaged ships that need repair
+                        const healthPercent = Math.round((ship.health / ship.maxHealth) * 100);
+                        shipDiv.innerHTML = `
+                            <span>${ship.name} - DAMAGED (${healthPercent}% HP)</span>
+                            <button onclick="repairShip(${shipId})">Repair (${ship.repairCost} coins)</button>
+                        `;
+                    } else {
+                        // Show healthy ships
+                        shipDiv.innerHTML = `
+                            <span>${ship.name} - READY</span>
+                            <span style="color: #00ff00;">✓ Fully Operational</span>
+                        `;
+                    }
+                    
                     shipyardList.appendChild(shipDiv);
                 }
             }
@@ -4354,6 +5013,18 @@
                 }
                 
                 if (coins >= ship.price) {
+                    // Show purchase receipt
+                    const receipt = `📋 PURCHASE RECEIPT
+                    
+🚀 ${ship.name}
+💰 Price: ${ship.price} coins
+💳 Your Balance: ${coins} coins
+💳 Remaining: ${coins - ship.price} coins
+
+${ship.level > 1 ? `🔨 Construction Time: ${ship.baseBuildTime/1000}s` : '✅ Ready to use!'}`;
+                    
+                    alert(receipt);
+                    
                     coins -= ship.price;
                     ship.owned = true;
                     ship.destroyed = false;
@@ -4372,13 +5043,14 @@
                     updateHUD();
                     
                     if (ship.level > 1) {
-                        showRewardMessage(`🚀 ${ship.name} construction started! Build time: ${ship.baseBuildTime/1000}s`);
+                        showPurchaseNotification(`🚀 ${ship.name} construction started!`, `Build time: ${ship.baseBuildTime/1000}s`, '#00ffff');
                     } else {
-                        showRewardMessage(`🚀 ${ship.name} purchased!`);
+                        showPurchaseNotification(`🚀 ${ship.name} purchased!`, `Cost: ${ship.price} coins`, '#00ff00');
                     }
                 } else {
                     console.log('❌ Not enough coins for ship:', ship.name);
-                    alert('Not enough coins!');
+                    const shortfall = ship.price - coins;
+                    showPurchaseNotification(`❌ Insufficient funds!`, `Need ${shortfall} more coins (You have: ${coins})`, '#ff4444');
                 }
             } catch (error) {
                 console.error('❌ Error buying ship:', error);
@@ -4415,7 +5087,7 @@
                 player.fireRate = ship.fireRate;
                 player.speed = ship.speed;
                 player.maxHealth = ship.maxHealth;
-                player.health = ship.health;
+                player.health = ship.maxHealth; // Always restore full health when switching ships
                 
                 console.log('✅ Ship selected:', ship.name);
                 console.log('📊 Updated stats:', {
@@ -4439,56 +5111,93 @@
         
         function repairShip(shipId) {
             const ship = ships[shipId];
-            if (coins >= ship.repairCost) {
-                coins -= ship.repairCost;
-                ship.destroyed = false;
-                ship.health = ship.maxHealth; // Restore full health
-                updateShopDisplay();
-                updateHUD();
-                showRewardMessage(`🔧 ${ship.name} repaired to full health!`);
-            } else {
-                alert('Not enough coins!');
+            
+            // Check if player has nanobot repair powerup
+            if (!activePowerups.nanobotRepair) {
+                alert('You need a Nanobot Repair Kit to repair ships! Purchase one from the Powerups tab.');
+                return;
             }
+            
+            // Use the nanobot repair powerup
+            activePowerups.nanobotRepair = null;
+            ship.health = ship.maxHealth; // Restore full health
+            updateShopDisplay();
+            updateHUD();
+            showPurchaseNotification(`🔧 ${ship.name} repaired!`, 'Used Nanobot Repair Kit', '#00ff00');
         }
         
         function buyPowerup(powerupType) {
             const powerup = powerupsAvailable[powerupType];
             if (coins >= powerup.price) {
+                // Show purchase receipt
+                const receipt = `📋 POWERUP RECEIPT
+                
+⚡ ${powerup.name}
+💰 Price: ${powerup.price} coins
+💳 Your Balance: ${coins} coins
+💳 Remaining: ${coins - powerup.price} coins
+⏱️ Duration: ${powerup.duration > 0 ? powerup.duration/1000 + 's' : 'Instant'}`;
+                
+                alert(receipt);
+                
                 coins -= powerup.price;
                 activatePowerup(powerupType);
                 updateShopDisplay();
                 updateHUD();
             } else {
-                alert('Not enough coins!');
+                const shortfall = powerup.price - coins;
+                alert(`❌ Not enough coins! Need ${shortfall} more coins (You have: ${coins})`);
             }
         }
         
         function buyPremiumWeapon(weaponType) {
             const weapon = premiumWeapons[weaponType];
             if (revCoins >= weapon.price) {
+                // Show purchase receipt
+                const receipt = `📋 PREMIUM WEAPON RECEIPT
+                
+🎯 ${weapon.name}
+💎 Price: ${weapon.price} RevCoins
+💳 Your Balance: ${revCoins} RevCoins
+💳 Remaining: ${revCoins - weapon.price} RevCoins
+⏱️ Cooldown: ${weapon.cooldown/1000}s`;
+                
+                alert(receipt);
+                
                 revCoins -= weapon.price;
                 activePremiumWeapons[weaponType] = {
                     lastUsed: 0,
                     cooldown: weapon.cooldown
                 };
-                alert(`Purchased ${weapon.name}! Use it in battle!`);
                 updateHUD();
                 updatePremiumShopDisplay();
             } else {
-                alert('Not enough RevCoins! Watch ads to earn RevCoins.');
+                const shortfall = weapon.price - revCoins;
+                alert(`❌ Not enough RevCoins! Need ${shortfall} more RevCoins (You have: ${revCoins})`);
             }
         }
         
         function buyPremiumPowerup(powerupType) {
             const powerup = premiumPowerups[powerupType];
             if (revCoins >= powerup.price) {
+                // Show purchase receipt
+                const receipt = `📋 PREMIUM POWERUP RECEIPT
+                
+💎 ${powerup.name}
+💎 Price: ${powerup.price} RevCoins
+💳 Your Balance: ${revCoins} RevCoins
+💳 Remaining: ${revCoins - powerup.price} RevCoins
+⏱️ Duration: ${powerup.duration > 0 ? powerup.duration/1000 + 's' : 'Instant'}`;
+                
+                alert(receipt);
+                
                 revCoins -= powerup.price;
                 activatePremiumPowerup(powerupType);
-                alert(`Purchased and activated ${powerup.name}!`);
                 updateHUD();
                 updatePremiumShopDisplay();
             } else {
-                alert('Not enough RevCoins! Watch ads to earn RevCoins.');
+                const shortfall = powerup.price - revCoins;
+                alert(`❌ Not enough RevCoins! Need ${shortfall} more RevCoins (You have: ${revCoins})`);
             }
         }
         
@@ -4549,6 +5258,11 @@
         
         function closePremiumShop() {
             document.getElementById('premiumShop').style.display = 'none';
+            // Only resume if we were actually playing (not from level complete)
+            if (gameRunning && !levelCompleteMenuShouldBeShown) {
+                gamePaused = false;
+                gameLoop();
+            }
         }
         
         function switchTab(tabName) {
@@ -4569,6 +5283,9 @@
             // Add active class to selected tab and content
             document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
             document.getElementById(`${tabName}Tab`).classList.add('active');
+            
+            // Update the display for the selected tab
+            updateShopDisplay();
         }
         
         function switchWeaponTab(tabName) {
@@ -4588,6 +5305,93 @@
         
         function closeWeaponShop() {
             document.getElementById('weaponShop').style.display = 'none';
+            // Only resume if we were actually playing (not from level complete)
+            if (gameRunning && !levelCompleteMenuShouldBeShown) {
+                gamePaused = false;
+                gameLoop();
+            }
+        }
+        
+        function openStatsPage() {
+            document.getElementById('statsPage').style.display = 'block';
+            updateStatsDisplay();
+        }
+        
+        function closeStatsPage() {
+            document.getElementById('statsPage').style.display = 'none';
+        }
+        
+        function updateStatsDisplay() {
+            // Game Performance Stats
+            document.getElementById('statsGamesPlayed').textContent = playerStats.gamesPlayed || 0;
+            document.getElementById('statsHighestScore').textContent = playerStats.highestScore || 0;
+            document.getElementById('statsHighestWave').textContent = playerStats.highestWave || 0;
+            document.getElementById('statsTotalEnemies').textContent = playerStats.totalEnemiesDefeated || 0;
+            document.getElementById('statsBossesDefeated').textContent = playerStats.bossesDefeated || 0;
+            document.getElementById('statsPowerupsCollected').textContent = playerStats.powerupsCollected || 0;
+            
+            // Financial Stats
+            document.getElementById('statsAllTimeEarnings').textContent = `$${loyaltyEarnings.toFixed(4)}`;
+            document.getElementById('statsAvailableWallet').textContent = `$${totalWallet.toFixed(4)}`;
+            document.getElementById('statsTotalWithdrawn').textContent = `$${totalWithdrawn.toFixed(4)}`;
+            document.getElementById('statsTotalCoinsEarned').textContent = playerStats.totalCoinsEarned || 0;
+            document.getElementById('statsRevCoinsEarned').textContent = playerStats.revCoinsEarned || 0;
+            document.getElementById('statsAdsWatched').textContent = adWatchCount || 0;
+            document.getElementById('statsRevivesUsed').textContent = reviveCount || 0;
+            
+            // Ship Fleet Stats
+            let shipsOwned = 0;
+            let shipsUnderConstruction = 0;
+            let shipsDestroyed = 0;
+            
+            for (let shipId in ships) {
+                if (ships[shipId].owned) shipsOwned++;
+                if (ships[shipId].destroyed) shipsDestroyed++;
+                if (ships[shipId].buildTime > Date.now()) shipsUnderConstruction++;
+            }
+            
+            document.getElementById('statsShipsOwned').textContent = shipsOwned;
+            document.getElementById('statsCurrentShipLevel').textContent = ships[player.currentShip] ? ships[player.currentShip].level : 1;
+            document.getElementById('statsShipsUnderConstruction').textContent = shipsUnderConstruction;
+            document.getElementById('statsShipsDestroyed').textContent = shipsDestroyed;
+            document.getElementById('statsTotalRepairs').textContent = playerStats.totalRepairs || 0;
+            
+            // Achievement Stats
+            document.getElementById('statsVirtualRewards').textContent = Object.keys(playerStats.virtualRewards || {}).length;
+            
+            // Calculate ranks
+            const weeklyRank = calculatePlayerRank(weeklyLeaderboard, score);
+            const allTimeRank = calculatePlayerRank(leaderboardData, score);
+            
+            document.getElementById('statsWeeklyRank').textContent = weeklyRank > 0 ? `#${weeklyRank}` : 'N/A';
+            document.getElementById('statsAllTimeRank').textContent = allTimeRank > 0 ? `#${allTimeRank}` : 'N/A';
+            document.getElementById('statsLongestSurvival').textContent = `${playerStats.longestSurvival || 0}s`;
+            document.getElementById('statsPerfectWaves').textContent = playerStats.perfectWaves || 0;
+        }
+        
+        function calculatePlayerRank(leaderboard, playerScore) {
+            const sortedLeaderboard = [...leaderboard].sort((a, b) => b.score - a.score);
+            const playerIndex = sortedLeaderboard.findIndex(entry => entry.score === playerScore);
+            return playerIndex >= 0 ? playerIndex + 1 : 0;
+        }
+        
+        function withdrawFunds(amount) {
+            if (amount <= 0) {
+                alert('Withdrawal amount must be greater than 0');
+                return false;
+            }
+            
+            if (amount > totalWallet) {
+                alert('Insufficient funds in wallet');
+                return false;
+            }
+            
+            totalWithdrawn += amount;
+            totalWallet = loyaltyEarnings - totalWithdrawn;
+            
+            showPurchaseNotification('💰 Withdrawal Successful!', `Withdrew $${amount.toFixed(6)}`, '#00ff00');
+            updateHUD();
+            return true;
         }
         
         function updateWeaponShopDisplay() {
@@ -4617,8 +5421,8 @@
                             <div class="weapon-stat">Health: ${ship.health}</div>
                         </div>
                         <button class="weapon-buy-btn" onclick="selectShip(${shipId})" 
-                                ${currentShip == shipId ? 'disabled' : ''}>
-                            ${currentShip == shipId ? 'CURRENT SHIP' : 'SELECT SHIP'}
+                                ${player.currentShip == shipId ? 'disabled' : ''}>
+                            ${player.currentShip == shipId ? 'CURRENT SHIP' : 'SELECT SHIP'}
                         </button>
                     `;
                     
@@ -4660,53 +5464,7 @@
             }
         }
         
-        function selectShip(shipId) {
-            try {
-                console.log('🚀 Selecting ship:', shipId);
-                
-                // Validate ship exists and is owned
-                if (!ships[shipId]) {
-                    console.error('❌ Ship not found:', shipId);
-                    return;
-                }
-                
-                const ship = ships[shipId];
-                if (!ship.owned) {
-                    console.error('❌ Ship not owned:', shipId);
-                    return;
-                }
-                
-                if (ship.destroyed) {
-                    console.error('❌ Ship is destroyed:', shipId);
-                    return;
-                }
-                
-                currentShip = shipId;
-                
-                // Update player stats based on selected ship
-                player.damage = ship.damage;
-                player.fireRate = ship.fireRate;
-                player.speed = ship.speed;
-                player.maxHealth = ship.maxHealth;
-                player.health = ship.health;
-                
-                console.log('✅ Ship stats updated:', {
-                    damage: player.damage,
-                    fireRate: player.fireRate,
-                    speed: player.speed,
-                    health: player.health
-                });
-                
-                updateWeaponShopDisplay();
-                updateHUD();
-                
-                showRewardMessage(`🚀 ${ship.name} selected!`);
-                
-            } catch (error) {
-                console.error('❌ Error selecting ship:', error);
-                alert('Error selecting ship. Please try again.');
-            }
-        }
+
         
         function updatePremiumShopDisplay() {
             // Update RevCoins display
@@ -5233,13 +5991,16 @@
                 showLeaderboard(false);
             });
             
-            document.getElementById('closeLeaderboard').addEventListener('click', hideLeaderboard);
+
             
             document.getElementById('clearLeaderboard').addEventListener('click', clearLeaderboard);
             
             document.getElementById('playAgain').addEventListener('click', () => {
                 hideLeaderboard();
-                restartGame();
+                // Go back to menu instead of restarting game
+                document.getElementById('shop').style.display = 'block';
+                gameRunning = false;
+                gamePaused = true;
             });
             
             document.getElementById('submitScore').addEventListener('click', () => {
@@ -5302,28 +6063,20 @@
             updatePlayerStats();
         }
         
-        function updateTimeUntilReset() {
-            const now = new Date();
-            const nextSunday = new Date(now);
-            const daysUntilSunday = (7 - now.getDay()) % 7;
-            nextSunday.setDate(now.getDate() + (daysUntilSunday === 0 ? 7 : daysUntilSunday));
-            nextSunday.setHours(0, 0, 0, 0);
+                function updateTimeUntilReset() {
+            const now = Date.now();
+            const nextWeekStart = getWeekStart() + (7 * 24 * 60 * 60 * 1000);
+            const timeUntilReset = nextWeekStart - now;
             
-            const timeLeft = nextSunday - now;
-            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const days = Math.floor(timeUntilReset / (24 * 60 * 60 * 1000));
+            const hours = Math.floor((timeUntilReset % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+            const minutes = Math.floor((timeUntilReset % (60 * 60 * 1000)) / (60 * 1000));
             
-            let timeString = '';
-            if (days > 0) timeString += `${days}d `;
-            if (hours > 0) timeString += `${hours}h `;
-            timeString += `${minutes}m until reset`;
-            
-            const timeElement = document.getElementById('timeUntilReset');
-            if (timeElement) {
-                timeElement.textContent = timeString;
+            const timeDisplay = document.getElementById('timeUntilReset');
+            if (timeDisplay) {
+                timeDisplay.textContent = `${days}d ${hours}h ${minutes}m`;
             }
-        });
+        }
 
         // ===== START GAME =====
          window.addEventListener('load', init);
