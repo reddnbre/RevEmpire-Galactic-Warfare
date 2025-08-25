@@ -2853,51 +2853,54 @@
                 return img;
             }
             
-            // Load player ship sprites
-            sprites.playerShips[1] = createImageWithLoader('../Ship_LVL_1.png');
-            sprites.playerShips[2] = createImageWithLoader('../Ship_LVL_2.png');
-            sprites.playerShips[3] = createImageWithLoader('../Ship_LVL_3.png');
-            sprites.playerShips[4] = createImageWithLoader('../Ship_LVL_4.png');
-            sprites.playerShips[5] = createImageWithLoader('../Ship_LVL_5.png');
-            
-            // Load enemy ship sprites
-            sprites.enemyShips.fighter = createImageWithLoader('../Ship_01.png');
-            sprites.enemyShips.interceptor = createImageWithLoader('../Ship_02.png');
-            sprites.enemyShips.destroyer = createImageWithLoader('../Ship_03.png');
-            sprites.enemyShips.battleship = createImageWithLoader('../Ship_04.png');
-            sprites.enemyShips.dreadnought = createImageWithLoader('../Ship_05.png');
-            
-            // Load boss sprites
-            sprites.bossShips = {};
-            sprites.bossShips.boss1 = createImageWithLoader('../Boss_01.png');
-            sprites.bossShips.boss2 = createImageWithLoader('../Boss_02.png');
-            sprites.bossShips.boss3 = createImageWithLoader('../Boss_03.png');
-            
-            // Load background
-            sprites.backgrounds.space = createImageWithLoader('../Space_BG_02.png');
-            
-            // Load weapon effects
-            sprites.effects.laser = createImageWithLoader('../Laser_Shot_1_001.png');
-            sprites.effects.fire = createImageWithLoader('../Fire_Shot_1_1.png');
-            
-            // Load powerup sprites
-            sprites.powerups = {};
-            sprites.powerups.shield = createImageWithLoader('../Barrier_Bonus.png');
-            sprites.powerups.speed = createImageWithLoader('../Hero_Speed_Debuff.png');
-            sprites.powerups.damage = createImageWithLoader('../Damage_Bonus.png');
-            sprites.powerups.rapidFire = createImageWithLoader('../Rockets_Bonus.png');
-            sprites.powerups.multipleShots = createImageWithLoader('../Rockets_Bonus.png');
-            sprites.powerups.magnet = createImageWithLoader('../Magnet_Bonus.png');
-            sprites.powerups.nanobotRepair = createImageWithLoader('../HP_Bonus.png');
-            sprites.powerups.droneAlly = createImageWithLoader('../drone.png');
-            sprites.powerups.piercingLaser = createImageWithLoader('../Damage_Bonus.png');
-            sprites.powerups.coinBoost = createImageWithLoader('../HP_Bonus.png');
-            
-            // Load UI elements
-            sprites.ui.playButton = createImageWithLoader('../Play_BTN.png');
-            sprites.ui.closeButton = createImageWithLoader('../Close_BTN.png');
-            
-            console.log('Sprites loading initiated...');
+        // Load player ship sprites
+sprites.playerShips[1] = createImageWithLoader('Ship_LVL_1.png');
+sprites.playerShips[2] = createImageWithLoader('Ship_LVL_2.png');
+sprites.playerShips[3] = createImageWithLoader('Ship_LVL_3.png');
+sprites.playerShips[4] = createImageWithLoader('Ship_LVL_4.png');
+sprites.playerShips[5] = createImageWithLoader('Ship_LVL_5.png');
+
+// Load enemy ship sprites
+sprites.enemyShips.fighter = createImageWithLoader('Ship_01.png');
+sprites.enemyShips.interceptor = createImageWithLoader('Ship_02.png');
+sprites.enemyShips.destroyer = createImageWithLoader('Ship_03.png');
+sprites.enemyShips.battleship = createImageWithLoader('Ship_04.png');
+sprites.enemyShips.dreadnought = createImageWithLoader('Ship_05.png');
+
+// Load boss sprites
+sprites.bossShips = {};
+sprites.bossShips.boss1 = createImageWithLoader('Boss_01.png');
+sprites.bossShips.boss2 = createImageWithLoader('Boss_02.png');
+sprites.bossShips.boss3 = createImageWithLoader('Boss_03.png');
+
+// Load background
+sprites.backgrounds.space = createImageWithLoader('Space_BG_02.png');
+
+// Load weapon effects
+sprites.effects = {};
+sprites.effects.laser = createImageWithLoader('Laser_Shot_1_001.png');
+sprites.effects.fire = createImageWithLoader('Fire_Shot_1_1.png');
+
+// Load powerup sprites
+sprites.powerups = {};
+sprites.powerups.shield = createImageWithLoader('Barrier_Bonus.png');
+sprites.powerups.speed = createImageWithLoader('Hero_Speed_Debuff.png');
+sprites.powerups.damage = createImageWithLoader('Damage_Bonus.png');
+sprites.powerups.rapidFire = createImageWithLoader('Rockets_Bonus.png');
+sprites.powerups.multipleShots = createImageWithLoader('Rockets_Bonus.png');
+sprites.powerups.magnet = createImageWithLoader('Magnet_Bonus.png');
+sprites.powerups.nanobotRepair = createImageWithLoader('HP_Bonus.png');
+sprites.powerups.droneAlly = createImageWithLoader('drone.png');
+sprites.powerups.piercingLaser = createImageWithLoader('Damage_Bonus.png');
+sprites.powerups.coinBoost = createImageWithLoader('HP_Bonus.png');
+
+// Load UI elements
+sprites.ui = {};
+sprites.ui.playButton = createImageWithLoader('Play_BTN.png');
+sprites.ui.closeButton = createImageWithLoader('Close_BTN.png');
+
+console.log('sprites loading initiated...');
+
             
             // Start tip rotation for AAA loading experience
             startTipRotation();
