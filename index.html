@@ -4435,27 +4435,6 @@
             }
         }
         
-        // New ad functions for additional revenue opportunities
-        function showBonusCoinsAd() {
-            const currentTime = Date.now();
-            const timeSinceLastAd = currentTime - lastBonusCoinsAdTime;
-            
-            if (timeSinceLastAd < bonusCoinsAdCooldown) {
-                const remainingMinutes = Math.ceil((bonusCoinsAdCooldown - timeSinceLastAd) / 1000 / 60);
-                alert(`Bonus coins ad cooldown active! Please wait ${remainingMinutes} more minutes before watching another ad for bonus coins.`);
-                return;
-            }
-            
-            showAdModal('bonusCoins', () => {
-                // Give bonus coins
-                coins += 150;
-                lastBonusCoinsAdTime = currentTime;
-                updateHUD();
-                updateShopDisplay();
-                showRewardMessage('💰 +150 bonus coins earned!');
-            });
-        }
-        
         function showFreePowerupAd() {
             const currentTime = Date.now();
             const timeSinceLastAd = currentTime - lastFreePowerupAdTime;
@@ -5452,3 +5431,7 @@ ${ship.level > 1 ? `🔨 Construction Time: ${ship.baseBuildTime/1000}s` : '✅ 
                 alert(`❌ Not enough RevCoins! Need ${shortfall} more RevCoins (You have: ${revCoins})`);
             }
         }
+
+    </script>
+</body>
+</html>
