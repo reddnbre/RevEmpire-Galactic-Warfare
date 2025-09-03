@@ -7,6 +7,50 @@
     <meta name="keywords" content="space shooter, arcade game, action game, HTML5 game, browser game">
     <title>RevEmpire: Galactic Warfare</title>
     <style>
+        /* ===== CSS VARIABLES ===== */
+        :root {
+            /* Colors */
+            --primary-color: #00ffff;
+            --primary-dark: #0080ff;
+            --secondary-color: #00ff00;
+            --secondary-dark: #008000;
+            --accent-color: #ffd700;
+            --accent-orange: #ffa500;
+            --danger-color: #ff4444;
+            --danger-dark: #cc0000;
+            --warning-color: #ff8800;
+            --text-light: #ffffff;
+            --text-muted: #cccccc;
+            --bg-dark: #000000;
+            --bg-gradient-1: #0a0f24;
+            --bg-gradient-2: #1a1f44;
+            --bg-gradient-3: #1a1a2e;
+            --bg-gradient-4: #16213e;
+            --bg-gradient-5: #2a2a4a;
+            --bg-gradient-6: #3a3a6a;
+            
+            /* Spacing */
+            --spacing-xs: 5px;
+            --spacing-sm: 10px;
+            --spacing-md: 15px;
+            --spacing-lg: 20px;
+            --spacing-xl: 30px;
+            
+            /* Border radius */
+            --radius-sm: 5px;
+            --radius-md: 8px;
+            --radius-lg: 10px;
+            --radius-xl: 15px;
+            --radius-2xl: 20px;
+            
+            /* Shadows */
+            --shadow-primary: 0 0 20px rgba(0, 255, 255, 0.6);
+            --shadow-secondary: 0 0 30px rgba(0, 255, 255, 0.3);
+            --shadow-gold: 0 0 30px rgba(255, 215, 0, 0.5);
+            --shadow-green: 0 0 30px rgba(0, 255, 0, 0.5);
+        }
+
+        /* ===== RESET & BASE STYLES ===== */
         * {
             margin: 0;
             padding: 0;
@@ -14,31 +58,57 @@
         }
 
         body {
-            background: #000;
+            background: var(--bg-dark);
             font-family: 'Arial', sans-serif;
             overflow: hidden;
-            color: white;
+            color: var(--text-light);
         }
 
+        /* ===== LAYOUT UTILITIES ===== */
+        .full-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .flex-center {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bg-gradient-primary {
+            background: linear-gradient(to bottom, var(--bg-gradient-1), var(--bg-gradient-2));
+        }
+
+        .bg-gradient-secondary {
+            background: linear-gradient(to bottom, var(--bg-gradient-3), var(--bg-gradient-4));
+        }
+
+        /* ===== GAME CONTAINER ===== */
         #gameContainer {
             position: relative;
             width: 100vw;
             height: 100vh;
         }
 
+        /* ===== SCREEN STYLES ===== */
         #loadingScreen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to bottom, #0a0f24, #1a1f44);
+            background: linear-gradient(to bottom, var(--bg-gradient-1), var(--bg-gradient-2));
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            color: #fff;
+            color: var(--text-light);
             font-family: 'Orbitron', sans-serif;
             overflow: hidden;
         }
@@ -49,16 +119,17 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to bottom, #0a0f24, #1a1f44);
+            background: linear-gradient(to bottom, var(--bg-gradient-1), var(--bg-gradient-2));
             display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 999;
-            color: #fff;
+            color: var(--text-light);
             font-family: 'Orbitron', sans-serif;
         }
         
+        /* ===== BACKGROUND EFFECTS ===== */
         #spaceBackground {
             position: absolute;
             top: 0;
@@ -236,23 +307,80 @@
              background: #000;
          }
 
+        /* ===== HUD STYLES ===== */
+        .hud-container {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 100;
+            font-size: 16px;
+            color: var(--text-light);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            background: rgba(0, 0, 0, 0.7);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--primary-color);
+            backdrop-filter: blur(5px);
+        }
+
+        .hud-row {
+            margin-bottom: var(--spacing-xs);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-width: 200px;
+        }
+
+        .stat-label {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .stat-value {
+            color: var(--text-light);
+            text-shadow: 0 0 5px currentColor;
+        }
+
+        .progress-bar {
+            width: 80px;
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-left: var(--spacing-sm);
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .health-fill {
+            background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00);
+        }
+
+        .wave-progress-fill {
+            background: linear-gradient(90deg, #ffff00, #00ff00);
+        }
+
+        /* ===== HUD SPECIFIC ===== */
                  #hud {
              position: absolute;
              top: 10px;
              left: 10px;
              z-index: 100;
              font-size: 16px;
-             color: white;
+            color: var(--text-light);
              text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
              background: rgba(0, 0, 0, 0.7);
-             padding: 15px;
-             border-radius: 10px;
-             border: 2px solid #00ffff;
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--primary-color);
              backdrop-filter: blur(5px);
          }
 
          #hud div {
-             margin-bottom: 8px;
+            margin-bottom: var(--spacing-xs);
              display: flex;
              justify-content: space-between;
              align-items: center;
@@ -260,12 +388,12 @@
          }
 
          #hud .stat-label {
-             color: #00ffff;
+            color: var(--primary-color);
              font-weight: bold;
          }
 
          #hud .stat-value {
-             color: #fff;
+            color: var(--text-light);
              text-shadow: 0 0 5px currentColor;
          }
 
@@ -275,7 +403,7 @@
              background: #333;
              border-radius: 4px;
              overflow: hidden;
-             margin-left: 10px;
+            margin-left: var(--spacing-sm);
          }
 
          #hud .health-fill {
@@ -283,6 +411,21 @@
              background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00);
              transition: width 0.3s ease;
          }
+
+        #hud .wave-progress {
+            width: 80px;
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-left: var(--spacing-sm);
+        }
+
+        #hud .wave-progress .health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffff00, #00ff00);
+            transition: width 0.3s ease;
+        }
 
         #startScreen {
             position: absolute;
@@ -300,24 +443,160 @@
             margin-bottom: 2rem;
         }
 
-        #startScreen button {
-            background: linear-gradient(45deg, #00ffff, #0080ff);
-            color: #000;
+        /* ===== BUTTON STYLES ===== */
+        .btn {
             border: none;
-            padding: 15px 30px;
-            border-radius: 8px;
+            padding: var(--spacing-md) var(--spacing-xl);
+            border-radius: var(--radius-md);
             font-size: 1.2rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
         }
 
-        #startScreen button:hover {
-            background: linear-gradient(45deg, #0080ff, #0040ff);
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-dark));
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, var(--primary-dark), #0040ff);
             color: white;
             transform: scale(1.05);
         }
 
+        .btn-secondary {
+            background: linear-gradient(45deg, var(--secondary-color), var(--secondary-dark));
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(45deg, var(--secondary-dark), #004000);
+            transform: scale(1.05);
+        }
+
+        .btn-accent {
+            background: linear-gradient(45deg, var(--accent-color), var(--accent-orange));
+            color: #000;
+        }
+
+        .btn-accent:hover {
+            background: linear-gradient(45deg, var(--accent-orange), #ff6600);
+            transform: scale(1.05);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, var(--danger-color), var(--danger-dark));
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(45deg, var(--danger-dark), #990000);
+            transform: scale(1.05);
+        }
+
+        /* ===== START SCREEN BUTTONS ===== */
+        #startScreen button {
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-dark));
+            color: #000;
+            border: none;
+            padding: var(--spacing-md) var(--spacing-xl);
+            border-radius: var(--radius-md);
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        #startScreen button:hover {
+            background: linear-gradient(45deg, var(--primary-dark), #0040ff);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* ===== SHOP STYLES ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .modal-container {
+            background: linear-gradient(45deg, var(--bg-gradient-3), var(--bg-gradient-4));
+            border: 3px solid var(--primary-color);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-lg);
+            max-width: 95vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: var(--shadow-secondary);
+        }
+
+        .modal-header {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+            font-size: 1.8rem;
+        }
+
+        .modal-section {
+            margin-bottom: var(--spacing-md);
+            padding: var(--spacing-sm);
+            border: 1px solid var(--primary-color);
+            border-radius: var(--radius-lg);
+            background: rgba(0, 255, 255, 0.05);
+        }
+
+        .modal-section h3 {
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-xs);
+            font-size: 1.1rem;
+        }
+
+        .modal-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-xs);
+            margin: 3px 0;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+        }
+
+        .modal-item button {
+            background: linear-gradient(45deg, var(--secondary-color), var(--secondary-dark));
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.8rem;
+            min-width: 80px;
+        }
+
+        .modal-item button:hover {
+            background: linear-gradient(45deg, var(--secondary-dark), #004000);
+        }
+
+        /* ===== SHOP SPECIFIC ===== */
         #shop {
             position: fixed;
             top: 0;
@@ -334,35 +613,35 @@
         }
         
         .shop-container {
-            background: linear-gradient(45deg, #1a1a2e, #16213e);
-            border: 3px solid #00ffff;
-            border-radius: 20px;
-            padding: 20px;
+            background: linear-gradient(45deg, var(--bg-gradient-3), var(--bg-gradient-4));
+            border: 3px solid var(--primary-color);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-lg);
             max-width: 95vw;
             max-height: 90vh;
             overflow-y: auto;
             position: relative;
-            box-shadow: 0 0 50px rgba(0, 255, 255, 0.3);
+            box-shadow: var(--shadow-secondary);
         }
 
         #shop h2 {
-            color: #00ffff;
+            color: var(--primary-color);
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: var(--spacing-lg);
             font-size: 1.8rem;
         }
 
         .shop-section {
-            margin-bottom: 15px;
-            padding: 12px;
-            border: 1px solid #00ffff;
-            border-radius: 10px;
+            margin-bottom: var(--spacing-md);
+            padding: var(--spacing-sm);
+            border: 1px solid var(--primary-color);
+            border-radius: var(--radius-lg);
             background: rgba(0, 255, 255, 0.05);
         }
 
         .shop-section h3 {
-            color: #00ffff;
-            margin-bottom: 8px;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-xs);
             font-size: 1.1rem;
         }
 
@@ -370,19 +649,19 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px;
+            padding: var(--spacing-xs);
             margin: 3px 0;
             background: rgba(0, 255, 255, 0.1);
-            border-radius: 5px;
+            border-radius: var(--radius-sm);
             font-size: 0.9rem;
         }
 
         .shop-item button {
-            background: linear-gradient(45deg, #00ff00, #008000);
+            background: linear-gradient(45deg, var(--secondary-color), var(--secondary-dark));
             color: white;
             border: none;
             padding: 6px 12px;
-            border-radius: 5px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
             font-weight: bold;
             font-size: 0.8rem;
@@ -390,7 +669,7 @@
         }
 
         .shop-item button:hover {
-            background: linear-gradient(45deg, #008000, #004000);
+            background: linear-gradient(45deg, var(--secondary-dark), #004000);
         }
 
         #closeShop {
@@ -930,210 +1209,109 @@
             background: linear-gradient(45deg, #ff4444, #cc0000);
         }
         
-        /* Mobile and Tablet Responsive Design */
+        /* ===== RESPONSIVE DESIGN ===== */
         @media (max-width: 768px) {
-            .shop-container {
-                padding: 15px;
+            /* Common mobile styles */
+            .modal-container {
+                padding: var(--spacing-md);
                 max-width: 98vw;
                 max-height: 95vh;
             }
             
-            #shop h2 {
+            .modal-header {
                 font-size: 1.5rem;
-                margin-bottom: 15px;
+                margin-bottom: var(--spacing-md);
             }
             
-            .shop-section {
-                padding: 10px;
-                margin-bottom: 12px;
+            .modal-section {
+                padding: var(--spacing-sm);
+                margin-bottom: var(--spacing-sm);
             }
             
-            .shop-section h3 {
+            .modal-section h3 {
                 font-size: 1rem;
             }
             
-            .shop-item {
+            .modal-item {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 8px;
-                padding: 10px;
+                gap: var(--spacing-xs);
+                padding: var(--spacing-sm);
             }
             
-            .shop-item button {
+            .modal-item button {
                 align-self: flex-end;
-                padding: 8px 15px;
+                padding: var(--spacing-xs) var(--spacing-md);
                 font-size: 0.9rem;
             }
             
-            .shop-tabs {
+            /* Tab styles */
+            .shop-tabs, .premium-tabs, .weapon-shop-tabs {
                 flex-direction: column;
             }
             
-            .shop-tab-btn {
-                padding: 10px 12px;
-                font-size: 0.9rem;
+            .shop-tab-btn, .tab-btn, .weapon-tab-btn {
+                padding: var(--spacing-sm) var(--spacing-sm);
+                font-size: 1rem;
             }
             
+            /* Action buttons */
             .shop-actions button {
                 margin: 5px 0;
-                padding: 12px 20px;
+                padding: var(--spacing-sm) var(--spacing-lg);
                 font-size: 1rem;
                 width: 100%;
                 max-width: 300px;
             }
             
-            /* Premium Shop Mobile */
-            .premium-shop-content {
-                max-width: 98vw;
-                max-height: 95vh;
-            }
-            
-            .premium-header {
-                padding: 15px 20px;
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .premium-header h2 {
-                font-size: 1.5rem;
-            }
-            
-            .revcoins-display {
-                font-size: 1rem;
-                padding: 8px 15px;
-            }
-            
-            .premium-tabs {
-                flex-direction: column;
-            }
-            
-            .tab-btn {
-                padding: 12px 15px;
-                font-size: 1rem;
-            }
-            
-            .tab-content {
-                padding: 20px;
-                max-height: 50vh;
-            }
-            
-            .premium-items-grid {
+            /* Grid layouts */
+            .premium-items-grid, .weapon-items-grid {
                 grid-template-columns: 1fr;
-                gap: 15px;
+                gap: var(--spacing-md);
             }
             
-            .premium-item {
-                padding: 15px;
+            .premium-item, .weapon-item {
+                padding: var(--spacing-md);
             }
             
-            .premium-item-header {
+            .premium-item-header, .weapon-item-header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 8px;
+                gap: var(--spacing-xs);
             }
             
-            .premium-item-stats {
+            .premium-item-stats, .weapon-item-stats {
                 grid-template-columns: 1fr;
-                gap: 8px;
+                gap: var(--spacing-xs);
             }
             
-            .premium-footer {
-                padding: 15px 20px;
+            /* Footer padding */
+            .premium-footer, .weapon-shop-footer {
+                padding: var(--spacing-md) var(--spacing-lg);
             }
             
             .premium-footer button {
                 width: 100%;
-                padding: 12px 20px;
-            }
-            
-            /* Weapon Shop Mobile */
-            .weapon-shop-content {
-                max-width: 98vw;
-                max-height: 95vh;
-            }
-            
-            .weapon-shop-header {
-                padding: 15px 20px;
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .weapon-shop-header h2 {
-                font-size: 1.5rem;
-            }
-            
-            .coins-display {
-                font-size: 1rem;
-                padding: 8px 15px;
-            }
-            
-            .weapon-shop-tabs {
-                flex-direction: column;
-            }
-            
-            .weapon-tab-btn {
-                padding: 12px 15px;
-                font-size: 1rem;
-            }
-            
-            .weapon-tab-content {
-                padding: 20px;
-                max-height: 50vh;
-            }
-            
-            .weapon-items-grid {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-            
-            .weapon-item {
-                padding: 15px;
-            }
-            
-            .weapon-item-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-            }
-            
-            .weapon-item-stats {
-                grid-template-columns: 1fr;
-                gap: 8px;
-            }
-            
-            .weapon-shop-footer {
-                padding: 15px 20px;
+                padding: var(--spacing-sm) var(--spacing-lg);
             }
         }
         
         @media (max-width: 480px) {
-            .shop-container {
-                padding: 10px;
+            .modal-container {
+                padding: var(--spacing-sm);
             }
             
-            #shop h2 {
+            .modal-header {
                 font-size: 1.3rem;
             }
             
-            .shop-item {
+            .modal-item {
                 font-size: 0.8rem;
             }
             
-            .shop-item button {
+            .modal-item button {
                 font-size: 0.8rem;
-                padding: 6px 10px;
-            }
-            
-            .premium-header h2 {
-                font-size: 1.3rem;
-            }
-            
-            .premium-item-name {
-                font-size: 1.1rem;
-            }
-            
-            .premium-item-description {
-                font-size: 0.9rem;
+                padding: 6px var(--spacing-sm);
             }
         }
         
@@ -1992,7 +2170,7 @@
             <div><span class="stat-label">Loyalty Earnings:</span> <span class="stat-value" id="earnings">$0.00</span></div>
             <div><span class="stat-label">Total Wallet:</span> <span class="stat-value" id="wallet">$0.00</span></div>
             <div><span class="stat-label">RevCoins:</span> <span class="stat-value" id="revCoins">0</span></div>
-            <div><span class="stat-label">Revives:</span> <span class="stat-value" id="revives">0/3</span></div>
+            
             <div><span class="stat-label">Combo:</span> <span class="stat-value" id="comboDisplay">x1</span></div>
             <div><span class="stat-label">Sound:</span> <button id="soundToggle" style="background: #00ff00; color: #000; border: none; padding: 2px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">ON</button></div>
          </div>
@@ -2182,7 +2360,7 @@
                 ">Watch Ad to Continue</button>
         </div>
 
-            <button id="restartGame">Revive</button>
+
          </div>
     </div>
 
@@ -2597,11 +2775,296 @@
                     type: 'skill',
                     icon: '🔥'
                 }
-            ],
-            streak: 0,
-            lastCompleted: null,
-            completedToday: false
+            ]
         };
+        
+        // ===== EPIC BOSS BATTLE SYSTEM 🌟 =====
+        const bossSystem = {
+            active: false,
+            currentBoss: null,
+            bossWave: 0,
+            bossDefeated: false,
+            bossHealth: 0,
+            bossMaxHealth: 0,
+            bossPhase: 1,
+            bossWarningShown: false,
+            bossSpawnTime: 0,
+            bossMinions: [],
+            bossProjectiles: [],
+            bossPattern: 'attack',
+            bossPatternTimer: 0,
+            bossInvulnerable: false,
+            bossInvulnerabilityTimer: 0
+        };
+
+        // Boss Types with unique abilities
+        const bossTypes = {
+            destroyer: {
+                name: "Dreadnought Destroyer",
+                health: 500,
+                width: 120,
+                height: 80,
+                speed: 1.5,
+                damage: 30,
+                fireRate: 800,
+                projectileSpeed: 4,
+                projectileDamage: 25,
+                abilities: ['tripleShot', 'shieldBurst', 'minionSpawn'],
+                phases: [
+                    { healthThreshold: 100, abilities: ['tripleShot'], speed: 1.5 },
+                    { healthThreshold: 50, abilities: ['tripleShot', 'shieldBurst'], speed: 2.0 },
+                    { healthThreshold: 25, abilities: ['tripleShot', 'shieldBurst', 'minionSpawn'], speed: 2.5 }
+                ],
+                rewards: { coins: 500, revCoins: 20, experience: 1000 },
+                sprite: 'boss_destroyer.png',
+                color: '#ff4444'
+            },
+            carrier: {
+                name: "Carrier Mothership",
+                health: 800,
+                width: 150,
+                height: 100,
+                speed: 1.0,
+                damage: 40,
+                fireRate: 1200,
+                projectileSpeed: 3,
+                projectileDamage: 30,
+                abilities: ['droneSwarm', 'plasmaCannon', 'teleport'],
+                phases: [
+                    { healthThreshold: 100, abilities: ['droneSwarm'], speed: 1.0 },
+                    { healthThreshold: 50, abilities: ['droneSwarm', 'plasmaCannon'], speed: 1.3 },
+                    { healthThreshold: 25, abilities: ['droneSwarm', 'plasmaCannon', 'teleport'], speed: 1.6 }
+                ],
+                rewards: { coins: 800, revCoins: 35, experience: 1500 },
+                sprite: 'boss_carrier.png',
+                color: '#8844ff'
+            },
+            titan: {
+                name: "Titan Class Warship",
+                health: 1200,
+                width: 180,
+                height: 120,
+                speed: 0.8,
+                damage: 50,
+                fireRate: 1500,
+                projectileSpeed: 5,
+                projectileDamage: 40,
+                abilities: ['laserBeam', 'missileBarrage', 'gravityWell'],
+                phases: [
+                    { healthThreshold: 100, abilities: ['laserBeam'], speed: 0.8 },
+                    { healthThreshold: 50, abilities: ['laserBeam', 'missileBarrage'], speed: 1.0 },
+                    { healthThreshold: 25, abilities: ['laserBeam', 'missileBarrage', 'gravityWell'], speed: 1.2 }
+                ],
+                rewards: { coins: 1200, revCoins: 50, experience: 2500 },
+                sprite: 'boss_titan.png',
+                color: '#ff8800'
+            }
+        };
+
+        // Boss Abilities
+        const bossAbilities = {
+            tripleShot: {
+                name: "Triple Shot",
+                description: "Fires three projectiles in a spread pattern",
+                cooldown: 2000,
+                lastUsed: 0,
+                execute: (boss) => {
+                    const angles = [-15, 0, 15];
+                    angles.forEach(angle => {
+                        const rad = (angle * Math.PI) / 180;
+                        const vx = Math.sin(rad) * boss.projectileSpeed;
+                        const vy = Math.cos(rad) * boss.projectileSpeed;
+                        bossProjectiles.push({
+                            x: boss.x + boss.width / 2,
+                            y: boss.y + boss.height,
+                            vx: vx,
+                            vy: vy,
+                            damage: boss.projectileDamage,
+                            width: 8,
+                            height: 8,
+                            color: '#ff0000',
+                            isBossProjectile: true
+                        });
+                    });
+                }
+            },
+            shieldBurst: {
+                name: "Shield Burst",
+                description: "Creates an expanding shield that damages nearby enemies",
+                cooldown: 5000,
+                lastUsed: 0,
+                execute: (boss) => {
+                    // Create expanding shield effect
+                    for (let i = 0; i < 8; i++) {
+                        const angle = (i * Math.PI * 2) / 8;
+                        const vx = Math.cos(angle) * 3;
+                        const vy = Math.sin(angle) * 3;
+                        bossProjectiles.push({
+                            x: boss.x + boss.width / 2,
+                            y: boss.y + boss.height / 2,
+                            vx: vx,
+                            vy: vy,
+                            damage: 20,
+                            width: 12,
+                            height: 12,
+                            color: '#00ffff',
+                            isBossProjectile: true,
+                            isShieldBurst: true
+                        });
+                    }
+                }
+            },
+            minionSpawn: {
+                name: "Minion Spawn",
+                description: "Spawns smaller enemies to assist the boss",
+                cooldown: 8000,
+                lastUsed: 0,
+                execute: (boss) => {
+                    for (let i = 0; i < 3; i++) {
+                        const minion = {
+                            x: boss.x + Math.random() * boss.width,
+                            y: boss.y + boss.height,
+                            width: 30,
+                            height: 30,
+                            speed: 2,
+                            health: 50,
+                            damage: 15,
+                            color: '#ff6666',
+                            type: 'bossMinion',
+                            isBossMinion: true
+                        };
+                        bossMinions.push(minion);
+                    }
+                }
+            },
+            droneSwarm: {
+                name: "Drone Swarm",
+                description: "Releases a swarm of attack drones",
+                cooldown: 6000,
+                lastUsed: 0,
+                execute: (boss) => {
+                    for (let i = 0; i < 5; i++) {
+                        const drone = {
+                            x: boss.x + Math.random() * boss.width,
+                            y: boss.y + boss.height,
+                            width: 20,
+                            height: 20,
+                            speed: 3,
+                            health: 30,
+                            damage: 10,
+                            color: '#8844ff',
+                            type: 'bossDrone',
+                            isBossDrone: true,
+                            target: player
+                        };
+                        bossMinions.push(drone);
+                    }
+                }
+            },
+            plasmaCannon: {
+                name: "Plasma Cannon",
+                description: "Fires a powerful plasma projectile",
+                cooldown: 4000,
+                lastUsed: 0,
+                execute: (boss) => {
+                    const plasma = {
+                        x: boss.x + boss.width / 2,
+                        y: boss.y + boss.height,
+                        vx: 0,
+                        vy: 6,
+                        damage: 50,
+                        width: 16,
+                        height: 16,
+                        color: '#ff00ff',
+                        isBossProjectile: true,
+                        isPlasma: true,
+                        trail: []
+                    };
+                    bossProjectiles.push(plasma);
+                }
+            },
+            teleport: {
+                name: "Teleport",
+                description: "Instantly moves to a new position",
+                cooldown: 10000,
+                lastUsed: 0,
+                execute: (boss) => {
+                    boss.x = Math.random() * (canvas.width - boss.width);
+                    boss.y = Math.random() * (canvas.height / 2);
+                    // Create teleport effect
+                    createTeleportEffect(boss.x + boss.width / 2, boss.y + boss.height / 2);
+                }
+            },
+            laserBeam: {
+                name: "Laser Beam",
+                description: "Fires a continuous laser beam",
+                cooldown: 3000,
+                lastUsed: 0,
+                execute: (boss) => {
+                    const laser = {
+                        x: boss.x + boss.width / 2,
+                        y: boss.y + boss.height,
+                        width: 4,
+                        height: canvas.height,
+                        damage: 35,
+                        color: '#ff0000',
+                        isBossProjectile: true,
+                        isLaser: true,
+                        duration: 1000,
+                        startTime: Date.now()
+                    };
+                    bossProjectiles.push(laser);
+                }
+            },
+            missileBarrage: {
+                name: "Missile Barrage",
+                description: "Launches multiple homing missiles",
+                cooldown: 7000,
+                lastUsed: 0,
+                execute: (boss) => {
+                    for (let i = 0; i < 4; i++) {
+                        const missile = {
+                            x: boss.x + Math.random() * boss.width,
+                            y: boss.y + boss.height,
+                            width: 10,
+                            height: 20,
+                            speed: 4,
+                            damage: 30,
+                            color: '#ffaa00',
+                            isBossProjectile: true,
+                            isMissile: true,
+                            target: player,
+                            homing: true
+                        };
+                        bossProjectiles.push(missile);
+                    }
+                }
+            },
+            gravityWell: {
+                name: "Gravity Well",
+                description: "Creates a gravity well that pulls player and projectiles",
+                cooldown: 12000,
+                lastUsed: 0,
+                execute: (boss) => {
+                    const gravityWell = {
+                        x: boss.x + boss.width / 2,
+                        y: boss.y + boss.height / 2,
+                        radius: 100,
+                        strength: 0.5,
+                        duration: 3000,
+                        startTime: Date.now(),
+                        color: '#8800ff',
+                        isGravityWell: true
+                    };
+                    bossProjectiles.push(gravityWell);
+                }
+            }
+        };
+        
+        // Add missing properties to dailyChallenges
+        dailyChallenges.streak = 0;
+        dailyChallenges.lastCompleted = null;
+        dailyChallenges.completedToday = false;
         
         // Daily challenge functions
         function updateDailyChallenges() {
@@ -2877,6 +3340,7 @@
         // Input
         let keys = {};
         let lastFireTime = 0;
+        let fireRate = 800; // Default fire rate
         
         // ===== OBJECT POOLING SYSTEM =====
         class ObjectPool {
@@ -2947,15 +3411,36 @@
             async loadImage(key, src, fallbackSrc = null) {
                 return new Promise((resolve) => {
                     const img = new Image();
+                    
+                    // Special debugging for missile sprite
+                    if (key === 'missileEffect') {
+                        console.log(`🚀 Loading missile sprite: ${src}`);
+                    }
+                    
                     img.onload = () => {
                         this.assets.set(key, img);
                         this.loadedCount++;
                         this.updateLoadingProgress();
                         console.log(`✅ Loaded: ${key}`);
+                        
+                        // Special debugging for missile sprite
+                        if (key === 'missileEffect') {
+                            console.log(`✅ Missile sprite loaded successfully!`);
+                            console.log(`✅ Missile sprite dimensions: ${img.naturalWidth}x${img.naturalHeight}`);
+                            console.log(`✅ Missile sprite complete: ${img.complete}`);
+                        }
+                        
                         resolve(img);
                     };
                     img.onerror = () => {
                         console.warn(`❌ Failed to load ${src}, using fallback`);
+                        
+                        // Special debugging for missile sprite
+                        if (key === 'missileEffect') {
+                            console.error(`❌ MISSILE SPRITE FAILED TO LOAD: ${src}`);
+                            console.error(`❌ This will cause fallback to loadSprites()`);
+                        }
+                        
                         if (fallbackSrc) {
                             img.src = fallbackSrc;
                         } else {
@@ -2987,44 +3472,44 @@
             async loadAll() {
                 console.log('🚀 Starting asset loading...');
                 
-                const assetList = [
+                                const assetList = [
                     // Player ships
-                    ['playerShip1', 'assets/Ship_LVL_1.png'],
-                    ['playerShip2', 'assets/Ship_LVL_2.png'],
-                    ['playerShip3', 'assets/Ship_LVL_3.png'],
-                    ['playerShip4', 'assets/Ship_LVL_4.png'],
-                    ['playerShip5', 'assets/Ship_LVL_5.png'],
+                    ['playerShip1', 'Ship_LVL_1.png'],
+                    ['playerShip2', 'Ship_LVL_2.png'],
+                    ['playerShip3', 'Ship_LVL_3.png'],
+                    ['playerShip4', 'Ship_LVL_4.png'],
+                    ['playerShip5', 'Ship_LVL_5.png'],
                     
                     // Enemy ships
-                    ['enemyFighter', 'assets/Ship_01.png'],
-                    ['enemyInterceptor', 'assets/Ship_02.png'],
-                    ['enemyDestroyer', 'assets/Ship_03.png'],
-                    ['enemyBattleship', 'assets/Ship_04.png'],
-                    ['enemyDreadnought', 'assets/Ship_05.png'],
+                    ['enemyFighter', 'Ship_01.png'],
+                    ['enemyInterceptor', 'Ship_02.png'],
+                    ['enemyDestroyer', 'Ship_03.png'],
+                    ['enemyBattleship', 'Ship_04.png'],
+                    ['enemyDreadnought', 'Ship_05.png'],
                     ['enemyWarship', 'ChatGPTbattleship1.png'],
                     
                     // Boss ships
-                    ['boss1', 'assets/Boss_01.png'],
-                    ['boss2', 'assets/Boss_02.png'],
-                    ['boss3', 'assets/Boss_03.png'],
+                    ['boss1', 'Boss_01.png'],
+                    ['boss2', 'Boss_02.png'],
+                    ['boss3', 'Boss_03.png'],
                     
                     // Backgrounds
-                    ['spaceBackground', 'assets/Space_BG_02.png'],
+                    ['spaceBackground', 'Space_BG_02.png'],
                     
                     // Powerups
-                    ['powerupShield', 'assets/Barrier_Bonus.png'],
-                    ['powerupSpeed', 'assets/Hero_Speed_Debuff - Copy.png'],
-                    ['powerupDamage', 'Damageicon.png', 'assets/Damage_Bonus.png'],
-                    ['powerupRapidFire', 'assets/Rockets_Bonus - Copy.png'],
-                    ['powerupMultipleShots', 'assets/Enemy_Destroy_Bonus.png'],
-                    ['powerupMagnet', 'assets/Magnet_Bonus - Copy.png'],
-                    ['powerupNanobotRepair', 'nanorepairicon.png', 'assets/HP_Bonus.png'],
-                    ['powerupDroneAlly', 'assets/drone.png'],
-                    ['powerupPiercingLaser', 'piercinglasericon.png', 'assets/Enemy_Speed_Debuff - Copy.png'],
-                    ['powerupCoinBoost', 'assets/Armor_Bonus.png'],
+                    ['powerupShield', 'Barrier_Bonus.png'],
+                    ['powerupSpeed', 'Hero_Speed_Debuff - Copy.png'],
+                    ['powerupDamage', 'Damageicon.png', 'Damage_Bonus.png'],
+                    ['powerupRapidFire', 'Rockets_Bonus - Copy.png'],
+                    ['powerupMultipleShots', 'Enemy_Destroy_Bonus.png'],
+                    ['powerupMagnet', 'Magnet_Bonus - Copy.png'],
+                    ['powerupNanobotRepair', 'nanorepairicon.png', 'HP_Bonus.png'],
+                    ['powerupDroneAlly', 'drone.png'],
+                    ['powerupPiercingLaser', 'piercinglasericon.png', 'Enemy_Speed_Debuff - Copy.png'],
+                    ['powerupCoinBoost', 'Armor_Bonus.png'],
                     
                     // Effects
-                    ['missileEffect', 'assets/missile.png']
+                    ['missileEffect', 'ChatGPTheatseekingmiss.png', null] // No fallback, just the main file
                 ];
                 
                 this.totalAssets = assetList.length;
@@ -3108,6 +3593,11 @@
                         missile: assetLoader.get('missileEffect')
                     }
                 };
+                
+                // Debug missile sprite loading
+                console.log('AssetLoader missile sprite:', assetLoader.get('missileEffect'));
+                console.log('AssetLoader missile sprite complete:', assetLoader.get('missileEffect')?.complete);
+                console.log('AssetLoader missile sprite naturalWidth:', assetLoader.get('missileEffect')?.naturalWidth);
                 
                 console.log('✅ Assets converted to sprites format');
                 
@@ -3344,8 +3834,8 @@
              }
          };
          
-        // Boss types
-        let bossTypes = {
+        // Enemy Boss types
+        let enemyBossTypes = {
             boss1: { 
                 name: "Titan Destroyer", 
                 health: 500, 
@@ -3597,8 +4087,7 @@
         let adRewardMultiplier = 2;
         let adWatchCount = 0;
         let adRevenue = 0;
-        let reviveCount = 0;
-        let maxRevives = 3;
+
         let revCoins = 0;
         let lastAdWatchTime = 0;
         let adCooldownTime = 5 * 60 * 1000; // 5 minutes in milliseconds
@@ -3922,6 +4411,14 @@
                 // For now, we'll just enhance the existing drone
                 droneAlly.level = activePowerupCounts.droneAlly;
             }
+            
+            // Set the active powerup timestamp so the drone persists
+            if (!activePowerups.droneAlly || Date.now() >= activePowerups.droneAlly) {
+                activePowerups.droneAlly = Date.now() + 20000; // 20 seconds duration
+            } else {
+                // Extend existing duration
+                activePowerups.droneAlly += 20000;
+            }
         }
         
         // ===== VISUAL EFFECTS =====
@@ -4014,23 +4511,41 @@
             const missile = {
                 x: x,
                 y: y,
-                width: 24, // 2x bigger than before
-                height: 40, // 2x bigger than before
-                speed: 2,
-                maxSpeed: 4,
-                turnRate: 0.1,
+                width: 20,
+                height: 32,
+                speed: 2.5,
+                maxSpeed: 4.5,
+                turnRate: 0.15, // More aggressive turning
                 targetX: targetX,
                 targetY: targetY,
                 vx: 0,
-                vy: 2,
-                life: 300, // 5 seconds max life
+                vy: 2.5, // Initial downward velocity
+                life: 300, // Life in frames (5 seconds at 60fps)
                 maxLife: 300,
-                damage: 30,
-                explosionRadius: 80,
+                damage: 35,
+                explosionRadius: 90,
                 color: '#ff6600',
-                trail: []
+                trail: [],
+                // Add realistic missile properties
+                acceleration: 0.2, // Faster acceleration
+                maxTurnRate: 0.18, // Maximum turn rate
+                engineGlow: 0, // Engine glow effect
+                smokeTrail: [], // Smoke particles
+                lockOnDelay: 20, // Shorter delay before seeking starts
+                currentTurnRate: 0, // Current turn rate (starts at 0)
+                // Add missile-specific properties
+                isActive: false, // Whether missile is actively seeking
+                warningTime: 0, // Time to show warning before missile becomes active
+                targetAcquired: false, // Whether missile has locked onto target
+                spriteDebugLogged: false // Track if sprite debugging has been logged
             };
             seekingMissiles.push(missile);
+            
+            // Play missile warning sound
+            playMissileSound();
+            
+            // Add screen shake for missile launch
+            addScreenShake(2, 3);
         }
         
         function updateSeekingMissiles() {
@@ -4046,7 +4561,7 @@
                     continue;
                 }
                 
-                // Update target to current player position
+                // Update target to current player position (real-time tracking)
                 missile.targetX = player.x + player.width / 2;
                 missile.targetY = player.y + player.height / 2;
                 
@@ -4055,31 +4570,91 @@
                 const dy = missile.targetY - missile.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
-                if (distance > 0) {
-                    // Normalize direction
+                // Missile behavior phases
+                if (missile.life > missile.maxLife - missile.lockOnDelay) {
+                    // Phase 1: Initial launch - move forward with slight guidance
+                    missile.warningTime++;
+                    if (missile.warningTime > 10) { // Show warning for 10 frames
+                        missile.isActive = true;
+                    }
+                    
+                    // Initial forward movement with slight guidance
+                    const angle = Math.atan2(dy, dx);
+                    missile.vx = Math.cos(angle) * missile.speed * 0.8;
+                    missile.vy = Math.sin(angle) * missile.speed * 0.8;
+                } else if (missile.life > missile.maxLife * 0.3) {
+                    // Phase 2: Active seeking - aggressively chase player
+                    missile.isActive = true;
+                    missile.targetAcquired = true;
+                    
+                    // Calculate target velocity
                     const targetVx = (dx / distance) * missile.maxSpeed;
                     const targetVy = (dy / distance) * missile.maxSpeed;
                     
-                    // Gradually turn towards target
-                    missile.vx += (targetVx - missile.vx) * missile.turnRate;
-                    missile.vy += (targetVy - missile.vy) * missile.turnRate;
+                    // Aggressive turning towards target
+                    missile.currentTurnRate = Math.min(missile.currentTurnRate + 0.02, missile.maxTurnRate);
+                    
+                    // Turn towards target
+                    missile.vx += (targetVx - missile.vx) * missile.currentTurnRate;
+                    missile.vy += (targetVy - missile.vy) * missile.currentTurnRate;
+                    
+                    // Accelerate towards target
+                    const currentSpeed = Math.sqrt(missile.vx * missile.vx + missile.vy * missile.vy);
+                    if (currentSpeed < missile.maxSpeed) {
+                        missile.vx += (dx / distance) * missile.acceleration;
+                        missile.vy += (dy / distance) * missile.acceleration;
+                    }
                     
                     // Limit speed
-                    const currentSpeed = Math.sqrt(missile.vx * missile.vx + missile.vy * missile.vy);
                     if (currentSpeed > missile.maxSpeed) {
                         missile.vx = (missile.vx / currentSpeed) * missile.maxSpeed;
                         missile.vy = (missile.vy / currentSpeed) * missile.maxSpeed;
                     }
+                } else {
+                    // Phase 3: Final approach - maintain speed and direction
+                    missile.isActive = true;
+                    // Keep current velocity, just update position
                 }
                 
                 // Update position
                 missile.x += missile.vx;
                 missile.y += missile.vy;
                 
-                // Add trail effect
-                missile.trail.push({ x: missile.x, y: missile.y, life: 10 });
-                if (missile.trail.length > 5) {
+                // Update engine glow effect
+                missile.engineGlow = Math.sin(Date.now() * 0.02) * 0.3 + 0.7;
+                
+                // Enhanced trail generation based on missile state
+                const trailIntensity = missile.isActive ? 1.0 : 0.5;
+                if (Math.random() < 0.8 * trailIntensity) {
+                    missile.trail.push({ 
+                        x: missile.x, 
+                        y: missile.y, 
+                        life: 20,
+                        size: Math.random() * 4 + 3,
+                        intensity: trailIntensity
+                    });
+                }
+                if (missile.trail.length > 12) {
                     missile.trail.shift();
+                }
+                
+                // Enhanced smoke trail based on missile state
+                if (Math.random() < 0.4 * trailIntensity) {
+                    missile.smokeTrail.push({
+                        x: missile.x + (Math.random() - 0.5) * 15,
+                        y: missile.y + (Math.random() - 0.5) * 15,
+                        life: 25,
+                        size: Math.random() * 5 + 4,
+                        intensity: trailIntensity
+                    });
+                }
+                
+                // Update smoke trail
+                for (let j = missile.smokeTrail.length - 1; j >= 0; j--) {
+                    missile.smokeTrail[j].life--;
+                    if (missile.smokeTrail[j].life <= 0) {
+                        missile.smokeTrail.splice(j, 1);
+                    }
                 }
                 
                 // Check collision with player
@@ -4114,19 +4689,32 @@
         }
         
         function createMissileExplosion(x, y, radius) {
-            // Create explosion particles
-            createParticles(x, y, 15, '#ff6600', 'explosion');
-            addScreenShake(6, 8);
+            // Create enhanced explosion particles
+            createParticles(x, y, 25, '#ff6600', 'explosion');
+            createParticles(x, y, 15, '#ff0000', 'explosion');
+            createParticles(x, y, 10, '#ffff00', 'explosion');
+            addScreenShake(8, 12);
             playMissileExplosionSound();
             
-            // Create explosion effect
+            // Create multiple explosion effects for more dramatic impact
             missileExplosions.push({
                 x: x,
                 y: y,
                 radius: radius,
-                life: 20,
-                maxLife: 20
+                life: 25,
+                maxLife: 25
             });
+            
+            // Add secondary explosion
+            setTimeout(() => {
+                missileExplosions.push({
+                    x: x + (Math.random() - 0.5) * 20,
+                    y: y + (Math.random() - 0.5) * 20,
+                    radius: radius * 0.6,
+                    life: 20,
+                    maxLife: 20
+                });
+            }, 100);
             
             // Check if player is in explosion radius
             const dx = (player.x + player.width / 2) - x;
@@ -4135,16 +4723,16 @@
             
             if (distance < radius) {
                 // Player takes explosion damage
-                const damage = Math.floor(20 * (1 - distance / radius)); // Damage decreases with distance
+                const damage = Math.floor(25 * (1 - distance / radius)); // Slightly increased damage
                 if (activePowerups.shield.charges > 0) {
                     activePowerups.shield.charges--;
-                    addScreenShake(4, 6);
-                    createParticles(player.x + player.width/2, player.y + player.height/2, 6, '#00ffff', 'shield');
+                    addScreenShake(5, 8);
+                    createParticles(player.x + player.width/2, player.y + player.height/2, 8, '#00ffff', 'shield');
                 } else {
                     health -= damage;
                     addDamageFlash();
-                    addScreenShake(6, 8);
-                    createParticles(player.x + player.width/2, player.y + player.height/2, 10, '#ff0000', 'damage');
+                    addScreenShake(8, 12);
+                    createParticles(player.x + player.width/2, player.y + player.height/2, 15, '#ff0000', 'damage');
                     
                     if (health <= 0) {
                         gameOver();
@@ -4178,27 +4766,27 @@
             
             // Load player ship sprites
             sprites.playerShips[1] = new Image();
-            sprites.playerShips[1].src = 'assets/Ship_LVL_1.png';
+            sprites.playerShips[1].src = 'Ship_LVL_1.png';
             sprites.playerShips[2] = new Image();
-            sprites.playerShips[2].src = 'assets/Ship_LVL_2.png';
+            sprites.playerShips[2].src = 'Ship_LVL_2.png';
             sprites.playerShips[3] = new Image();
-            sprites.playerShips[3].src = 'assets/Ship_LVL_3.png';
+            sprites.playerShips[3].src = 'Ship_LVL_3.png';
             sprites.playerShips[4] = new Image();
-            sprites.playerShips[4].src = 'assets/Ship_LVL_4.png';
+            sprites.playerShips[4].src = 'Ship_LVL_4.png';
             sprites.playerShips[5] = new Image();
-            sprites.playerShips[5].src = 'assets/Ship_LVL_5.png';
+            sprites.playerShips[5].src = 'Ship_LVL_5.png';
             
             // Load enemy ship sprites
             sprites.enemyShips.fighter = new Image();
-            sprites.enemyShips.fighter.src = 'assets/Ship_01.png';
+            sprites.enemyShips.fighter.src = 'Ship_01.png';
             sprites.enemyShips.interceptor = new Image();
-            sprites.enemyShips.interceptor.src = 'assets/Ship_02.png';
+            sprites.enemyShips.interceptor.src = 'Ship_02.png';
             sprites.enemyShips.destroyer = new Image();
-            sprites.enemyShips.destroyer.src = 'assets/Ship_03.png';
+            sprites.enemyShips.destroyer.src = 'Ship_03.png';
             sprites.enemyShips.battleship = new Image();
-            sprites.enemyShips.battleship.src = 'assets/Ship_04.png';
+            sprites.enemyShips.battleship.src = 'Ship_04.png';
             sprites.enemyShips.dreadnought = new Image();
-            sprites.enemyShips.dreadnought.src = 'assets/Ship_05.png';
+            sprites.enemyShips.dreadnought.src = 'Ship_05.png';
             
             // Load warship sprite
             sprites.enemyShips.warship = new Image();
@@ -4206,24 +4794,24 @@
             
             // Load boss sprites
             sprites.bossShips.boss1 = new Image();
-            sprites.bossShips.boss1.src = 'assets/Boss_01.png';
+            sprites.bossShips.boss1.src = 'Boss_01.png';
             sprites.bossShips.boss2 = new Image();
-            sprites.bossShips.boss2.src = 'assets/Boss_02.png';
+            sprites.bossShips.boss2.src = 'Boss_02.png';
             sprites.bossShips.boss3 = new Image();
-            sprites.bossShips.boss3.src = 'assets/Boss_03.png';
+            sprites.bossShips.boss3.src = 'Boss_03.png';
             
             // Load background
             sprites.backgrounds.space = new Image();
-            sprites.backgrounds.space.src = 'assets/Space_BG_02.png';
+            sprites.backgrounds.space.src = 'Space_BG_02.png';
             
             // Load powerup sprites - each with unique sprite
             sprites.powerups.shield = new Image();
-            sprites.powerups.shield.src = 'assets/Barrier_Bonus.png';
+            sprites.powerups.shield.src = 'Barrier_Bonus.png';
             sprites.powerups.shield.onload = () => console.log('✅ Shield sprite loaded');
             sprites.powerups.shield.onerror = () => console.log('❌ Shield sprite failed to load');
             
             sprites.powerups.speed = new Image();
-            sprites.powerups.speed.src = 'assets/Hero_Speed_Debuff - Copy.png';
+            sprites.powerups.speed.src = 'Hero_Speed_Debuff - Copy.png';
             sprites.powerups.speed.onload = () => console.log('✅ Speed sprite loaded');
             sprites.powerups.speed.onerror = () => console.log('❌ Speed sprite failed to load');
             
@@ -4232,22 +4820,22 @@
             sprites.powerups.damage.onload = () => console.log('✅ Damage sprite loaded successfully');
             sprites.powerups.damage.onerror = (e) => {
                 console.log('❌ Damage sprite failed to load:', e);
-                console.log('Trying fallback to assets/Damage_Bonus.png...');
-                sprites.powerups.damage.src = 'assets/Damage_Bonus.png';
+                console.log('Trying fallback to Damage_Bonus.png...');
+                sprites.powerups.damage.src = 'Damage_Bonus.png';
             };
             
             sprites.powerups.rapidFire = new Image();
-            sprites.powerups.rapidFire.src = 'assets/Rockets_Bonus - Copy.png';
+            sprites.powerups.rapidFire.src = 'Rockets_Bonus - Copy.png';
             sprites.powerups.rapidFire.onload = () => console.log('✅ Rapid Fire sprite loaded');
             sprites.powerups.rapidFire.onerror = () => console.log('❌ Rapid Fire sprite failed to load');
             
             sprites.powerups.multipleShots = new Image();
-            sprites.powerups.multipleShots.src = 'assets/Enemy_Destroy_Bonus.png'; // Blue skull for multiple shots
+            sprites.powerups.multipleShots.src = 'Enemy_Destroy_Bonus.png'; // Blue skull for multiple shots
             sprites.powerups.multipleShots.onload = () => console.log('✅ Multiple Shots sprite loaded');
             sprites.powerups.multipleShots.onerror = () => console.log('❌ Multiple Shots sprite failed to load');
             
             sprites.powerups.magnet = new Image();
-            sprites.powerups.magnet.src = 'assets/Magnet_Bonus - Copy.png';
+            sprites.powerups.magnet.src = 'Magnet_Bonus - Copy.png';
             sprites.powerups.magnet.onload = () => console.log('✅ Magnet sprite loaded');
             sprites.powerups.magnet.onerror = () => console.log('❌ Magnet sprite failed to load');
             
@@ -4256,12 +4844,12 @@
             sprites.powerups.nanobotRepair.onload = () => console.log('✅ Nanobot Repair sprite loaded successfully');
             sprites.powerups.nanobotRepair.onerror = (e) => {
                 console.log('❌ Nanobot Repair sprite failed to load:', e);
-                console.log('Trying fallback to assets/HP_Bonus.png...');
-                sprites.powerups.nanobotRepair.src = 'assets/HP_Bonus.png';
+                console.log('Trying fallback to HP_Bonus.png...');
+                sprites.powerups.nanobotRepair.src = 'HP_Bonus.png';
             };
             
             sprites.powerups.droneAlly = new Image();
-            sprites.powerups.droneAlly.src = 'assets/drone.png';
+            sprites.powerups.droneAlly.src = 'drone.png';
             sprites.powerups.droneAlly.onload = () => console.log('✅ Drone Ally sprite loaded');
             sprites.powerups.droneAlly.onerror = () => console.log('❌ Drone Ally sprite failed to load');
             
@@ -4270,18 +4858,37 @@
             sprites.powerups.piercingLaser.onload = () => console.log('✅ Piercing Laser sprite loaded successfully');
             sprites.powerups.piercingLaser.onerror = (e) => {
                 console.log('❌ Piercing Laser sprite failed to load:', e);
-                console.log('Trying fallback to assets/Enemy_Speed_Debuff - Copy.png...');
-                sprites.powerups.piercingLaser.src = 'assets/Enemy_Speed_Debuff - Copy.png';
+                console.log('Trying fallback to Enemy_Speed_Debuff - Copy.png...');
+                sprites.powerups.piercingLaser.src = 'Enemy_Speed_Debuff - Copy.png';
             };
             
             sprites.powerups.coinBoost = new Image();
-            sprites.powerups.coinBoost.src = 'assets/Armor_Bonus.png'; // Golden shield for coin boost
+            sprites.powerups.coinBoost.src = 'Armor_Bonus.png'; // Golden shield for coin boost
             sprites.powerups.coinBoost.onload = () => console.log('✅ Coin Boost sprite loaded');
             sprites.powerups.coinBoost.onerror = () => console.log('❌ Coin Boost sprite failed to load');
             
-            // Load missile sprite
-            sprites.effects.missile = new Image();
-            sprites.effects.missile.src = 'ChatGPTheatseekingmiss.png';
+            // Load missile sprite with fallback (only if not already loaded by AssetLoader)
+            if (!sprites.effects.missile || !sprites.effects.missile.complete) {
+                sprites.effects.missile = new Image();
+                sprites.effects.missile.src = 'ChatGPTheatseekingmiss.png';
+                sprites.effects.missile.onload = () => {
+                    console.log('✅ Missile sprite loaded successfully (fallback)');
+                    console.log('Missile sprite dimensions:', sprites.effects.missile.naturalWidth, 'x', sprites.effects.missile.naturalHeight);
+                    console.log('Missile sprite complete:', sprites.effects.missile.complete);
+                    console.log('Missile sprite src:', sprites.effects.missile.src);
+                };
+                sprites.effects.missile.onerror = () => {
+                    console.log('❌ Missile sprite failed to load from ChatGPTheatseekingmiss.png (fallback)');
+                    console.log('Trying alternative missile sprite...');
+                    sprites.effects.missile.src = 'missile.png'; // Try alternative path in root directory
+                    sprites.effects.missile.onerror = () => {
+                        console.log('❌ Alternative missile sprite also failed, using fallback drawing');
+                        sprites.effects.missile = null; // Use fallback drawing
+                    };
+                };
+            } else {
+                console.log('✅ Missile sprite already loaded by AssetLoader, skipping manual load');
+            }
             
             console.log('Sprites loading initiated...');
             
@@ -4292,12 +4899,23 @@
                     const sprite = sprites.powerups[type];
                     console.log(`${type}: ${sprite.complete ? '✅ Loaded' : '❌ Not loaded'} (${sprite.naturalWidth}x${sprite.naturalHeight})`);
                 }
+                
+                // Check missile sprite specifically
+                if (sprites.effects.missile) {
+                    console.log(`missile: ${sprites.effects.missile.complete ? '✅ Loaded' : '❌ Not loaded'} (${sprites.effects.missile.naturalWidth}x${sprites.effects.missile.naturalHeight})`);
+                    console.log(`missile src: ${sprites.effects.missile.src}`);
+                } else {
+                    console.log('missile: ❌ Sprite object is null');
+                }
                 console.log('============================');
             }, 2000);
         }
         
         // ===== INITIALIZATION =====
-         function init() {
+        
+
+        
+        function init() {
             console.log('Game initializing...');
             
             // Essential setup first
@@ -4544,202 +5162,10 @@
                     keys.ArrowDown = false;
                 });
             }
-            // Keyboard events
-            document.addEventListener('keydown', (e) => {
-                keys[e.key] = true;
-            });
-            
-            document.addEventListener('keyup', (e) => {
-                keys[e.key] = false;
-            });
-            
-            // Mouse movement
-            canvas.addEventListener('mousemove', (e) => {
-                if (gameRunning && !gamePaused) {
-                    const rect = canvas.getBoundingClientRect();
-                    player.x = e.clientX - rect.left - player.width / 2;
-                    player.y = e.clientY - rect.top - player.height / 2;
-                    
-                    // Keep player in bounds
-                    if (player.x < 0) player.x = 0;
-                    if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
-                    if (player.y < 0) player.y = 0;
-                    if (player.y > canvas.height - player.height) player.y = canvas.height - player.height;
-                }
-            });
-            
-            // Touch controls for mobile
-            canvas.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                if (!gameRunning || gamePaused) return;
-                
-                const touch = e.touches[0];
-                const rect = canvas.getBoundingClientRect();
-                const x = touch.clientX - rect.left;
-                const y = touch.clientY - rect.top;
-                
-                // Move player to touch position
-                player.x = x - player.width / 2;
-                player.y = y - player.height / 2;
-                
-                // Keep player on screen
-                if (player.x < 0) player.x = 0;
-                if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
-                if (player.y < 0) player.y = 0;
-                if (player.y > canvas.height - player.height) player.y = canvas.height - player.height;
-                
-                // Auto-fire when touching
-                if (Date.now() - lastFireTime > fireRate) {
-                    fireBullet();
-                    lastFireTime = Date.now();
-                }
-            }, { passive: false });
-            
-            canvas.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-                if (!gameRunning || gamePaused) return;
-                
-                const touch = e.touches[0];
-                const rect = canvas.getBoundingClientRect();
-                const x = touch.clientX - rect.left;
-                const y = touch.clientY - rect.top;
-                
-                // Move player to touch position
-                player.x = x - player.width / 2;
-                player.y = y - player.height / 2;
-                
-                // Keep player on screen
-                if (player.x < 0) player.x = 0;
-                if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
-                if (player.y < 0) player.y = 0;
-                if (player.y > canvas.height - player.height) player.y = canvas.height - player.height;
-                
-                // Auto-fire when touching
-                if (Date.now() - lastFireTime > fireRate) {
-                    fireBullet();
-                    lastFireTime = Date.now();
-                }
-            }, { passive: false });
-            
-            // Button events
-            document.getElementById('startButton').addEventListener('click', startGame);
-            document.getElementById('shopButton').addEventListener('click', () => {
-                document.getElementById('shop').style.display = 'block';
-                updateShopDisplay();
-                // Only pause if game is running
-                if (gameRunning) {
-                    gamePaused = true;
-                }
-            });
-            
-
-            
-                            document.getElementById('backToLevelComplete').addEventListener('click', () => {
-                    document.getElementById('shop').style.display = 'none';
-                    // Only show level complete if we actually completed a level
-                    if (levelCompleteMenuShouldBeShown) {
-                        document.getElementById('levelComplete').style.display = 'block';
-                    } else {
-                        // Resume the game if we didn't actually complete a level
-                        gamePaused = false;
-                        levelCompleteMenuShouldBeShown = false;
-                        gameLoop();
-                    }
-                });
-            
-            document.getElementById('continueToNextLevel').addEventListener('click', continueToNextLevel);
-            document.getElementById('restartGame').addEventListener('click', restartGame);
-            
-            // Ad monetization event listeners
-            document.getElementById('watchAdForDouble').addEventListener('click', showDoubleEarningsAd);
-            document.getElementById('watchAdForContinue').addEventListener('click', showContinueAd);
-            document.getElementById('earnRevCoinsButton').addEventListener('click', showRevCoinsAd);
-            
-            // Premium shop event listeners
-            document.getElementById('premiumShopButton').addEventListener('click', openPremiumShop);
-            document.getElementById('closePremiumShop').addEventListener('click', closePremiumShop);
-            document.getElementById('earnRevCoinsFromPremium').addEventListener('click', showRevCoinsAd);
-            
-            // Weapon shop event listeners
-            document.getElementById('weaponShopButton').addEventListener('click', openWeaponShop);
-            document.getElementById('closeWeaponShop').addEventListener('click', closeWeaponShop);
-            
-            // Speed up construction button
-            document.getElementById('speedUpConstructionButton').addEventListener('click', showSpeedUpBuildAd);
-            
-            // Weapon shop tab switching
-            document.querySelectorAll('.weapon-tab-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const tabName = btn.getAttribute('data-tab');
-                    switchWeaponTab(tabName);
-                });
-            });
-            
-            // Tab switching
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const tabName = btn.getAttribute('data-tab');
-                    switchTab(tabName);
-                });
-            });
-            
-            // Shop tab switching
-            document.querySelectorAll('.shop-tab-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const tabName = btn.getAttribute('data-tab');
-                    switchShopTab(tabName);
-                });
-            });
-            
-            // Add event listeners for level complete menu buttons
-            document.getElementById('upgradeShips').addEventListener('click', () => {
-                document.getElementById('levelComplete').style.display = 'none';
-                document.getElementById('shop').style.display = 'block';
-                updateShopDisplay();
-            });
-            
-            document.getElementById('repairShips').addEventListener('click', () => {
-                document.getElementById('levelComplete').style.display = 'none';
-                document.getElementById('shop').style.display = 'block';
-                updateShopDisplay();
-            });
-            
-            document.getElementById('buyWeapons').addEventListener('click', () => {
-                document.getElementById('levelComplete').style.display = 'none';
-                document.getElementById('shop').style.display = 'block';
-                updateShopDisplay();
-            });
-            
-            document.getElementById('buyPowerups').addEventListener('click', () => {
-                document.getElementById('levelComplete').style.display = 'none';
-                document.getElementById('shop').style.display = 'block';
-                updateShopDisplay();
-            });
-            
-            // Sound toggle
-            document.getElementById('soundToggle').addEventListener('click', () => {
-                soundEnabled = !soundEnabled;
-                const button = document.getElementById('soundToggle');
-                if (soundEnabled) {
-                    button.textContent = 'ON';
-                    button.style.background = '#00ff00';
-                    button.style.color = '#000';
-                } else {
-                    button.textContent = 'OFF';
-                    button.style.background = '#ff0000';
-                    button.style.color = '#fff';
-                }
-            });
-            
-            // Window resize
-            window.addEventListener('resize', () => {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            });
         }
 
         // ===== GAME FUNCTIONS =====
-                 function startGame() {
+        function startGame() {
             console.log('Starting game...');
             
             // Initialize object pools for better performance
@@ -4747,13 +5173,13 @@
             
             document.getElementById('startScreen').style.display = 'none';
             gameStartTime = Date.now(); // Reset game start time
-            reviveCount = 0; // Reset revive count for new game
+
              gameRunning = true;
              gamePaused = false;
              gameLoop();
          }
         
-                 function gameLoop() {
+        function gameLoop() {
              if (!gameRunning || gamePaused) return;
              
              update();
@@ -4761,7 +5187,7 @@
              requestAnimationFrame(gameLoop);
          }
         
-                         function update() {
+        function update() {
             // Update visual effects
             if (screenShake.duration > 0) {
                 screenShake.duration--;
@@ -4809,7 +5235,7 @@
              
              // Auto-fire
              const currentTime = Date.now();
-             let fireRate = ships[player.currentShip].fireRate;
+             fireRate = ships[player.currentShip].fireRate;
              
              if (activePowerups.rapidFire && currentTime < activePowerups.rapidFire) {
                 fireRate = Math.max(50, fireRate / 3);
@@ -5293,7 +5719,7 @@
             updateHUD();
         }
         
-                 function draw() {
+        function draw() {
              // Apply screen shake
              ctx.save();
              ctx.translate(screenShake.x, screenShake.y);
@@ -5801,24 +6227,108 @@
                 ctx.shadowBlur = 0;
             }
             
-            // Draw seeking missiles
+            // Draw missile warning indicators
             for (let missile of seekingMissiles) {
-                // Draw missile trail
+                // Draw warning indicator on screen edges when missile is off-screen
+                if (missile.x < 0 || missile.x > canvas.width || missile.y < 0 || missile.y > canvas.height) {
+                    const warningX = Math.max(50, Math.min(canvas.width - 50, missile.x));
+                    const warningY = Math.max(50, Math.min(canvas.height - 50, missile.y));
+                    
+                    // Pulsing warning arrow
+                    const pulseIntensity = Math.sin(Date.now() * 0.01) * 0.4 + 0.6;
+                    ctx.fillStyle = `rgba(255, 0, 0, ${pulseIntensity})`;
+                    ctx.shadowColor = '#ff0000';
+                    ctx.shadowBlur = 15;
+                    
+                    // Draw warning arrow pointing to missile direction
+                    ctx.beginPath();
+                    ctx.moveTo(warningX, warningY);
+                    const angle = Math.atan2(missile.y - warningY, missile.x - warningX);
+                    ctx.lineTo(warningX + Math.cos(angle) * 30, warningY + Math.sin(angle) * 30);
+                    ctx.lineTo(warningX + Math.cos(angle - 0.5) * 20, warningY + Math.sin(angle - 0.5) * 20);
+                    ctx.moveTo(warningX + Math.cos(angle) * 30, warningY + Math.sin(angle) * 30);
+                    ctx.lineTo(warningX + Math.cos(angle + 0.5) * 20, warningY + Math.sin(angle + 0.5) * 20);
+                    ctx.stroke();
+                    
+                    // Draw warning text
+                    ctx.fillStyle = `rgba(255, 0, 0, ${pulseIntensity})`;
+                    ctx.font = 'bold 16px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('MISSILE!', warningX, warningY - 40);
+                }
+                
+                // Draw missile status indicator (warning/active/target acquired)
+                if (missile.isActive) {
+                    const statusX = missile.x;
+                    const statusY = missile.y - 25;
+                    
+                    if (missile.targetAcquired) {
+                        // Target acquired - green indicator
+                        ctx.fillStyle = 'rgba(0, 255, 0, 0.8)';
+                        ctx.shadowColor = '#00ff00';
+                        ctx.shadowBlur = 10;
+                        ctx.font = 'bold 12px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('TARGET LOCKED', statusX, statusY);
+                    } else if (missile.warningTime > 10) {
+                        // Warning phase - yellow indicator
+                        ctx.fillStyle = 'rgba(255, 255, 0, 0.8)';
+                        ctx.shadowColor = '#ffff00';
+                        ctx.shadowBlur = 10;
+                        ctx.font = 'bold 12px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('SEEKING', statusX, statusY);
+                    }
+                    ctx.shadowBlur = 0;
+                }
+                
+                // Draw seeking missiles
+                // Draw smoke trail first (behind missile)
+                for (let i = 0; i < missile.smokeTrail.length; i++) {
+                    const smoke = missile.smokeTrail[i];
+                    const alpha = (smoke.life / 25) * (smoke.intensity || 1.0);
+                    ctx.globalAlpha = alpha * 0.5;
+                    ctx.fillStyle = `rgba(100, 100, 100, ${alpha})`;
+                    ctx.shadowColor = 'rgba(100, 100, 100, 0.5)';
+                    ctx.shadowBlur = 3 + (smoke.intensity || 1.0) * 2;
+                    ctx.beginPath();
+                    ctx.arc(smoke.x, smoke.y, smoke.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1;
+                
+                // Draw enhanced missile trail
                 for (let i = 0; i < missile.trail.length; i++) {
                     const trail = missile.trail[i];
-                    const alpha = trail.life / 10;
-                    ctx.globalAlpha = alpha * 0.5;
+                    const alpha = (trail.life / 20) * (trail.intensity || 1.0);
+                    ctx.globalAlpha = alpha * 0.8;
                     ctx.fillStyle = '#ff6600';
                     ctx.shadowColor = '#ff6600';
-                    ctx.shadowBlur = 5;
-                    ctx.fillRect(trail.x - 3, trail.y - 3, 6, 6);
+                    ctx.shadowBlur = 8 + (trail.intensity || 1.0) * 4;
+                    ctx.beginPath();
+                    ctx.arc(trail.x, trail.y, trail.size, 0, Math.PI * 2);
+                    ctx.fill();
                 }
                 ctx.globalAlpha = 1;
                 
                 // Try to draw missile sprite first
                 const missileSprite = sprites.effects.missile;
+                
+                // Debug missile sprite status (only log once per missile)
+                if (missileSprite && !missile.spriteDebugLogged) {
+                    console.log('✅ Missile sprite loaded and ready for drawing');
+                    missile.spriteDebugLogged = true; // Only log once per missile
+                } else if (!missileSprite && !missile.spriteDebugLogged) {
+                    console.log('❌ Missile sprite not loaded, using fallback drawing');
+                    missile.spriteDebugLogged = true; // Only log once per missile
+                }
+                
                 try {
                     if (missileSprite && missileSprite.complete && missileSprite.naturalWidth > 0) {
+                        if (!missile.spriteDebugLogged) {
+                            console.log('✅ Drawing missile sprite');
+                            missile.spriteDebugLogged = true;
+                        }
                         // Draw missile sprite
                         ctx.save();
                         ctx.translate(missile.x, missile.y);
@@ -5828,46 +6338,91 @@
                         ctx.rotate(angle);
                         
                         ctx.shadowColor = '#ff6600';
-                        ctx.shadowBlur = 12;
+                        ctx.shadowBlur = 15;
                         ctx.drawImage(missileSprite, -missile.width/2, -missile.height/2, missile.width, missile.height);
                         ctx.restore();
                     } else {
-                        // Fallback to enhanced drawing
-                        ctx.fillStyle = missile.color;
+                        if (!missile.spriteDebugLogged) {
+                            console.log('❌ Using fallback drawing for missile');
+                            missile.spriteDebugLogged = true;
+                        }
+                        // Enhanced fallback drawing
+                        ctx.save();
+                        ctx.translate(missile.x, missile.y);
+                        
+                        // Calculate angle to face the direction of movement
+                        const angle = Math.atan2(missile.vy, missile.vx);
+                        ctx.rotate(angle);
+                        
+                        // Draw missile body with gradient
+                        const gradient = ctx.createLinearGradient(-missile.width/2, -missile.height/2, missile.width/2, missile.height/2);
+                        gradient.addColorStop(0, '#ff6600');
+                        gradient.addColorStop(0.5, '#ff8800');
+                        gradient.addColorStop(1, '#ffaa00');
+                        
+                        ctx.fillStyle = gradient;
                         ctx.shadowColor = '#ff6600';
-                        ctx.shadowBlur = 12;
-                        ctx.fillRect(missile.x - missile.width/2, missile.y - missile.height/2, missile.width, missile.height);
+                        ctx.shadowBlur = 15;
+                        ctx.fillRect(-missile.width/2, -missile.height/2, missile.width, missile.height);
                         
                         // Draw missile tip
                         ctx.fillStyle = '#ff0000';
-                        ctx.fillRect(missile.x - missile.width/2, missile.y - missile.height/2, missile.width, 6);
+                        ctx.fillRect(-missile.width/2, -missile.height/2, missile.width, 8);
                         
                         // Draw missile fins
                         ctx.fillStyle = '#ffaa00';
-                        ctx.fillRect(missile.x - missile.width/2 - 2, missile.y + missile.height/2 - 4, 4, 8);
-                        ctx.fillRect(missile.x + missile.width/2 - 2, missile.y + missile.height/2 - 4, 4, 8);
+                        ctx.fillRect(-missile.width/2 - 3, missile.height/2 - 6, 6, 12);
+                        ctx.fillRect(missile.width/2 - 3, missile.height/2 - 6, 6, 12);
+                        
+                        // Draw engine glow
+                        ctx.fillStyle = `rgba(255, 255, 0, ${missile.engineGlow * 0.8})`;
+                        ctx.shadowColor = '#ffff00';
+                        ctx.shadowBlur = 20;
+                        ctx.fillRect(-missile.width/2, missile.height/2, missile.width, 8);
+                        
+                        ctx.restore();
                     }
                 } catch (e) {
-                    // Fallback to enhanced drawing
-                    ctx.fillStyle = missile.color;
+                    // Enhanced fallback drawing
+                    ctx.save();
+                    ctx.translate(missile.x, missile.y);
+                    
+                    // Calculate angle to face the direction of movement
+                    const angle = Math.atan2(missile.vy, missile.vx);
+                    ctx.rotate(angle);
+                    
+                    // Draw missile body with gradient
+                    const gradient = ctx.createLinearGradient(-missile.width/2, -missile.height/2, missile.width/2, missile.height/2);
+                    ctx.fillStyle = gradient;
                     ctx.shadowColor = '#ff6600';
-                    ctx.shadowBlur = 12;
-                    ctx.fillRect(missile.x - missile.width/2, missile.y - missile.height/2, missile.width, missile.height);
+                    ctx.shadowBlur = 15;
+                    ctx.fillRect(-missile.width/2, -missile.height/2, missile.width, missile.height);
                     
                     // Draw missile tip
                     ctx.fillStyle = '#ff0000';
-                    ctx.fillRect(missile.x - missile.width/2, missile.y - missile.height/2, missile.width, 6);
+                    ctx.fillRect(-missile.width/2, -missile.height/2, missile.width, 8);
                     
                     // Draw missile fins
                     ctx.fillStyle = '#ffaa00';
-                    ctx.fillRect(missile.x - missile.width/2 - 2, missile.y + missile.height/2 - 4, 4, 8);
-                    ctx.fillRect(missile.x + missile.width/2 - 2, missile.y + missile.height/2 - 4, 4, 8);
+                    ctx.fillRect(-missile.width/2 - 3, missile.height/2 - 6, 6, 12);
+                    ctx.fillRect(missile.width/2 - 3, missile.height/2 - 6, 6, 12);
+                    
+                    // Draw engine glow
+                    ctx.fillStyle = `rgba(255, 255, 0, ${missile.engineGlow * 0.8})`;
+                    ctx.shadowColor = '#ffff00';
+                    ctx.shadowBlur = 20;
+                    ctx.fillRect(-missile.width/2, missile.height/2, missile.width, 8);
+                    
+                    ctx.restore();
                 }
                 
-                // Draw warning glow
-                ctx.strokeStyle = '#ff0000';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(missile.x - missile.width/2 - 2, missile.y - missile.height/2 - 2, missile.width + 4, missile.height + 4);
+                // Draw warning glow with pulsing effect
+                const pulseAlpha = Math.sin(Date.now() * 0.01) * 0.3 + 0.7;
+                ctx.strokeStyle = `rgba(255, 0, 0, ${pulseAlpha})`;
+                ctx.lineWidth = 3;
+                ctx.shadowColor = '#ff0000';
+                ctx.shadowBlur = 10;
+                ctx.strokeRect(missile.x - missile.width/2 - 4, missile.y - missile.height/2 - 4, missile.width + 8, missile.height + 8);
                 
                 ctx.shadowBlur = 0;
             }
@@ -6114,7 +6669,7 @@
             });
         }
         
-                         function activatePowerup(type) {
+        function activatePowerup(type) {
             console.log(`Powerup activated: ${type}`);
             
             if (type === 'shield') {
@@ -6783,12 +7338,7 @@
                         <p>• Build up your fleet in the shop</p>
                     </div>
                     
-                    <div style="text-align: left; margin-bottom: 20px;">
-                        <h3 style="color: #ffff00;">💎 REVIVES:</h3>
-                        <p>• You have 3 revives per game</p>
-                        <p>• Watch ads to continue when you die</p>
-                        <p>• After 3 revives, game ends and score is saved</p>
-                    </div>
+
                     
                     <button onclick="closeTutorial()" style="
                         background: linear-gradient(45deg, #00ff00, #008000);
@@ -7236,20 +7786,9 @@
         }
         
         function showContinueAd() {
-            console.log(`🔍 Revive check: ${reviveCount}/${maxRevives}`);
-            // Check if player has revives left
-            if (reviveCount >= maxRevives) {
-                console.log('❌ No more revives - game over!');
-                // No more revives - game over
-                submitScoreAndGameOver();
-                return;
-            }
-            
             showAdModal('continue', () => {
                 // Continue the player with full health and keep all progress
                 health = 100;
-                reviveCount++; // Increment revive count
-                console.log(`✅ Revive used: ${reviveCount}/${maxRevives}`);
                 gameRunning = true;
                 gamePaused = false;
                 
@@ -7259,7 +7798,7 @@
                 // Call restartGame to reset wave progress but keep everything else
                 restartGame();
                 
-                showRewardMessage(`🛡️ Mission continued! (${reviveCount}/${maxRevives} revives used)`);
+                showRewardMessage(`🛡️ Mission continued!`);
             });
         }
         
@@ -7328,11 +7867,7 @@
             });
         }
         
-        function updateReviveDisplay() {
-            // This function is no longer needed since we changed to continue system
-            // But keeping it to prevent errors if called
-            console.log('Revive display update called - continuing with new system');
-        }
+
         
         function showBossWarning() {
             // Initialize boss wave if this is the first boss
@@ -7412,7 +7947,7 @@
                 bossType = 'boss3';
             }
             
-            const bossTemplate = bossTypes[bossType];
+                            const bossTemplate = enemyBossTypes[bossType];
             
             // Generate random boss stats for NFT-style uniqueness
             const randomBoss = generateRandomBossStats(bossTemplate);
@@ -7850,7 +8385,7 @@
             document.getElementById('earnings').textContent = '$' + loyalty.toFixed(6);
             document.getElementById('wallet').textContent = '$' + wallet.toFixed(6);
             document.getElementById('revCoins').textContent = revCoins;
-            document.getElementById('revives').textContent = `${reviveCount}/${maxRevives}`;
+
             document.getElementById('comboDisplay').textContent = `x${comboMultiplier}`;
             
             // Show damaged ship warning if using damaged ship
@@ -7885,6 +8420,39 @@
                 const damagedWarning = document.getElementById('damagedShipWarning');
                 if (damagedWarning) {
                     damagedWarning.style.display = 'none';
+                }
+            }
+            
+            // Show missile warning if missiles are active
+            if (seekingMissiles.length > 0) {
+                let missileWarning = document.getElementById('missileWarning');
+                if (!missileWarning) {
+                    missileWarning = document.createElement('div');
+                    missileWarning.id = 'missileWarning';
+                    missileWarning.style.cssText = `
+                        position: fixed;
+                        top: 80px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background: rgba(255, 0, 0, 0.9);
+                        border: 2px solid #ff0000;
+                        border-radius: 10px;
+                        padding: 10px 20px;
+                        color: white;
+                        font-weight: bold;
+                        z-index: 1000;
+                        text-align: center;
+                        animation: pulse 1s infinite;
+                    `;
+                    document.body.appendChild(missileWarning);
+                }
+                missileWarning.innerHTML = `🚨 MISSILE THREAT DETECTED - ${seekingMissiles.length} MISSILE(S) ACTIVE 🚨`;
+                missileWarning.style.display = 'block';
+            } else {
+                // Hide missile warning
+                const missileWarning = document.getElementById('missileWarning');
+                if (missileWarning) {
+                    missileWarning.style.display = 'none';
                 }
             }
             
@@ -8133,7 +8701,7 @@
             
             document.getElementById('finalScore').textContent = score;
             document.getElementById('finalWave').textContent = currentWave;
-            updateReviveDisplay();
+
             document.getElementById('gameOver').style.display = 'block';
         }
         
@@ -8193,7 +8761,7 @@
             enemiesKilledThisWave = 0;
             coinsEarnedThisWave = 0;
             loyaltyEarnedThisWave = 0;
-            reviveCount = 0;
+
             
             // Reset all powerups
             activePowerups = {
@@ -8489,7 +9057,7 @@
             // Note: Premium weapons and powerups are handled separately in their own shop tabs
         }
         
-                         function buyShip(shipId) {
+        function buyShip(shipId) {
             const ship = ships[shipId];
             if (coins >= ship.price) {
                 coins -= ship.price;
@@ -9050,6 +9618,13 @@
             
             // Keep all active powerups and weapons - don't reset them
             // activePowerups and activePremiumWeapons stay as they are
+            // droneAlly is also preserved since it's tied to activePowerups.droneAlly
+            
+            // Reposition drone ally if it exists and is still active
+            if (droneAlly && activePowerups.droneAlly && Date.now() < activePowerups.droneAlly) {
+                droneAlly.x = player.x + player.width + 20;
+                droneAlly.y = player.y;
+            }
             
             // Reset boss state for current wave
             bossActive = false;
@@ -9174,10 +9749,319 @@
         }
         
         function closeWithdrawalDialog() {
-            const withdrawalDialog = document.querySelector('.withdrawal-dialog');
+            const withdrawalDialog = document.querySelector('.withdrawalDialog');
             if (withdrawalDialog) {
                 withdrawalDialog.remove();
             }
+        }
+        
+        // ===== GAME INITIALIZATION =====
+        function resetGame() {
+            // Reset game state
+            gameRunning = false;
+            gamePaused = false;
+            score = 0;
+            coins = 0;
+            health = 100;
+            currentWave = 1;
+            enemiesRequiredForLevel = 30;
+            enemiesKilled = 0;
+            enemiesKilledThisWave = 0;
+            coinsEarnedThisWave = 0;
+            loyaltyEarnedThisWave = 0;
+            adWatchedThisWave = false;
+            adBonusAvailable = false;
+            
+            // Reset player position
+            if (player) {
+                player.x = canvas.width / 2;
+                player.y = canvas.height - 100;
+            }
+            
+            // Clear arrays
+            enemies = [];
+            bullets = [];
+            powerups = [];
+            explosions = [];
+            particles = [];
+            
+            console.log('Game state reset');
+        }
+
+        function initGame() {
+            // Initialize canvas
+            canvas = document.getElementById('gameCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            // Initialize game state
+            resetGame();
+            
+            // Show loading screen first
+            document.getElementById('loadingScreen').style.display = 'flex';
+            document.getElementById('startScreen').style.display = 'none';
+            
+            // Simulate loading
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.display = 'none';
+                document.getElementById('startScreen').style.display = 'flex';
+            }, 2000);
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Initialize HUD
+            updateHUD();
+            
+            console.log('Game initialized successfully!');
+        }
+
+        function setupEventListeners() {
+            // Keyboard events
+            document.addEventListener('keydown', (e) => {
+                keys[e.key] = true;
+            });
+            
+            document.addEventListener('keyup', (e) => {
+                keys[e.key] = false;
+            });
+            
+            // Mouse movement
+            canvas.addEventListener('mousemove', (e) => {
+                if (gameRunning && !gamePaused) {
+                    const rect = canvas.getBoundingClientRect();
+                    player.x = e.clientX - rect.left - player.width / 2;
+                    player.y = e.clientY - rect.top - player.height / 2;
+                    
+                    // Keep player in bounds
+                    if (player.x < 0) player.x = 0;
+                    if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
+                    if (player.y < 0) player.y = 0;
+                    if (player.y > canvas.height - player.height) player.y = canvas.height - player.height;
+                }
+            });
+            
+            // Touch controls for mobile
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (!gameRunning || gamePaused) return;
+                
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+                
+                // Move player to touch position
+                player.x = x - player.width / 2;
+                player.y = y - player.height / 2;
+                
+                // Keep player on screen
+                if (player.x < 0) player.x = 0;
+                if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
+                if (player.y < 0) player.y = 0;
+                if (player.y > canvas.height - player.height) player.y = canvas.height - player.height;
+                
+                // Auto-fire when touching
+                if (Date.now() - lastFireTime > fireRate) {
+                    fireShipWeapon();
+                    lastFireTime = Date.now();
+                }
+            }, { passive: false });
+            
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (!gameRunning || gamePaused) return;
+                
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+                
+                // Move player to touch position
+                player.x = x - player.width / 2;
+                player.y = y - player.height / 2;
+                
+                // Keep player on screen
+                if (player.x < 0) player.x = 0;
+                if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
+                if (player.y < 0) player.y = 0;
+                if (player.y > canvas.height - player.height) player.y = canvas.height - player.height;
+                
+                // Auto-fire when touching
+                if (Date.now() - lastFireTime > fireRate) {
+                    fireShipWeapon();
+                    lastFireTime = Date.now();
+                }
+            }, { passive: false });
+            
+            // Button events
+            document.getElementById('startButton').addEventListener('click', startGame);
+            document.getElementById('shopButton').addEventListener('click', () => {
+                document.getElementById('shop').style.display = 'block';
+                updateShopDisplay();
+                // Only pause if game is running
+                if (gameRunning) {
+                    gamePaused = true;
+                }
+            });
+            
+            document.getElementById('backToLevelComplete').addEventListener('click', () => {
+                document.getElementById('shop').style.display = 'none';
+                // Only show level complete if we actually completed a level
+                if (levelCompleteMenuShouldBeShown) {
+                    document.getElementById('levelComplete').style.display = 'block';
+                } else {
+                    // Resume the game if we didn't actually complete a level
+                    gamePaused = false;
+                    levelCompleteMenuShouldBeShown = false;
+                    gameLoop();
+                }
+            });
+            
+            document.getElementById('continueToNextLevel').addEventListener('click', continueToNextLevel);
+    
+            
+            // Ad monetization event listeners
+            document.getElementById('watchAdForDouble').addEventListener('click', showDoubleEarningsAd);
+            document.getElementById('watchAdForContinue').addEventListener('click', showContinueAd);
+            document.getElementById('earnRevCoinsButton').addEventListener('click', showRevCoinsAd);
+            
+            // Premium shop event listeners
+            document.getElementById('premiumShopButton').addEventListener('click', openPremiumShop);
+            document.getElementById('closePremiumShop').addEventListener('click', closePremiumShop);
+            document.getElementById('earnRevCoinsFromPremium').addEventListener('click', showRevCoinsAd);
+            
+            // Weapon shop event listeners
+            document.getElementById('weaponShopButton').addEventListener('click', openWeaponShop);
+            document.getElementById('closeWeaponShop').addEventListener('click', closeWeaponShop);
+            
+            // Speed up construction button
+            document.getElementById('speedUpConstructionButton').addEventListener('click', showSpeedUpBuildAd);
+            
+            // Weapon shop tab switching
+            document.querySelectorAll('.weapon-tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabName = btn.getAttribute('data-tab');
+                    switchWeaponTab(tabName);
+                });
+            });
+            
+            // Tab switching
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabName = btn.getAttribute('data-tab');
+                    switchTab(tabName);
+                });
+            });
+            
+            // Shop tab switching
+            document.querySelectorAll('.shop-tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabName = btn.getAttribute('data-tab');
+                    switchShopTab(tabName);
+                });
+            });
+            
+            // Add event listeners for level complete menu buttons
+            document.getElementById('upgradeShips').addEventListener('click', () => {
+                document.getElementById('levelComplete').style.display = 'none';
+                document.getElementById('shop').style.display = 'block';
+                updateShopDisplay();
+            });
+            
+            document.getElementById('repairShips').addEventListener('click', () => {
+                document.getElementById('levelComplete').style.display = 'none';
+                document.getElementById('shop').style.display = 'block';
+                updateShopDisplay();
+            });
+            
+            document.getElementById('buyWeapons').addEventListener('click', () => {
+                document.getElementById('levelComplete').style.display = 'none';
+                document.getElementById('shop').style.display = 'block';
+                updateShopDisplay();
+            });
+            
+            document.getElementById('buyPowerups').addEventListener('click', () => {
+                document.getElementById('levelComplete').style.display = 'none';
+                document.getElementById('shop').style.display = 'block';
+                updateShopDisplay();
+            });
+            
+            // Sound toggle
+            document.getElementById('soundToggle').addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                const button = document.getElementById('soundToggle');
+                if (soundEnabled) {
+                    button.textContent = 'ON';
+                    button.style.background = '#00ff00';
+                    button.style.color = '#000';
+                } else {
+                    button.textContent = 'OFF';
+                    button.style.background = '#ff0000';
+                    button.style.color = '#fff';
+                }
+            });
+            
+            // Window resize
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+            
+            // Setup virtual joystick for mobile
+            setupVirtualJoystick();
+        }
+        
+        // ===== RevEmpire Same-Folder Sprite Fix =====
+        (() => {
+            // Function to strip "assets/" from paths
+            const stripAssets = src => String(src || "").replace(/(^|\/)assets\//i, "");
+
+            // Patch Image.src setter
+            const desc = Object.getOwnPropertyDescriptor(Image.prototype, "src");
+            if (desc && desc.set) {
+                const nativeGet = desc.get;
+                const nativeSet = desc.set;
+                Object.defineProperty(Image.prototype, "src", {
+                    configurable: true,
+                    enumerable: true,
+                    get: nativeGet,
+                    set(v) { nativeSet.call(this, stripAssets(v)); }
+                });
+            }
+
+            // Fix any <img src="assets/..."> already in DOM
+            function fixExistingImgs() {
+                document.querySelectorAll("img[src]").forEach(img => {
+                    const orig = img.getAttribute("src");
+                    if (!orig) return;
+                    img.src = stripAssets(orig);
+                });
+            }
+
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", fixExistingImgs);
+            } else {
+                fixExistingImgs();
+            }
+
+            // Optional helper
+            window.loadSprite = function(fileName) {
+                const img = new Image();
+                img.src = stripAssets(fileName);
+                return img;
+            };
+        })();
+
+        // ===== START THE GAME =====
+        // Initialize when DOM is ready
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", initGame);
+        } else {
+            initGame();
         }
     </script>
 </body>
